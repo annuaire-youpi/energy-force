@@ -33,9 +33,10 @@
     .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}.field{display:grid;gap:8px}.field label{font-size:13px;font-weight:800}.input,select,textarea{width:100%;border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;outline:none;min-height:50px}.textarea{min-height:120px;resize:vertical}.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
     .footer-mobile{display:none;position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:10px 12px;grid-template-columns:repeat(5,1fr);gap:8px}.footer-mobile button{border:0;background:transparent;padding:8px 6px;border-radius:14px;color:var(--muted);min-height:54px;font-size:11px}.footer-mobile button.active{background:#eef4ff;color:var(--primary)}
     .floating{position:fixed;right:16px;bottom:82px;z-index:25;width:60px;height:60px;border-radius:22px;border:0;background:linear-gradient(135deg,var(--primary),#3b82f6);color:#fff;font-size:30px;box-shadow:0 20px 38px rgba(37,99,235,.35)}
-    .modalBackdrop{position:fixed;inset:0;background:rgba(15,23,42,.52);display:none;align-items:center;justify-content:center;z-index:60;padding:14px}.modalBackdrop.show{display:flex}.modal{width:100%;max-width:600px;background:#fff;border-radius:26px;box-shadow:var(--shadow);overflow:hidden}.modalHeader{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modalBody{padding:16px 18px;display:grid;gap:12px}.modalActions{padding:16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.modalHeader h3{margin:0}.empty{padding:18px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center}
+    .modalBackdrop{position:fixed;inset:0;background:rgba(15,23,42,.52);display:none;align-items:center;justify-content:center;z-index:60;padding:14px;overflow-y:auto}.modalBackdrop.show{display:flex}.modal{width:100%;max-width:900px;background:#fff;border-radius:26px;box-shadow:var(--shadow);overflow:hidden;margin:auto}.modalHeader{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modalBody{padding:16px 18px;max-height:calc(90vh - 140px);overflow-y:auto}.modalActions{padding:16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.modalHeader h3{margin:0}.empty{padding:18px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     @media (max-width:1024px){.app{grid-template-columns:1fr}.sidebar{display:none}.hero,.cards,.grid2{grid-template-columns:1fr 1fr}.main{padding-bottom:92px}}
-    @media (max-width:760px){.hero,.cards,.grid2,.form{grid-template-columns:1fr}.topbar{gap:8px}.search{padding:12px 14px}.btn,.iconbtn{min-height:50px}.panel,.card{border-radius:20px}.floating,.footer-mobile{display:grid}.modalBackdrop{align-items:flex-end;padding:0}.modal{max-width:none;min-height:72vh;border-radius:26px 26px 0 0}}
+    @media (max-width:760px){.hero,.cards,.grid2,.form{grid-template-columns:1fr}.topbar{gap:8px}.search{padding:12px 14px}.btn,.iconbtn{min-height:50px}.panel,.card{border-radius:20px}.floating,.footer-mobile{display:grid}.modalBackdrop{align-items:flex-start;padding:0}.modal{max-width:none;min-height:auto;border-radius:26px 26px 0 0;margin-top:60px}.modalBody{max-height:calc(100vh - 200px)}.form-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -182,14 +183,16 @@
     <div class="modalHeader"><h3 id="modalTitle">Nouveau client</h3><button class="iconbtn" id="closeModal">✕</button></div>
     <form id="clientForm">
       <div class="modalBody">
-        <div class="field"><label>Nom complet</label><input class="input" id="cName" required placeholder="Ex. Jean Dupont" /></div>
-        <div class="field"><label>Téléphone</label><input class="input" id="cPhone" required placeholder="Ex. +596 ..." /></div>
-        <div class="field"><label>Email</label><input class="input" id="cEmail" type="email" placeholder="exemple@email.com" /></div>
-        <div class="field"><label>Statut</label><select id="cStatus"><option value="actif">Actif</option><option value="pause">Pause</option></select></div>
-        <div class="field"><label>Métier</label><input class="input" id="cJob" placeholder="Ex. Développeur, Enseignant..." /></div>
-        <div class="field"><label>Typologie du client</label><input class="input" id="cTypology" placeholder="Ex. Stressé, Sportif, Détendu..." /></div>
-        <div class="field full"><label>Objectif</label><textarea class="textarea" id="cObjective" placeholder="Ex. Gestion du stress"></textarea></div>
-        <div class="field full"><label>Commentaire</label><textarea class="textarea" id="cComment" placeholder="Informations utiles, contre-indications, préférences..."></textarea></div>
+        <div class="form-grid">
+          <div class="field"><label>Nom complet</label><input class="input" id="cName" required placeholder="Ex. Jean Dupont" /></div>
+          <div class="field"><label>Téléphone</label><input class="input" id="cPhone" required placeholder="Ex. +596 ..." /></div>
+          <div class="field"><label>Email</label><input class="input" id="cEmail" type="email" placeholder="exemple@email.com" /></div>
+          <div class="field"><label>Statut</label><select id="cStatus"><option value="actif">Actif</option><option value="pause">Pause</option></select></div>
+          <div class="field"><label>Métier</label><input class="input" id="cJob" placeholder="Ex. Développeur, Enseignant..." /></div>
+          <div class="field"><label>Typologie du client</label><input class="input" id="cTypology" placeholder="Ex. Stressé, Sportif, Détendu..." /></div>
+          <div class="field full"><label>Objectif</label><textarea class="textarea" id="cObjective" placeholder="Ex. Gestion du stress"></textarea></div>
+          <div class="field full"><label>Commentaire</label><textarea class="textarea" id="cComment" placeholder="Informations utiles, contre-indications, préférences..."></textarea></div>
+        </div>
       </div>
       <div class="modalActions"><button type="button" class="btn soft" id="cancelModal">Annuler</button><button class="btn primary" type="submit">Enregistrer</button></div>
     </form>
@@ -197,7 +200,7 @@
 </div>
 
 <script>
-const storageKey='energy_force_final_v4';
+const storageKey='energy_force_final_v5';
 const sample={
   clients:[
     {id:'c1',name:'Jean Dupont',phone:'+596 696 00 00 00',email:'jean@example.com',status:'actif',job:'Développeur',typology:'Stressé',objective:'Gestion du stress',comment:'Très ponctuel, apprécie les séances courtes.',updated:'2026-05-02'},
@@ -302,7 +305,7 @@ function openClient(id){ state.selectedClientId=id; save(); render(); goView('hi
 function openModal(id=null){ editingId=id; const modal=$('#clientModalBackdrop'); const c=id?state.clients.find(x=>x.id===id):null; $('#modalTitle').textContent=id?'Éditer le client':'Nouveau client'; $('#cName').value=c?.name||''; $('#cPhone').value=c?.phone||''; $('#cEmail').value=c?.email||''; $('#cStatus').value=c?.status||'actif'; $('#cJob').value=c?.job||''; $('#cTypology').value=c?.typology||''; $('#cObjective').value=c?.objective||''; $('#cComment').value=c?.comment||''; modal.classList.add('show'); }
 function closeModal(){ $('#clientModalBackdrop').classList.remove('show'); editingId=null; }
 function deleteClient(id){ const c=state.clients.find(x=>x.id===id); if(!confirm(`Supprimer ${c?.name} ?`)) return; state.clients=state.clients.filter(x=>x.id!==id); state.sessions=state.sessions.filter(x=>x.clientId!==id); if(state.selectedClientId===id) state.selectedClientId=state.clients[0]?.id||null; save(); render(); }
-function exportJSON(){ const payload={app:'Energy Force',version:'final-v4',exportedAt:new Date().toISOString(),data:state}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='energy_force_export_make.json'; a.click(); URL.revokeObjectURL(a.href); }
+function exportJSON(){ const payload={app:'Energy Force',version:'final-v5',exportedAt:new Date().toISOString(),data:state}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='energy_force_export_make.json'; a.click(); URL.revokeObjectURL(a.href); }
 function render(){ renderStats(); renderUpcoming(); renderAppointments(); renderRecent(); renderClients(); renderClientDetail(); renderTimeline(); fillSessionSelect(); save(); }
 $('#seedBtn').onclick=()=>{state=JSON.parse(JSON.stringify(sample)); state.selectedClientId='c1'; render();};
 $('#newClientBtn').onclick=()=>openModal(); $('#fab').onclick=()=>openModal(); $('#exportBtn').onclick=exportJSON;

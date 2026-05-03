@@ -20,6 +20,7 @@
     .topbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(244,247,251,.98),rgba(244,247,251,.6));backdrop-filter:blur(10px);padding:4px 0 10px}
     .search{flex:1;display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow)}.search input{border:0;outline:0;width:100%;background:transparent}.search .hint{color:var(--muted);font-size:12px}
     .btn,.iconbtn{border:0;border-radius:16px;min-height:50px;padding:0 16px;cursor:pointer;font-weight:800}.iconbtn{width:50px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}.btn.primary{background:linear-gradient(135deg,var(--primary),#3b82f6);color:#fff;box-shadow:0 14px 30px rgba(37,99,235,.25)}.btn.soft{background:#eef4ff;color:var(--primary)}.btn.danger{background:#fee2e2;color:#991b1b}
+    .btn-icon{border:0;background:#fff;border:1px solid var(--line);border-radius:12px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s}.btn-icon:hover{transform:scale(1.08);box-shadow:0 6px 16px rgba(15,23,42,.12)}.btn-icon.edit{background:#eef4ff;border-color:#bfdbfe}.btn-icon.delete{background:#fee2e2;border-color:#fecaca}.btn-icon.open{background:#ecfdf5;border-color:#a7f3d0}
     .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-bottom:14px}
     .panel,.card{background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid rgba(219,227,238,.9);border-radius:var(--r);box-shadow:var(--shadow)}.panel{padding:18px}.card{padding:16px}.kpi{font-size:30px;font-weight:900;margin:8px 0 2px}.muted{color:var(--muted)}
     .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.grid2{display:grid;grid-template-columns:1.06fr .94fr;gap:14px;margin-top:14px}
@@ -109,7 +110,10 @@
         <div class="panel">
           <div class="section-title"><h2>Fiche client</h2><span class="tag" id="clientTag">—</span></div>
           <div id="clientDetail"></div>
-          <div class="actions"><button class="btn soft" id="editClientBtn">Éditer</button><button class="btn danger" id="deleteClientBtn">Supprimer</button></div>
+          <div class="actions">
+            <button class="btn-icon edit" id="editClientBtn" title="Éditer le client">✏️</button>
+            <button class="btn-icon delete" id="deleteClientBtn" title="Supprimer le client">🗑️</button>
+          </div>
         </div>
         <div class="panel">
           <div class="section-title"><h2>Historique</h2><span class="tag">Timeline</span></div>
@@ -166,25 +170,8 @@
   </div>
 </div>
 
-<div class="modalBackdrop" id="sessionModalBackdrop">
-  <div class="modal">
-    <div class="modalHeader"><h3 id="sessionModalTitle">Séance</h3><button class="iconbtn" id="closeSessionModal">✕</button></div>
-    <form id="sessionEditForm">
-      <div class="modalBody">
-        <div class="field"><label>Client</label><select id="esClient"></select></div>
-        <div class="field"><label>Date</label><input class="input" id="esDate" type="date" /></div>
-        <div class="field"><label>Type</label><select id="esType"><option>Suivi</option><option>Initiale</option><option>Contrôle</option></select></div>
-        <div class="field"><label>État initial</label><input class="input" id="esState" /></div>
-        <div class="field full"><label>Réalisé</label><textarea class="textarea" id="esReason"></textarea></div>
-        <div class="field full"><label>Notes / recommandations</label><textarea class="textarea" id="esNotes"></textarea></div>
-      </div>
-      <div class="modalActions"><button type="button" class="btn soft" id="cancelSessionModal">Annuler</button><button type="button" class="btn danger" id="deleteSessionBtn">Supprimer</button><button class="btn primary" type="submit">Enregistrer</button></div>
-    </form>
-  </div>
-</div>
-
 <script>
-const storageKey='energy_force_final_v2';
+const storageKey='energy_force_final_v3';
 const sample={clients:[
 {id:'c1',name:'Jean Dupont',phone:'+596 696 00 00 00',email:'jean@example.com',status:'actif',job:'Développeur',typology:'Stressé',objective:'Gestion du stress',comment:'Très ponctuel, apprécie les séances courtes.',updated:'2026-05-02'},
 {id:'c2',name:'Marie Legrand',phone:'+596 696 11 11 11',email:'marie@example.com',status:'actif',job:'Infirmière',typology:'Fatiguée',objective:'Sommeil et récupération',comment:'Travaille de nuit.',updated:'2026-04-28'},
@@ -197,7 +184,7 @@ const sample={clients:[
 {id:'s4',clientId:'c4',date:'2026-04-22',type:'Suivi',reason:'Libération tensions musculaires épaules et nuque',state:'Raide',notes:'Relâchement et conseils posture.'},
 {id:'s5',clientId:'c5',date:'2026-04-20',type:'Initiale',reason:'Évaluation globale et mise en place protocole',state:'Surmenée',notes:'Première séance, suivi prévu.'}
 ]};
-let state=JSON.parse(JSON.stringify(sample)); state.selectedClientId='c1'; let editingId=null; let sessionEditingId=null;
+let state=JSON.parse(JSON.stringify(sample)); state.selectedClientId='c1'; let editingId=null;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const save=()=>localStorage.setItem(storageKey,JSON.stringify(state));
 const load=()=>{const raw=localStorage.getItem(storageKey); if(raw){state=JSON.parse(raw)} save();};
@@ -206,18 +193,15 @@ function goView(view){ $$('.view').forEach(v=>v.classList.remove('active')); $('
 function renderStats(){ $('#kpiClients').textContent=state.clients.length; $('#kpiSessions').textContent=state.sessions.length; $('#kpiToday').textContent=Math.max(1,state.sessions.filter(s=>s.date===new Date().toISOString().slice(0,10)).length); $('#kpiFollow').textContent=state.clients.filter(c=>c.status==='pause').length; }
 function renderRecent(){ const el=$('#recentList'); el.innerHTML=''; state.clients.slice(0,4).forEach(c=>{const sessions=clientSessions(c.id); el.insertAdjacentHTML('beforeend',`<div class="row"><div><strong>${c.name}</strong><div class="muted">${c.objective}</div><div class="muted">Séances : ${sessions.length} · Dernière : ${sessions[0]?.date||'—'}</div></div><div class="tag">${c.status}</div></div>`)}); }
 function matches(c,q){return [c.name,c.phone,c.email,c.objective,c.comment||'',c.status,c.job||'',c.typology||''].join(' ').toLowerCase().includes(q)}
-function renderClients(){ const q=($('#clientFilter')?.value||$('#searchInput').value).toLowerCase().trim(); const status=$('#statusFilter').value; const el=$('#clientsList'); const filtered=state.clients.filter(c=>(status==='all'||c.status===status)&&matches(c,q)); $('#resultCount').textContent=`${filtered.length} résultat(s)`; el.innerHTML=''; if(!filtered.length){el.innerHTML='<div class="empty">Aucun client trouvé.</div>'; return;} filtered.forEach(c=>{const sessions=clientSessions(c.id); el.insertAdjacentHTML('beforeend',`<div class="row"><div><strong>${c.name}</strong><div class="muted">${c.phone} · ${c.email||'—'}</div><div class="muted">Objectif : ${c.objective||'—'}</div><div class="muted">Séances : ${sessions.length} · Dernière : ${sessions[0]?.date||'Aucune'}</div></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">${c.status}</span><button class="btn soft" data-open="${c.id}">Ouvrir</button><button class="btn soft" data-edit="${c.id}">Éditer</button><button class="btn danger" data-del="${c.id}">Suppr.</button></div></div>`)}); $$('[data-open]').forEach(b=>b.onclick=()=>openClient(b.dataset.open)); $$('[data-edit]').forEach(b=>b.onclick=()=>openModal(b.dataset.edit)); $$('[data-del]').forEach(b=>b.onclick=()=>deleteClient(b.dataset.del)); }
+function renderClients(){ const q=($('#clientFilter')?.value||$('#searchInput').value).toLowerCase().trim(); const status=$('#statusFilter').value; const el=$('#clientsList'); const filtered=state.clients.filter(c=>(status==='all'||c.status===status)&&matches(c,q)); $('#resultCount').textContent=`${filtered.length} résultat(s)`; el.innerHTML=''; if(!filtered.length){el.innerHTML='<div class="empty">Aucun client trouvé.</div>'; return;} filtered.forEach(c=>{const sessions=clientSessions(c.id); el.insertAdjacentHTML('beforeend',`<div class="row"><div><strong>${c.name}</strong><div class="muted">${c.phone} · ${c.email||'—'}</div><div class="muted">Objectif : ${c.objective||'—'}</div><div class="muted">Séances : ${sessions.length} · Dernière : ${sessions[0]?.date||'Aucune'}</div></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">${c.status}</span><button class="btn-icon open" data-open="${c.id}" title="Ouvrir la fiche">📂</button><button class="btn-icon edit" data-edit="${c.id}" title="Éditer">✏️</button><button class="btn-icon delete" data-del="${c.id}" title="Supprimer">🗑️</button></div></div>`)}); $$('[data-open]').forEach(b=>b.onclick=()=>openClient(b.dataset.open)); $$('[data-edit]').forEach(b=>b.onclick=()=>openModal(b.dataset.edit)); $$('[data-del]').forEach(b=>b.onclick=()=>deleteClient(b.dataset.del)); }
 function renderClientDetail(){ const c=state.clients.find(x=>x.id===state.selectedClientId)||state.clients[0]; if(!c) return; const sessions=clientSessions(c.id); $('#clientDetail').innerHTML=`<div class="profile"><div class="avatar"></div><div><div style="font-size:20px;font-weight:900">${c.name}</div><div class="muted">${c.phone} · ${c.email||'—'}</div><div class="muted" style="margin-top:8px;font-weight:600">Statut : ${c.status||'—'}</div><div class="muted">Métier : ${c.job||'—'}</div><div class="muted">Typologie du client : ${c.typology||'—'}</div><div class="muted">Objectif : ${c.objective||'—'}</div><div class="muted" style="margin-top:8px">Commentaire : ${c.comment||'—'}</div></div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px"><div class="row"><div><strong>${sessions[0]?.date||'—'}</strong><div class="muted">Dernière séance</div></div></div><div class="row"><div><strong>${sessions.length}</strong><div class="muted">Nb de séances</div></div></div></div>`; $('#clientTag').textContent=c.status; $('#nextSession').textContent=`${c.name} · ${sessions.length} séance(s)`; }
-function renderTimeline(){ const c=state.clients.find(x=>x.id===state.selectedClientId)||state.clients[0]; const el=$('#timeline'); el.innerHTML=''; if(!c) return; const sessions=clientSessions(c.id); if(!sessions.length){el.innerHTML='<div class="empty">Aucune séance pour ce client.</div>'; return;} sessions.forEach(s=>el.insertAdjacentHTML('beforeend',`<div class="event"><strong>${s.date} — ${s.type}</strong><div class="muted" style="margin-top:6px">Commentaire : ${s.reason}</div><div class="muted">État : ${s.state}</div><div style="margin-top:8px">${s.notes}</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn soft" data-ssedit="${s.id}">Éditer</button><button class="btn danger" data-ssdel="${s.id}">Suppr.</button></div></div>`)); $$('[data-ssedit]').forEach(b=>b.onclick=()=>openSessionModal(b.dataset.ssedit)); $$('[data-ssdel]').forEach(b=>b.onclick=()=>deleteSession(b.dataset.ssdel)); }
+function renderTimeline(){ const c=state.clients.find(x=>x.id===state.selectedClientId)||state.clients[0]; const el=$('#timeline'); el.innerHTML=''; if(!c) return; const sessions=clientSessions(c.id); if(!sessions.length){el.innerHTML='<div class="empty">Aucune séance pour ce client.</div>'; return;} sessions.forEach(s=>el.insertAdjacentHTML('beforeend',`<div class="event"><strong>${s.date} — ${s.type}</strong><div class="muted" style="margin-top:6px">Commentaire : ${s.reason}</div><div class="muted">État : ${s.state}</div><div style="margin-top:8px">${s.notes}</div></div>`)); }
 function fillSessionSelect(){ const sel=$('#sessionClient'); sel.innerHTML=state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join(''); sel.value=state.selectedClientId||state.clients[0]?.id; }
 function openClient(id){ state.selectedClientId=id; save(); render(); goView('historique'); }
 function openModal(id=null){ editingId=id; const modal=$('#clientModalBackdrop'); const c=id?state.clients.find(x=>x.id===id):null; $('#modalTitle').textContent=id?'Éditer le client':'Nouveau client'; $('#cName').value=c?.name||''; $('#cPhone').value=c?.phone||''; $('#cEmail').value=c?.email||''; $('#cStatus').value=c?.status||'actif'; $('#cJob').value=c?.job||''; $('#cTypology').value=c?.typology||''; $('#cObjective').value=c?.objective||''; $('#cComment').value=c?.comment||''; modal.classList.add('show'); }
 function closeModal(){ $('#clientModalBackdrop').classList.remove('show'); editingId=null; }
 function deleteClient(id){ const c=state.clients.find(x=>x.id===id); if(!confirm(`Supprimer ${c?.name} ?`)) return; state.clients=state.clients.filter(x=>x.id!==id); state.sessions=state.sessions.filter(x=>x.clientId!==id); if(state.selectedClientId===id) state.selectedClientId=state.clients[0]?.id||null; save(); render(); }
-function openSessionModal(id){ sessionEditingId=id; const s=state.sessions.find(x=>x.id===id); if(!s) return; $('#sessionModalTitle').textContent='Éditer la séance'; $('#esClient').innerHTML=state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join(''); $('#esClient').value=s.clientId; $('#esDate').value=s.date; $('#esType').value=s.type; $('#esState').value=s.state; $('#esReason').value=s.reason; $('#esNotes').value=s.notes; $('#sessionModalBackdrop').classList.add('show'); }
-function closeSessionModal(){ $('#sessionModalBackdrop').classList.remove('show'); sessionEditingId=null; }
-function deleteSession(id){ if(!confirm('Supprimer cette séance ?')) return; state.sessions=state.sessions.filter(x=>x.id!==id); save(); render(); }
-function exportJSON(){ const payload={app:'Energy Force',version:'final-v2',exportedAt:new Date().toISOString(),data:state}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='energy_force_export_make.json'; a.click(); URL.revokeObjectURL(a.href); }
+function exportJSON(){ const payload={app:'Energy Force',version:'final-v3',exportedAt:new Date().toISOString(),data:state}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='energy_force_export_make.json'; a.click(); URL.revokeObjectURL(a.href); }
 function render(){ renderStats(); renderRecent(); renderClients(); renderClientDetail(); renderTimeline(); fillSessionSelect(); save(); }
 $('#seedBtn').onclick=()=>{state=JSON.parse(JSON.stringify(sample)); state.selectedClientId='c1'; render();};
 $('#newClientBtn').onclick=()=>openModal(); $('#fab').onclick=()=>openModal(); $('#exportBtn').onclick=exportJSON;
@@ -227,9 +211,6 @@ $('#searchInput').oninput=e=>{goView('clients'); $('#clientFilter').value=e.targ
 $('#editClientBtn').onclick=()=>openModal(state.selectedClientId); $('#deleteClientBtn').onclick=()=>deleteClient(state.selectedClientId);
 $('#sessionForm').onsubmit=e=>{e.preventDefault(); const clientId=$('#sessionClient').value; state.selectedClientId=clientId; const entry={id:crypto.randomUUID(),clientId,date:$('#sessionDate').value||new Date().toISOString().slice(0,10),type:$('#sessionType').value,reason:$('#sessionReason').value||'—',state:$('#sessionState').value||'—',notes:$('#sessionNotes').value||'—'}; state.sessions.unshift(entry); const client=state.clients.find(x=>x.id===clientId); if(client){ client.updated=new Date().toISOString().slice(0,10);} render(); e.target.reset(); alert('Séance enregistrée ! Le compteur de séances a été mis à jour automatiquement.'); };
 $('#clearForm').onclick=()=>$('#sessionForm').reset();
-$('#closeSessionModal').onclick=closeSessionModal; $('#cancelSessionModal').onclick=closeSessionModal; $('#sessionModalBackdrop').addEventListener('click',e=>{if(e.target.id==='sessionModalBackdrop') closeSessionModal()});
-$('#sessionEditForm').onsubmit=e=>{e.preventDefault(); const i=state.sessions.findIndex(x=>x.id===sessionEditingId); if(i>=0){state.sessions[i]={...state.sessions[i],clientId:$('#esClient').value,date:$('#esDate').value,type:$('#esType').value,state:$('#esState').value,reason:$('#esReason').value,notes:$('#esNotes').value}; state.selectedClientId=$('#esClient').value;} closeSessionModal(); render(); };
-$('#deleteSessionBtn').onclick=()=>{ if(!sessionEditingId) return; deleteSession(sessionEditingId); closeSessionModal(); };
 $$('.nav button, .footer-mobile button').forEach(b=>b.onclick=()=>goView(b.dataset.view));
 load(); render();
 </script>

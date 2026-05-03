@@ -7,30 +7,31 @@
   <meta name="theme-color" content="#2563eb" />
   <title>Energy Force — Version finale</title>
   <style>
-    :root{--bg:#f4f7fb;--panel:#fff;--text:#0f172a;--muted:#64748b;--line:#dbe3ee;--primary:#2563eb;--primary2:#14b8a6;--danger:#ef4444;--warn:#f59e0b;--shadow:0 18px 40px rgba(15,23,42,.08);--r:22px;--r2:16px}
+    :root{--bg:#f4f7fb;--panel:#fff;--text:#0f172a;--muted:#64748b;--line:#dbe3ee;--primary:#2563eb;--primary2:#14b8a6;--danger:#ef4444;--warn:#f59e0b;--success:#10b981;--shadow:0 18px 40px rgba(15,23,42,.08);--r:22px;--r2:16px}
     *{box-sizing:border-box} html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top,#fff 0,#f4f7fb 30%,#eef4ff 100%);color:var(--text)}
     body{overscroll-behavior:none} button,input,textarea,select{font:inherit}
     .app{display:grid;grid-template-columns:300px 1fr;min-height:100dvh}
     .sidebar{background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-right:1px solid var(--line);padding:20px;position:sticky;top:0;height:100dvh;display:flex;flex-direction:column;gap:16px}
     .brand{display:flex;align-items:center;gap:12px}.logo{width:50px;height:50px;border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 16px 30px rgba(37,99,235,.25)}.brand h1{margin:0;font-size:19px}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
-    .nav{display:grid;gap:8px}.nav button{border:0;background:transparent;text-align:left;padding:14px 16px;border-radius:16px;color:var(--text);cursor:pointer;min-height:48px}.nav button.active,.nav button:hover{background:#edf4ff;color:var(--primary)}
+    .nav{display:grid;gap:8px}.nav button{border:0;background:transparent;text-align:left;padding:14px 16px;border-radius:16px;color:var(--text);cursor:pointer;min-height:48px;display:flex;justify-content:space-between;align-items:center}.nav button.active,.nav button:hover{background:#edf4ff;color:var(--primary)}.badge{background:var(--primary);color:#fff;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:900;min-width:20px;text-align:center}
     .sidebar-card{margin-top:auto;padding:16px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,#fff,#f8fbff)}
     .main{padding:16px 16px 26px;min-width:0}
     .view{display:none}.view.active{display:block}
     .topbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(244,247,251,.98),rgba(244,247,251,.6));backdrop-filter:blur(10px);padding:4px 0 10px}
     .search{flex:1;display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow)}.search input{border:0;outline:0;width:100%;background:transparent}.search .hint{color:var(--muted);font-size:12px}
     .btn,.iconbtn{border:0;border-radius:16px;min-height:50px;padding:0 16px;cursor:pointer;font-weight:800}.iconbtn{width:50px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}.btn.primary{background:linear-gradient(135deg,var(--primary),#3b82f6);color:#fff;box-shadow:0 14px 30px rgba(37,99,235,.25)}.btn.soft{background:#eef4ff;color:var(--primary)}.btn.danger{background:#fee2e2;color:#991b1b}
-    .btn-icon{border:0;background:#fff;border:1px solid var(--line);border-radius:12px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s}.btn-icon:hover{transform:scale(1.08);box-shadow:0 6px 16px rgba(15,23,42,.12)}.btn-icon.edit{background:#eef4ff;border-color:#bfdbfe}.btn-icon.delete{background:#fee2e2;border-color:#fecaca}.btn-icon.open{background:#ecfdf5;border-color:#a7f3d0}
+    .btn-icon{border:0;background:#fff;border:1px solid var(--line);border-radius:12px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s}.btn-icon:hover{transform:scale(1.08);box-shadow:0 6px 16px rgba(15,23,42,.12)}.btn-icon.edit{background:#eef4ff;border-color:#bfdbfe}.btn-icon.delete{background:#fee2e2;border-color:#fecaca}.btn-icon.open{background:#ecfdf5;border-color:#a7f3d0}.btn-icon.confirm{background:#d1fae5;border-color:#6ee7b7}
     .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-bottom:14px}
     .panel,.card{background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid rgba(219,227,238,.9);border-radius:var(--r);box-shadow:var(--shadow)}.panel{padding:18px}.card{padding:16px}.kpi{font-size:30px;font-weight:900;margin:8px 0 2px}.muted{color:var(--muted)}
     .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.grid2{display:grid;grid-template-columns:1.06fr .94fr;gap:14px;margin-top:14px}
     .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.section-title h2{margin:0;font-size:18px}
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}.toolbar .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:0 14px;height:48px;display:flex;align-items:center;min-width:0}.toolbar select,.toolbar input{border:0;outline:0;background:transparent;width:100%}
-    .list{display:grid;gap:10px}.row{display:flex;justify-content:space-between;gap:10px;padding:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff)}.row strong{display:block}.tag{font-size:12px;padding:8px 11px;border-radius:999px;background:#ecfeff;color:#0f766e;white-space:nowrap;font-weight:800}
+    .list{display:grid;gap:10px}.row{display:flex;justify-content:space-between;gap:10px;padding:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff)}.row strong{display:block}.tag{font-size:12px;padding:8px 11px;border-radius:999px;background:#ecfeff;color:#0f766e;white-space:nowrap;font-weight:800}.tag.upcoming{background:#dbeafe;color:#1e40af}.tag.confirmed{background:#d1fae5;color:#065f46}
     .profile{display:flex;gap:14px;align-items:center}.avatar{width:66px;height:66px;border-radius:22px;background:linear-gradient(135deg,#dbeafe,#cffafe)}
     .timeline{position:relative;padding-left:18px}.timeline:before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:#dbe5f5}.event{position:relative;margin-bottom:12px;padding:14px 14px 14px 18px;border:1px solid var(--line);border-radius:18px;background:#fff}.event:before{content:'';position:absolute;left:-22px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--primary)}
+    .appointment{position:relative;padding:16px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#fff,#f0fdfa);border-left:4px solid var(--success);margin-bottom:12px}.appointment .time{font-size:24px;font-weight:900;color:var(--primary)}.appointment .date{color:var(--muted);font-size:13px;margin-top:2px}
     .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}.field{display:grid;gap:8px}.field label{font-size:13px;font-weight:800}.input,select,textarea{width:100%;border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;outline:none;min-height:50px}.textarea{min-height:120px;resize:vertical}.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
-    .footer-mobile{display:none;position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:10px 12px;grid-template-columns:repeat(4,1fr);gap:8px}.footer-mobile button{border:0;background:transparent;padding:8px 6px;border-radius:14px;color:var(--muted);min-height:54px}.footer-mobile button.active{background:#eef4ff;color:var(--primary)}
+    .footer-mobile{display:none;position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:10px 12px;grid-template-columns:repeat(5,1fr);gap:8px}.footer-mobile button{border:0;background:transparent;padding:8px 6px;border-radius:14px;color:var(--muted);min-height:54px;font-size:11px}.footer-mobile button.active{background:#eef4ff;color:var(--primary)}
     .floating{position:fixed;right:16px;bottom:82px;z-index:25;width:60px;height:60px;border-radius:22px;border:0;background:linear-gradient(135deg,var(--primary),#3b82f6);color:#fff;font-size:30px;box-shadow:0 20px 38px rgba(37,99,235,.35)}
     .modalBackdrop{position:fixed;inset:0;background:rgba(15,23,42,.52);display:none;align-items:center;justify-content:center;z-index:60;padding:14px}.modalBackdrop.show{display:flex}.modal{width:100%;max-width:600px;background:#fff;border-radius:26px;box-shadow:var(--shadow);overflow:hidden}.modalHeader{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modalBody{padding:16px 18px;display:grid;gap:12px}.modalActions{padding:16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.modalHeader h3{margin:0}.empty{padding:18px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center}
     @media (max-width:1024px){.app{grid-template-columns:1fr}.sidebar{display:none}.hero,.cards,.grid2{grid-template-columns:1fr 1fr}.main{padding-bottom:92px}}
@@ -43,14 +44,15 @@
     <div class="brand"><div class="logo"></div><div><h1>Energy Force</h1><p>Version finale premium</p></div></div>
     <div class="nav">
       <button class="active" data-view="dashboard">Tableau de bord</button>
+      <button data-view="appointments"><span>Rendez-vous</span><span class="badge" id="appointmentBadge">0</span></button>
       <button data-view="clients">Clients</button>
       <button data-view="historique">Historique</button>
       <button data-view="settings">Paramètres</button>
     </div>
     <div class="sidebar-card">
-      <div class="muted" style="font-size:13px">Client sélectionné</div>
-      <div id="nextSession" style="font-weight:900;margin-top:6px">—</div>
-      <div class="muted" style="margin-top:4px">Sélection instantanée</div>
+      <div class="muted" style="font-size:13px">Prochain RDV</div>
+      <div id="nextAppointment" style="font-weight:900;margin-top:6px">—</div>
+      <div class="muted" style="margin-top:4px">À confirmer</div>
     </div>
   </aside>
 
@@ -69,17 +71,13 @@
           <div class="cards">
             <div class="card"><div class="muted">Clients</div><div class="kpi" id="kpiClients">0</div><div class="muted">Fiches actives</div></div>
             <div class="card"><div class="muted">Séances</div><div class="kpi" id="kpiSessions">0</div><div class="muted">Historique total</div></div>
-            <div class="card"><div class="muted">Aujourd'hui</div><div class="kpi" id="kpiToday">0</div><div class="muted">Séances</div></div>
+            <div class="card"><div class="muted">RDV à venir</div><div class="kpi" id="kpiAppointments">0</div><div class="muted">À confirmer</div></div>
             <div class="card"><div class="muted">À relancer</div><div class="kpi" id="kpiFollow">0</div><div class="muted">Clients en pause</div></div>
           </div>
         </div>
         <div class="panel">
-          <div class="section-title"><h2>Raccourcis</h2><span class="tag">Mobile</span></div>
-          <div class="list">
-            <div class="row"><div><strong>Ajouter un client</strong><div class="muted">Fiche complète via modale</div></div><div class="tag">+</div></div>
-            <div class="row"><div><strong>Éditer une séance</strong><div class="muted">Historique modifiable</div></div><div class="tag">✎</div></div>
-            <div class="row"><div><strong>Exporter JSON</strong><div class="muted">Prêt pour Make</div></div><div class="tag">JSON</div></div>
-          </div>
+          <div class="section-title"><h2>Prochains RDV</h2><span class="tag">Agenda</span></div>
+          <div class="list" id="upcomingList"></div>
         </div>
       </div>
       <div class="grid2">
@@ -89,8 +87,35 @@
         </div>
         <div class="panel">
           <div class="section-title"><h2>Utilisation</h2><span class="tag">Demo</span></div>
-          <div class="muted">Cette version finale comprend l'édition et la suppression des clients, l'édition/suppression des séances, les filtres avancés et l'export JSON. Le nombre de séances s'incrémente automatiquement à chaque nouvelle séance enregistrée.</div>
+          <div class="muted">Cette version comprend la gestion des rendez-vous à venir, synchronisés depuis Google Sheets via Make. Les données incluent clients existants et historique des séances avec compteur automatique.</div>
         </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-appointments">
+      <div class="panel">
+        <div class="section-title"><h2>Rendez-vous à venir</h2><span class="tag" id="appointmentCount">0 RDV</span></div>
+        <div class="muted" style="margin-bottom:16px">📅 Les rendez-vous sont synchronisés automatiquement depuis Google Sheets via Make. Vous pouvez confirmer ou annuler les RDV directement ici.</div>
+        <div id="appointmentsList"></div>
+      </div>
+      <div class="panel" style="margin-top:14px">
+        <div class="section-title"><h2>Configuration Make</h2><span class="tag">API</span></div>
+        <div class="muted" style="margin-bottom:12px">🔗 Format attendu depuis Google Sheets :</div>
+        <pre style="background:#f8fafc;padding:14px;border-radius:12px;border:1px solid var(--line);overflow-x:auto;font-size:12px">{
+  "appointments": [
+    {
+      "id": "rdv1",
+      "clientName": "Nom du client",
+      "phone": "+596 696 XX XX XX",
+      "email": "email@example.com",
+      "date": "2026-05-10",
+      "time": "14:00",
+      "type": "Initiale",
+      "objective": "Objectif de la séance",
+      "status": "pending"
+    }
+  ]
+}</pre>
       </div>
     </section>
 
@@ -137,7 +162,7 @@
     <section class="view" id="view-settings">
       <div class="panel">
         <div class="section-title"><h2>Paramètres</h2><span class="tag">JSON</span></div>
-        <p class="muted">Le fichier exporté contient les clients, les séances et les métadonnées utiles pour construire tes scénarios Make, sans perte de structure.</p>
+        <p class="muted">Le fichier exporté contient les clients, les séances, les rendez-vous et les métadonnées utiles pour construire tes scénarios Make, sans perte de structure.</p>
       </div>
     </section>
   </main>
@@ -146,6 +171,7 @@
 <button class="floating" id="fab">+</button>
 <footer class="footer-mobile">
   <button class="active" data-view="dashboard">Accueil</button>
+  <button data-view="appointments">RDV</button>
   <button data-view="clients">Clients</button>
   <button data-view="historique">Séances</button>
   <button data-view="settings">Réglages</button>
@@ -171,38 +197,113 @@
 </div>
 
 <script>
-const storageKey='energy_force_final_v3';
-const sample={clients:[
-{id:'c1',name:'Jean Dupont',phone:'+596 696 00 00 00',email:'jean@example.com',status:'actif',job:'Développeur',typology:'Stressé',objective:'Gestion du stress',comment:'Très ponctuel, apprécie les séances courtes.',updated:'2026-05-02'},
-{id:'c2',name:'Marie Legrand',phone:'+596 696 11 11 11',email:'marie@example.com',status:'actif',job:'Infirmière',typology:'Fatiguée',objective:'Sommeil et récupération',comment:'Travaille de nuit.',updated:'2026-04-28'},
-{id:'c3',name:'Nathalie Morel',phone:'+596 696 22 22 22',email:'nathalie@example.com',status:'pause',job:'Enseignante',typology:'Anxieuse',objective:'Équilibre émotionnel',comment:'Suivi irrégulier.',updated:'2026-04-25'},
-{id:'c4',name:'David Pierre',phone:'+596 696 33 33 33',email:'david@example.com',status:'actif',job:'Coach sportif',typology:'Sportif',objective:'Relâchement musculaire',comment:'Sportif amateur.',updated:'2026-04-22'},
-{id:'c5',name:'Sophie Lambert',phone:'+596 696 44 44 44',email:'sophie@example.com',status:'actif',job:'Commerciale',typology:'Stressée',objective:'Recentrage',comment:'Déplacements fréquents.',updated:'2026-04-20'}],sessions:[
-{id:'s1',clientId:'c1',date:'2026-05-02',type:'Suivi',reason:'Séance de relaxation profonde avec exercices respiratoires',state:'Tendu',notes:'Respiration, recentrage, conseil repos.'},
-{id:'s2',clientId:'c1',date:'2026-04-18',type:'Initiale',reason:'Bilan complet, évaluation posturale et énergétique',state:'Épuisé',notes:'Bilan complet, mise en route du suivi.'},
-{id:'s3',clientId:'c2',date:'2026-04-28',type:'Contrôle',reason:'Travail sur le sommeil, protocole relaxation',state:'Fatigue légère',notes:'Progrès nets, maintien du protocole.'},
-{id:'s4',clientId:'c4',date:'2026-04-22',type:'Suivi',reason:'Libération tensions musculaires épaules et nuque',state:'Raide',notes:'Relâchement et conseils posture.'},
-{id:'s5',clientId:'c5',date:'2026-04-20',type:'Initiale',reason:'Évaluation globale et mise en place protocole',state:'Surmenée',notes:'Première séance, suivi prévu.'}
-]};
+const storageKey='energy_force_final_v4';
+const sample={
+  clients:[
+    {id:'c1',name:'Jean Dupont',phone:'+596 696 00 00 00',email:'jean@example.com',status:'actif',job:'Développeur',typology:'Stressé',objective:'Gestion du stress',comment:'Très ponctuel, apprécie les séances courtes.',updated:'2026-05-02'},
+    {id:'c2',name:'Marie Legrand',phone:'+596 696 11 11 11',email:'marie@example.com',status:'actif',job:'Infirmière',typology:'Fatiguée',objective:'Sommeil et récupération',comment:'Travaille de nuit.',updated:'2026-04-28'},
+    {id:'c3',name:'Nathalie Morel',phone:'+596 696 22 22 22',email:'nathalie@example.com',status:'pause',job:'Enseignante',typology:'Anxieuse',objective:'Équilibre émotionnel',comment:'Suivi irrégulier.',updated:'2026-04-25'},
+    {id:'c4',name:'David Pierre',phone:'+596 696 33 33 33',email:'david@example.com',status:'actif',job:'Coach sportif',typology:'Sportif',objective:'Relâchement musculaire',comment:'Sportif amateur.',updated:'2026-04-22'},
+    {id:'c5',name:'Sophie Lambert',phone:'+596 696 44 44 44',email:'sophie@example.com',status:'actif',job:'Commerciale',typology:'Stressée',objective:'Recentrage',comment:'Déplacements fréquents.',updated:'2026-04-20'}
+  ],
+  sessions:[
+    {id:'s1',clientId:'c1',date:'2026-05-02',type:'Suivi',reason:'Séance de relaxation profonde avec exercices respiratoires',state:'Tendu',notes:'Respiration, recentrage, conseil repos.'},
+    {id:'s2',clientId:'c1',date:'2026-04-18',type:'Initiale',reason:'Bilan complet, évaluation posturale et énergétique',state:'Épuisé',notes:'Bilan complet, mise en route du suivi.'},
+    {id:'s3',clientId:'c2',date:'2026-04-28',type:'Contrôle',reason:'Travail sur le sommeil, protocole relaxation',state:'Fatigue légère',notes:'Progrès nets, maintien du protocole.'},
+    {id:'s4',clientId:'c4',date:'2026-04-22',type:'Suivi',reason:'Libération tensions musculaires épaules et nuque',state:'Raide',notes:'Relâchement et conseils posture.'},
+    {id:'s5',clientId:'c5',date:'2026-04-20',type:'Initiale',reason:'Évaluation globale et mise en place protocole',state:'Surmenée',notes:'Première séance, suivi prévu.'}
+  ],
+  appointments:[
+    {id:'rdv1',clientName:'Lucas Martin',phone:'+596 696 10 10 10',email:'lucas@example.com',date:'2026-05-05',time:'10:00',type:'Initiale',objective:'Gestion du stress professionnel',status:'pending'},
+    {id:'rdv2',clientName:'Emma Dubois',phone:'+596 696 20 20 20',email:'emma@example.com',date:'2026-05-06',time:'14:30',type:'Suivi',objective:'Amélioration du sommeil',status:'pending'},
+    {id:'rdv3',clientName:'Thomas Roux',phone:'+596 696 30 30 30',email:'thomas@example.com',date:'2026-05-08',time:'09:00',type:'Initiale',objective:'Récupération sportive',status:'pending'},
+    {id:'rdv4',clientName:'Camille Petit',phone:'+596 696 40 40 40',email:'camille@example.com',date:'2026-05-10',time:'16:00',type:'Contrôle',objective:'Suivi anxiété',status:'confirmed'},
+    {id:'rdv5',clientName:'Hugo Bernard',phone:'+596 696 50 50 50',email:'hugo@example.com',date:'2026-05-12',time:'11:30',type:'Initiale',objective:'Équilibre énergétique',status:'pending'}
+  ]
+};
 let state=JSON.parse(JSON.stringify(sample)); state.selectedClientId='c1'; let editingId=null;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const save=()=>localStorage.setItem(storageKey,JSON.stringify(state));
 const load=()=>{const raw=localStorage.getItem(storageKey); if(raw){state=JSON.parse(raw)} save();};
 function clientSessions(id){return state.sessions.filter(s=>s.clientId===id).sort((a,b)=>b.date.localeCompare(a.date));}
 function goView(view){ $$('.view').forEach(v=>v.classList.remove('active')); $('#view-'+view).classList.add('active'); $$('.nav button, .footer-mobile button').forEach(b=>b.classList.toggle('active',b.dataset.view===view)); }
-function renderStats(){ $('#kpiClients').textContent=state.clients.length; $('#kpiSessions').textContent=state.sessions.length; $('#kpiToday').textContent=Math.max(1,state.sessions.filter(s=>s.date===new Date().toISOString().slice(0,10)).length); $('#kpiFollow').textContent=state.clients.filter(c=>c.status==='pause').length; }
+function formatDate(date){const d=new Date(date);return d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});}
+function renderStats(){ 
+  $('#kpiClients').textContent=state.clients.length; 
+  $('#kpiSessions').textContent=state.sessions.length; 
+  $('#kpiAppointments').textContent=state.appointments?.filter(a=>a.status==='pending').length||0;
+  $('#kpiFollow').textContent=state.clients.filter(c=>c.status==='pause').length; 
+  $('#appointmentBadge').textContent=state.appointments?.length||0;
+}
+function renderUpcoming(){
+  const el=$('#upcomingList');
+  el.innerHTML='';
+  const upcoming=(state.appointments||[]).slice(0,3);
+  if(!upcoming.length){el.innerHTML='<div class="empty">Aucun rendez-vous programmé</div>';return;}
+  upcoming.forEach(a=>{
+    el.insertAdjacentHTML('beforeend',`<div class="row"><div><strong>${a.clientName}</strong><div class="muted">${formatDate(a.date)} à ${a.time}</div><div class="muted">${a.objective}</div></div><div class="tag ${a.status==='confirmed'?'confirmed':'upcoming'}">${a.status==='confirmed'?'Confirmé':'En attente'}</div></div>`);
+  });
+}
+function renderAppointments(){
+  const el=$('#appointmentsList');
+  const appointments=state.appointments||[];
+  $('#appointmentCount').textContent=`${appointments.length} RDV`;
+  if(!appointments.length){el.innerHTML='<div class="empty">Aucun rendez-vous. Les données seront synchronisées depuis Google Sheets via Make.</div>';return;}
+  el.innerHTML='';
+  appointments.forEach(a=>{
+    el.insertAdjacentHTML('beforeend',`
+      <div class="appointment">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:12px">
+          <div style="flex:1">
+            <div class="time">${a.time}</div>
+            <div class="date">${formatDate(a.date)}</div>
+            <div style="margin-top:12px"><strong style="font-size:18px">${a.clientName}</strong></div>
+            <div class="muted" style="margin-top:4px">📞 ${a.phone} ${a.email?'· ✉️ '+a.email:''}</div>
+            <div class="muted" style="margin-top:8px">Type : ${a.type}</div>
+            <div class="muted">Objectif : ${a.objective}</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            ${a.status==='pending'?`<button class="btn-icon confirm" data-confirm="${a.id}" title="Confirmer">✓</button>`:''}
+            <button class="btn-icon delete" data-cancel="${a.id}" title="Annuler">✕</button>
+          </div>
+        </div>
+      </div>
+    `);
+  });
+  $$('[data-confirm]').forEach(b=>b.onclick=()=>confirmAppointment(b.dataset.confirm));
+  $$('[data-cancel]').forEach(b=>b.onclick=()=>cancelAppointment(b.dataset.cancel));
+  if(appointments.length>0){
+    const next=appointments[0];
+    $('#nextAppointment').textContent=`${next.clientName} · ${next.date} ${next.time}`;
+  }
+}
+function confirmAppointment(id){
+  const i=state.appointments.findIndex(a=>a.id===id);
+  if(i>=0){
+    state.appointments[i].status='confirmed';
+    save();
+    render();
+    alert('Rendez-vous confirmé !');
+  }
+}
+function cancelAppointment(id){
+  if(!confirm('Annuler ce rendez-vous ?')) return;
+  state.appointments=state.appointments.filter(a=>a.id!==id);
+  save();
+  render();
+}
 function renderRecent(){ const el=$('#recentList'); el.innerHTML=''; state.clients.slice(0,4).forEach(c=>{const sessions=clientSessions(c.id); el.insertAdjacentHTML('beforeend',`<div class="row"><div><strong>${c.name}</strong><div class="muted">${c.objective}</div><div class="muted">Séances : ${sessions.length} · Dernière : ${sessions[0]?.date||'—'}</div></div><div class="tag">${c.status}</div></div>`)}); }
 function matches(c,q){return [c.name,c.phone,c.email,c.objective,c.comment||'',c.status,c.job||'',c.typology||''].join(' ').toLowerCase().includes(q)}
 function renderClients(){ const q=($('#clientFilter')?.value||$('#searchInput').value).toLowerCase().trim(); const status=$('#statusFilter').value; const el=$('#clientsList'); const filtered=state.clients.filter(c=>(status==='all'||c.status===status)&&matches(c,q)); $('#resultCount').textContent=`${filtered.length} résultat(s)`; el.innerHTML=''; if(!filtered.length){el.innerHTML='<div class="empty">Aucun client trouvé.</div>'; return;} filtered.forEach(c=>{const sessions=clientSessions(c.id); el.insertAdjacentHTML('beforeend',`<div class="row"><div><strong>${c.name}</strong><div class="muted">${c.phone} · ${c.email||'—'}</div><div class="muted">Objectif : ${c.objective||'—'}</div><div class="muted">Séances : ${sessions.length} · Dernière : ${sessions[0]?.date||'Aucune'}</div></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">${c.status}</span><button class="btn-icon open" data-open="${c.id}" title="Ouvrir la fiche">📂</button><button class="btn-icon edit" data-edit="${c.id}" title="Éditer">✏️</button><button class="btn-icon delete" data-del="${c.id}" title="Supprimer">🗑️</button></div></div>`)}); $$('[data-open]').forEach(b=>b.onclick=()=>openClient(b.dataset.open)); $$('[data-edit]').forEach(b=>b.onclick=()=>openModal(b.dataset.edit)); $$('[data-del]').forEach(b=>b.onclick=()=>deleteClient(b.dataset.del)); }
-function renderClientDetail(){ const c=state.clients.find(x=>x.id===state.selectedClientId)||state.clients[0]; if(!c) return; const sessions=clientSessions(c.id); $('#clientDetail').innerHTML=`<div class="profile"><div class="avatar"></div><div><div style="font-size:20px;font-weight:900">${c.name}</div><div class="muted">${c.phone} · ${c.email||'—'}</div><div class="muted" style="margin-top:8px;font-weight:600">Statut : ${c.status||'—'}</div><div class="muted">Métier : ${c.job||'—'}</div><div class="muted">Typologie du client : ${c.typology||'—'}</div><div class="muted">Objectif : ${c.objective||'—'}</div><div class="muted" style="margin-top:8px">Commentaire : ${c.comment||'—'}</div></div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px"><div class="row"><div><strong>${sessions[0]?.date||'—'}</strong><div class="muted">Dernière séance</div></div></div><div class="row"><div><strong>${sessions.length}</strong><div class="muted">Nb de séances</div></div></div></div>`; $('#clientTag').textContent=c.status; $('#nextSession').textContent=`${c.name} · ${sessions.length} séance(s)`; }
+function renderClientDetail(){ const c=state.clients.find(x=>x.id===state.selectedClientId)||state.clients[0]; if(!c) return; const sessions=clientSessions(c.id); $('#clientDetail').innerHTML=`<div class="profile"><div class="avatar"></div><div><div style="font-size:20px;font-weight:900">${c.name}</div><div class="muted">${c.phone} · ${c.email||'—'}</div><div class="muted" style="margin-top:8px;font-weight:600">Statut : ${c.status||'—'}</div><div class="muted">Métier : ${c.job||'—'}</div><div class="muted">Typologie du client : ${c.typology||'—'}</div><div class="muted">Objectif : ${c.objective||'—'}</div><div class="muted" style="margin-top:8px">Commentaire : ${c.comment||'—'}</div></div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px"><div class="row"><div><strong>${sessions[0]?.date||'—'}</strong><div class="muted">Dernière séance</div></div></div><div class="row"><div><strong>${sessions.length}</strong><div class="muted">Nb de séances</div></div></div></div>`; $('#clientTag').textContent=c.status; }
 function renderTimeline(){ const c=state.clients.find(x=>x.id===state.selectedClientId)||state.clients[0]; const el=$('#timeline'); el.innerHTML=''; if(!c) return; const sessions=clientSessions(c.id); if(!sessions.length){el.innerHTML='<div class="empty">Aucune séance pour ce client.</div>'; return;} sessions.forEach(s=>el.insertAdjacentHTML('beforeend',`<div class="event"><strong>${s.date} — ${s.type}</strong><div class="muted" style="margin-top:6px">Commentaire : ${s.reason}</div><div class="muted">État : ${s.state}</div><div style="margin-top:8px">${s.notes}</div></div>`)); }
 function fillSessionSelect(){ const sel=$('#sessionClient'); sel.innerHTML=state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join(''); sel.value=state.selectedClientId||state.clients[0]?.id; }
 function openClient(id){ state.selectedClientId=id; save(); render(); goView('historique'); }
 function openModal(id=null){ editingId=id; const modal=$('#clientModalBackdrop'); const c=id?state.clients.find(x=>x.id===id):null; $('#modalTitle').textContent=id?'Éditer le client':'Nouveau client'; $('#cName').value=c?.name||''; $('#cPhone').value=c?.phone||''; $('#cEmail').value=c?.email||''; $('#cStatus').value=c?.status||'actif'; $('#cJob').value=c?.job||''; $('#cTypology').value=c?.typology||''; $('#cObjective').value=c?.objective||''; $('#cComment').value=c?.comment||''; modal.classList.add('show'); }
 function closeModal(){ $('#clientModalBackdrop').classList.remove('show'); editingId=null; }
 function deleteClient(id){ const c=state.clients.find(x=>x.id===id); if(!confirm(`Supprimer ${c?.name} ?`)) return; state.clients=state.clients.filter(x=>x.id!==id); state.sessions=state.sessions.filter(x=>x.clientId!==id); if(state.selectedClientId===id) state.selectedClientId=state.clients[0]?.id||null; save(); render(); }
-function exportJSON(){ const payload={app:'Energy Force',version:'final-v3',exportedAt:new Date().toISOString(),data:state}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='energy_force_export_make.json'; a.click(); URL.revokeObjectURL(a.href); }
-function render(){ renderStats(); renderRecent(); renderClients(); renderClientDetail(); renderTimeline(); fillSessionSelect(); save(); }
+function exportJSON(){ const payload={app:'Energy Force',version:'final-v4',exportedAt:new Date().toISOString(),data:state}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='energy_force_export_make.json'; a.click(); URL.revokeObjectURL(a.href); }
+function render(){ renderStats(); renderUpcoming(); renderAppointments(); renderRecent(); renderClients(); renderClientDetail(); renderTimeline(); fillSessionSelect(); save(); }
 $('#seedBtn').onclick=()=>{state=JSON.parse(JSON.stringify(sample)); state.selectedClientId='c1'; render();};
 $('#newClientBtn').onclick=()=>openModal(); $('#fab').onclick=()=>openModal(); $('#exportBtn').onclick=exportJSON;
 $('#closeModal').onclick=closeModal; $('#cancelModal').onclick=closeModal; $('#clientModalBackdrop').addEventListener('click',e=>{if(e.target.id==='clientModalBackdrop') closeModal()});

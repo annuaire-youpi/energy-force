@@ -25,6 +25,8 @@
     .panel,.card{background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid rgba(219,227,238,.9);border-radius:var(--r);box-shadow:var(--shadow)}.panel{padding:18px}.card{padding:16px}.kpi{font-size:30px;font-weight:900;margin:8px 0 2px}.muted{color:var(--muted)}
     .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.grid2{display:grid;grid-template-columns:1.06fr .94fr;gap:14px;margin-top:14px}
     .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.section-title h2{margin:0;font-size:18px}
+    .year-selector{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#eef4ff;border:1px solid #bfdbfe;border-radius:999px}.year-selector select{border:0;background:transparent;outline:0;font-weight:800;color:var(--primary);cursor:pointer;padding:4px 8px;border-radius:8px}
+    .stats-table{width:100%;border-collapse:collapse;margin-top:12px}.stats-table th{padding:14px;border:1px solid var(--line);background:#dbeafe;color:#1e40af;font-weight:800;text-align:center;font-size:13px}.stats-table td{padding:16px;border:1px solid var(--line);background:#fff;font-size:24px;font-weight:900;color:var(--primary);text-align:center}
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}.toolbar .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:0 14px;height:48px;display:flex;align-items:center;min-width:0}.toolbar select,.toolbar input{border:0;outline:0;background:transparent;width:100%}
     .list{display:grid;gap:10px}.row{display:flex;justify-content:space-between;gap:10px;padding:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff)}.row strong{display:block}.tag{font-size:12px;padding:8px 11px;border-radius:999px;background:#ecfeff;color:#0f766e;white-space:nowrap;font-weight:800}.tag.upcoming{background:#dbeafe;color:#1e40af}.tag.confirmed{background:#d1fae5;color:#065f46}
     .profile{display:flex;gap:14px;align-items:center}.avatar{width:66px;height:66px;border-radius:22px;background:linear-gradient(135deg,#dbeafe,#cffafe)}
@@ -36,7 +38,7 @@
     .modalBackdrop{position:fixed;inset:0;background:rgba(15,23,42,.52);display:none;align-items:center;justify-content:center;z-index:60;padding:14px;overflow-y:auto}.modalBackdrop.show{display:flex}.modal{width:100%;max-width:900px;background:#fff;border-radius:26px;box-shadow:var(--shadow);overflow:hidden;margin:auto}.modalHeader{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modalBody{padding:16px 18px;max-height:calc(90vh - 140px);overflow-y:auto}.modalActions{padding:16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.modalHeader h3{margin:0}.empty{padding:18px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center}
     .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     @media (max-width:1024px){.app{grid-template-columns:1fr}.sidebar{display:none}.hero,.cards,.grid2{grid-template-columns:1fr 1fr}.main{padding-bottom:92px}}
-    @media (max-width:760px){.hero,.cards,.grid2,.form{grid-template-columns:1fr}.topbar{gap:8px}.search{padding:12px 14px}.btn,.iconbtn{min-height:50px}.panel,.card{border-radius:20px}.floating,.footer-mobile{display:grid}.modalBackdrop{align-items:flex-start;padding:0}.modal{max-width:none;min-height:auto;border-radius:26px 26px 0 0;margin-top:60px}.modalBody{max-height:calc(100vh - 200px)}.form-grid{grid-template-columns:1fr}}
+    @media (max-width:760px){.hero,.cards,.grid2,.form{grid-template-columns:1fr}.topbar{gap:8px}.search{padding:12px 14px}.btn,.iconbtn{min-height:50px}.panel,.card{border-radius:20px}.floating,.footer-mobile{display:grid}.modalBackdrop{align-items:flex-start;padding:0}.modal{max-width:none;min-height:auto;border-radius:26px 26px 0 0;margin-top:60px}.modalBody{max-height:calc(100vh - 200px)}.form-grid{grid-template-columns:1fr}.stats-table{font-size:11px}.stats-table th{padding:10px 6px;font-size:11px}.stats-table td{padding:12px 6px;font-size:18px}}
   </style>
 </head>
 <body>
@@ -44,11 +46,11 @@
   <aside class="sidebar">
     <div class="brand"><div class="logo"></div><div><h1>Energy Force</h1><p>Version finale premium</p></div></div>
     <div class="nav">
-      <button class="active" data-view="dashboard">Tableau de bord</button>
-      <button data-view="appointments"><span>Rendez-vous</span><span class="badge" id="appointmentBadge">0</span></button>
+      <button class="active" data-view="dashboard">Accueil</button>
+      <button data-view="appointments"><span>RDV</span><span class="badge" id="appointmentBadge">0</span></button>
       <button data-view="clients">Clients</button>
-      <button data-view="historique">Historique</button>
-      <button data-view="settings">Paramètres</button>
+      <button data-view="historique">Séances</button>
+      <button data-view="settings">Réglages</button>
     </div>
     <div class="sidebar-card">
       <div class="muted" style="font-size:13px">Prochain RDV</div>
@@ -68,13 +70,29 @@
     <section class="view active" id="view-dashboard">
       <div class="hero">
         <div class="panel">
-          <div class="section-title"><h2>Vue d'ensemble</h2><span class="tag">Live</span></div>
-          <div class="cards">
-            <div class="card"><div class="muted">Clients</div><div class="kpi" id="kpiClients">0</div><div class="muted">Fiches actives</div></div>
-            <div class="card"><div class="muted">Séances</div><div class="kpi" id="kpiSessions">0</div><div class="muted">Historique total</div></div>
-            <div class="card"><div class="muted">RDV à venir</div><div class="kpi" id="kpiAppointments">0</div><div class="muted">À confirmer</div></div>
-            <div class="card"><div class="muted">À relancer</div><div class="kpi" id="kpiFollow">0</div><div class="muted">Clients en pause</div></div>
+          <div class="section-title">
+            <h2>Vue d'ensemble</h2>
+            <div class="year-selector">
+              <span>📅</span>
+              <select id="yearSelector"></select>
+            </div>
           </div>
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th>Clients</th>
+                <th>Séances</th>
+                <th>Ratio séances/client</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="statTotalClients">0</td>
+                <td id="statTotalSessions">0</td>
+                <td id="statRatio">0.0</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div class="panel">
           <div class="section-title"><h2>Prochains RDV</h2><span class="tag">Agenda</span></div>
@@ -200,21 +218,26 @@
 </div>
 
 <script>
-const storageKey='energy_force_final_v5';
+const storageKey='energy_force_final_v9';
+let selectedYear = new Date().getFullYear();
 const sample={
   clients:[
     {id:'c1',name:'Jean Dupont',phone:'+596 696 00 00 00',email:'jean@example.com',status:'actif',job:'Développeur',typology:'Stressé',objective:'Gestion du stress',comment:'Très ponctuel, apprécie les séances courtes.',updated:'2026-05-02'},
     {id:'c2',name:'Marie Legrand',phone:'+596 696 11 11 11',email:'marie@example.com',status:'actif',job:'Infirmière',typology:'Fatiguée',objective:'Sommeil et récupération',comment:'Travaille de nuit.',updated:'2026-04-28'},
-    {id:'c3',name:'Nathalie Morel',phone:'+596 696 22 22 22',email:'nathalie@example.com',status:'pause',job:'Enseignante',typology:'Anxieuse',objective:'Équilibre émotionnel',comment:'Suivi irrégulier.',updated:'2026-04-25'},
+    {id:'c3',name:'Nathalie Morel',phone:'+596 696 22 22 22',email:'nathalie@example.com',status:'pause',job:'Enseignante',typology:'Anxieuse',objective:'Équilibre émotionnel',comment:'Suivi irrégulier.',updated:'2025-04-25'},
     {id:'c4',name:'David Pierre',phone:'+596 696 33 33 33',email:'david@example.com',status:'actif',job:'Coach sportif',typology:'Sportif',objective:'Relâchement musculaire',comment:'Sportif amateur.',updated:'2026-04-22'},
-    {id:'c5',name:'Sophie Lambert',phone:'+596 696 44 44 44',email:'sophie@example.com',status:'actif',job:'Commerciale',typology:'Stressée',objective:'Recentrage',comment:'Déplacements fréquents.',updated:'2026-04-20'}
+    {id:'c5',name:'Sophie Lambert',phone:'+596 696 44 44 44',email:'sophie@example.com',status:'actif',job:'Commerciale',typology:'Stressée',objective:'Recentrage',comment:'Déplacements fréquents.',updated:'2025-04-20'}
   ],
   sessions:[
     {id:'s1',clientId:'c1',date:'2026-05-02',type:'Suivi',reason:'Séance de relaxation profonde avec exercices respiratoires',state:'Tendu',notes:'Respiration, recentrage, conseil repos.'},
     {id:'s2',clientId:'c1',date:'2026-04-18',type:'Initiale',reason:'Bilan complet, évaluation posturale et énergétique',state:'Épuisé',notes:'Bilan complet, mise en route du suivi.'},
     {id:'s3',clientId:'c2',date:'2026-04-28',type:'Contrôle',reason:'Travail sur le sommeil, protocole relaxation',state:'Fatigue légère',notes:'Progrès nets, maintien du protocole.'},
     {id:'s4',clientId:'c4',date:'2026-04-22',type:'Suivi',reason:'Libération tensions musculaires épaules et nuque',state:'Raide',notes:'Relâchement et conseils posture.'},
-    {id:'s5',clientId:'c5',date:'2026-04-20',type:'Initiale',reason:'Évaluation globale et mise en place protocole',state:'Surmenée',notes:'Première séance, suivi prévu.'}
+    {id:'s5',clientId:'c5',date:'2025-04-20',type:'Initiale',reason:'Évaluation globale et mise en place protocole',state:'Surmenée',notes:'Première séance, suivi prévu.'},
+    {id:'s6',clientId:'c1',date:'2026-03-15',type:'Suivi',reason:'Séance de recentrage',state:'Normal',notes:'Bon état général.'},
+    {id:'s7',clientId:'c2',date:'2025-02-10',type:'Suivi',reason:'Travail respiratoire',state:'Calme',notes:'Progression continue.'},
+    {id:'s8',clientId:'c3',date:'2025-06-12',type:'Initiale',reason:'Première consultation',state:'Anxieuse',notes:'Mise en place suivi.'},
+    {id:'s9',clientId:'c1',date:'2025-12-08',type:'Contrôle',reason:'Bilan fin année',state:'Détendu',notes:'Excellents résultats.'}
   ],
   appointments:[
     {id:'rdv1',clientName:'Lucas Martin',phone:'+596 696 10 10 10',email:'lucas@example.com',date:'2026-05-05',time:'10:00',type:'Initiale',objective:'Gestion du stress professionnel',status:'pending'},
@@ -229,14 +252,32 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const save=()=>localStorage.setItem(storageKey,JSON.stringify(state));
 const load=()=>{const raw=localStorage.getItem(storageKey); if(raw){state=JSON.parse(raw)} save();};
 function clientSessions(id){return state.sessions.filter(s=>s.clientId===id).sort((a,b)=>b.date.localeCompare(a.date));}
+function getSessionsForYear(year){return state.sessions.filter(s=>s.date.startsWith(year.toString()));}
+function getClientsForYear(year){return state.clients.filter(c=>c.updated && c.updated.startsWith(year.toString()));}
+function getAvailableYears(){
+  const years = new Set();
+  state.sessions.forEach(s=>years.add(parseInt(s.date.substring(0,4))));
+  state.clients.forEach(c=>{if(c.updated)years.add(parseInt(c.updated.substring(0,4)))});
+  return Array.from(years).sort((a,b)=>b-a);
+}
+function populateYearSelector(){
+  const years = getAvailableYears();
+  const sel = $('#yearSelector');
+  sel.innerHTML = years.map(y=>`<option value="${y}" ${y===selectedYear?'selected':''}>${y}</option>`).join('');
+}
 function goView(view){ $$('.view').forEach(v=>v.classList.remove('active')); $('#view-'+view).classList.add('active'); $$('.nav button, .footer-mobile button').forEach(b=>b.classList.toggle('active',b.dataset.view===view)); }
 function formatDate(date){const d=new Date(date);return d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});}
 function renderStats(){ 
-  $('#kpiClients').textContent=state.clients.length; 
-  $('#kpiSessions').textContent=state.sessions.length; 
-  $('#kpiAppointments').textContent=state.appointments?.filter(a=>a.status==='pending').length||0;
-  $('#kpiFollow').textContent=state.clients.filter(c=>c.status==='pause').length; 
-  $('#appointmentBadge').textContent=state.appointments?.length||0;
+  const clientsForYear = getClientsForYear(selectedYear);
+  const sessionsForYear = getSessionsForYear(selectedYear);
+  const totalClients = clientsForYear.length;
+  const totalSessions = sessionsForYear.length;
+  const ratio = totalClients > 0 ? (totalSessions / totalClients).toFixed(1) : '0.0';
+
+  $('#statTotalClients').textContent = totalClients;
+  $('#statTotalSessions').textContent = totalSessions;
+  $('#statRatio').textContent = ratio;
+  $('#appointmentBadge').textContent = state.appointments?.length||0;
 }
 function renderUpcoming(){
   const el=$('#upcomingList');
@@ -305,8 +346,8 @@ function openClient(id){ state.selectedClientId=id; save(); render(); goView('hi
 function openModal(id=null){ editingId=id; const modal=$('#clientModalBackdrop'); const c=id?state.clients.find(x=>x.id===id):null; $('#modalTitle').textContent=id?'Éditer le client':'Nouveau client'; $('#cName').value=c?.name||''; $('#cPhone').value=c?.phone||''; $('#cEmail').value=c?.email||''; $('#cStatus').value=c?.status||'actif'; $('#cJob').value=c?.job||''; $('#cTypology').value=c?.typology||''; $('#cObjective').value=c?.objective||''; $('#cComment').value=c?.comment||''; modal.classList.add('show'); }
 function closeModal(){ $('#clientModalBackdrop').classList.remove('show'); editingId=null; }
 function deleteClient(id){ const c=state.clients.find(x=>x.id===id); if(!confirm(`Supprimer ${c?.name} ?`)) return; state.clients=state.clients.filter(x=>x.id!==id); state.sessions=state.sessions.filter(x=>x.clientId!==id); if(state.selectedClientId===id) state.selectedClientId=state.clients[0]?.id||null; save(); render(); }
-function exportJSON(){ const payload={app:'Energy Force',version:'final-v5',exportedAt:new Date().toISOString(),data:state}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='energy_force_export_make.json'; a.click(); URL.revokeObjectURL(a.href); }
-function render(){ renderStats(); renderUpcoming(); renderAppointments(); renderRecent(); renderClients(); renderClientDetail(); renderTimeline(); fillSessionSelect(); save(); }
+function exportJSON(){ const payload={app:'Energy Force',version:'final-v9',exportedAt:new Date().toISOString(),data:state}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='energy_force_export_make.json'; a.click(); URL.revokeObjectURL(a.href); }
+function render(){ populateYearSelector(); renderStats(); renderUpcoming(); renderAppointments(); renderRecent(); renderClients(); renderClientDetail(); renderTimeline(); fillSessionSelect(); save(); }
 $('#seedBtn').onclick=()=>{state=JSON.parse(JSON.stringify(sample)); state.selectedClientId='c1'; render();};
 $('#newClientBtn').onclick=()=>openModal(); $('#fab').onclick=()=>openModal(); $('#exportBtn').onclick=exportJSON;
 $('#closeModal').onclick=closeModal; $('#cancelModal').onclick=closeModal; $('#clientModalBackdrop').addEventListener('click',e=>{if(e.target.id==='clientModalBackdrop') closeModal()});
@@ -315,6 +356,7 @@ $('#searchInput').oninput=e=>{goView('clients'); $('#clientFilter').value=e.targ
 $('#editClientBtn').onclick=()=>openModal(state.selectedClientId); $('#deleteClientBtn').onclick=()=>deleteClient(state.selectedClientId);
 $('#sessionForm').onsubmit=e=>{e.preventDefault(); const clientId=$('#sessionClient').value; state.selectedClientId=clientId; const entry={id:crypto.randomUUID(),clientId,date:$('#sessionDate').value||new Date().toISOString().slice(0,10),type:$('#sessionType').value,reason:$('#sessionReason').value||'—',state:$('#sessionState').value||'—',notes:$('#sessionNotes').value||'—'}; state.sessions.unshift(entry); const client=state.clients.find(x=>x.id===clientId); if(client){ client.updated=new Date().toISOString().slice(0,10);} render(); e.target.reset(); alert('Séance enregistrée ! Le compteur de séances a été mis à jour automatiquement.'); };
 $('#clearForm').onclick=()=>$('#sessionForm').reset();
+$('#yearSelector').onchange=e=>{selectedYear=parseInt(e.target.value); render();};
 $$('.nav button, .footer-mobile button').forEach(b=>b.onclick=()=>goView(b.dataset.view));
 load(); render();
 </script>

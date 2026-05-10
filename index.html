@@ -1100,7 +1100,7 @@
     <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
 
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.10</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.11</span> — 2026
     </div>
   </div>
 </div>
@@ -1188,7 +1188,7 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.10';
+const VERSION = 'v0.11';
 /* ============================================================
    🔧 CONFIGURATION — À MODIFIER UNE SEULE FOIS
    ============================================================
@@ -3584,7 +3584,6 @@ const Views = {
         <span class="badge ${c.statut === 'actif' ? 'badge-success' : 'badge-neutral'}">${c.statut === 'actif' ? 'Actif' : 'En pause'}</span>
         <div class="page-actions">
           <button class="btn btn-secondary" onclick='Actions.openClientForm(${JSON.stringify(c).replace(/'/g, "&#39;")})'>✏️ Modifier</button>
-          <button class="btn btn-primary" onclick="Actions.openSessionForm(null, '${c.id}')">＋ Nouvelle séance</button>
         </div>
       </div>
 
@@ -3614,9 +3613,6 @@ const Views = {
         <button class="qa-btn" onclick='Actions.call(${JSON.stringify(c).replace(/'/g, "&#39;")})'>
           <span class="icon">📞</span><span>Appeler</span>
         </button>
-        <button class="qa-btn" onclick="Actions.openSessionForm(null, '${c.id}')">
-          <span class="icon">＋</span><span>Séance</span>
-        </button>
       </div>
 
       <div class="grid-2">
@@ -3639,24 +3635,26 @@ const Views = {
       <div class="card mt-4">
         <div class="card-header">
           <div class="card-title">📋 Historique des séances · ${sessions.length}</div>
-          <button class="btn btn-primary btn-sm" onclick="Actions.openSessionForm(null, '${c.id}')">＋ Nouvelle</button>
         </div>
         ${sessions.length === 0 ? `
           <div class="empty-state">
             <div class="empty-state-icon">📋</div>
             <div class="empty-state-title">Aucune séance enregistrée</div>
-            <div class="text-sm">Commence par enregistrer la première séance.</div>
+            <div class="text-sm">Utilise le bouton « Démarrer la séance » ci-dessus pour commencer.</div>
           </div>
-        ` : sessions.map(s => `
+        ` : sessions.map(s => {
+          const heureAff = normalizeTimeForInput(s.heure);
+          return `
           <div class="history-item" onclick="App.go('session', {id: '${s.id}'})" style="cursor:pointer;">
             <div class="history-item-head">
-              <div class="history-item-date">${fmtDate(s.date)}${s.heure ? ' · ' + escapeHtml(s.heure) : ''}</div>
+              <div class="history-item-date">${fmtDate(s.date)}${heureAff ? ' · ' + escapeHtml(heureAff) : ''}</div>
               <span class="badge ${this.sessionTypeBadge(s.type)}">${this.sessionTypeLabel(s.type)}</span>
               <div style="margin-left:auto;color:var(--text-soft);">›</div>
             </div>
             ${s.notes ? `<div class="history-item-text">${escapeHtml(s.notes.slice(0, 200))}${s.notes.length > 200 ? '…' : ''}</div>` : '<div class="history-item-text text-soft">Pas de notes</div>'}
           </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
 
       ${linkedBookings.length > 0 ? `
@@ -3664,16 +3662,19 @@ const Views = {
           <div class="card-header">
             <div class="card-title">🌐 Réservations cal.com · ${linkedBookings.length}</div>
           </div>
-          ${linkedBookings.map(b => `
+          ${linkedBookings.map(b => {
+            const heureAff = normalizeTimeForInput(b.heure_rdv);
+            return `
             <div class="history-item" onclick="App.go('bookings')" style="cursor:pointer;">
               <div class="history-item-head">
-                <div class="history-item-date">${fmtDate(b.date_rdv)}${b.heure_rdv ? ' · ' + escapeHtml(b.heure_rdv) : ''}</div>
+                <div class="history-item-date">${fmtDate(b.date_rdv)}${heureAff ? ' · ' + escapeHtml(heureAff) : ''}</div>
                 <span class="badge ${b.statut === 'valide' ? 'badge-success' : (b.statut === 'refuse' ? 'badge-neutral' : 'badge-warning')}">${b.statut === 'valide' ? 'validée' : (b.statut === 'refuse' ? 'refusée' : 'en attente')}</span>
                 <div style="margin-left:auto;color:var(--text-soft);">›</div>
               </div>
               ${b.message ? `<div class="history-item-text">${escapeHtml(b.message.slice(0, 200))}${b.message.length > 200 ? '…' : ''}</div>` : ''}
             </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
       ` : ''}
 

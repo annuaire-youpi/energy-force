@@ -565,6 +565,7 @@
     .badge-danger { background: var(--danger-soft); color: #b91c1c; }
     .badge-info { background: var(--info-soft); color: #0369a1; }
     .badge-neutral { background: var(--bg-soft); color: var(--text-muted); }
+    .badge-soft { background: #f1f5f9; color: #64748b; }
     .badge-primary { background: var(--primary-soft); color: var(--primary-hover); }
 
     /* ============================================================
@@ -1100,7 +1101,7 @@
     <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
 
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.12</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.13</span> — 2026
     </div>
   </div>
 </div>
@@ -1188,7 +1189,7 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.12';
+const VERSION = 'v0.13';
 /* ============================================================
    🔧 CONFIGURATION — À MODIFIER UNE SEULE FOIS
    ============================================================
@@ -1771,6 +1772,38 @@ function generateDemoData() {
       objectif: 'Apprendre à mettre des limites avec les parents d\'élèves et la hiérarchie.',
       commentaires: 'Très sensible aux exercices de respiration.',
       date_creation: days(20), date_modification: days(3)
+    },
+    // ----- PROSPECTS de démonstration -----
+    {
+      id: 'c_demo_p1', nom_complet: 'Lucas Moreau', telephone: '+596696112233', email: 'lucas.moreau@exemple.fr',
+      statut: 'prospect', metier: 'Sportif amateur', typologie: 'Performance',
+      objectif: 'Préparer un trail de 50 km en septembre.',
+      commentaires: '',
+      prospect_substate: 'nouveau', prospect_recall_date: '',
+      prospect_source: 'Recommandation Sophie Martin',
+      prospect_notes: 'A vu le résultat de Sophie sur Instagram, très motivé.',
+      date_creation: days(1), date_modification: days(1)
+    },
+    {
+      id: 'c_demo_p2', nom_complet: 'Camille Rousseau', telephone: '+33625889977', email: 'camille.rousseau@exemple.fr',
+      statut: 'prospect', metier: 'Avocate', typologie: 'Gestion du stress',
+      objectif: 'Mieux gérer la charge mentale et les nuits courtes.',
+      commentaires: '',
+      prospect_substate: 'lien_envoye', prospect_recall_date: '',
+      prospect_source: 'Site web',
+      prospect_notes: 'Cherche un accompagnement régulier de longue durée. Lien envoyé hier.',
+      date_creation: days(3), date_modification: days(1)
+    },
+    {
+      id: 'c_demo_p3', nom_complet: 'Antoine Bertrand', telephone: '+596696445566', email: 'antoine.bertrand@exemple.fr',
+      statut: 'prospect', metier: 'Entrepreneur', typologie: 'Leadership',
+      objectif: 'Préparer un pitch investisseur dans 6 semaines.',
+      commentaires: '',
+      prospect_substate: 'a_rappeler',
+      prospect_recall_date: new Date(now).toISOString().slice(0, 10),
+      prospect_source: 'Salon entrepreneurs',
+      prospect_notes: 'Très intéressé mais voulait y réfléchir. Lui demander s\'il est prêt à démarrer.',
+      date_creation: days(7), date_modification: days(2)
     }
   ];
 
@@ -2172,11 +2205,16 @@ const Actions = {
   openClientForm(client = null) {
     const isEdit = !!client;
     const c = client || {
-      nom_complet: '', telephone: '', email: '', statut: 'actif',
-      metier: '', typologie: '', objectif: '', commentaires: ''
+      nom_complet: '', telephone: '', email: '', statut: 'prospect',
+      metier: '', typologie: '', objectif: '', commentaires: '',
+      prospect_substate: 'nouveau', prospect_recall_date: '',
+      prospect_source: '', prospect_notes: ''
     };
+    // Pour les anciens clients sans champ prospect, valeurs par défaut
+    if (!c.prospect_substate) c.prospect_substate = 'nouveau';
     openModal({
       title: isEdit ? 'Modifier le client' : 'Nouveau client',
+      size: 'lg',
       body: `
         <form id="client-form" onsubmit="event.preventDefault();Actions.saveClient(${isEdit ? `'${c.id}'` : 'null'});">
           <div class="form-group">
@@ -2197,9 +2235,11 @@ const Actions = {
           <div class="form-row cols-2">
             <div class="form-group">
               <label class="form-label">Statut<span class="req">*</span></label>
-              <select class="form-select" name="statut" required>
-                <option value="actif" ${c.statut === 'actif' ? 'selected' : ''}>Actif</option>
-                <option value="pause" ${c.statut === 'pause' ? 'selected' : ''}>En pause</option>
+              <select class="form-select" name="statut" required onchange="Actions.toggleProspectFields(this.value)">
+                <option value="prospect" ${c.statut === 'prospect' ? 'selected' : ''}>🟠 Prospect</option>
+                <option value="actif" ${c.statut === 'actif' ? 'selected' : ''}>🟢 Actif</option>
+                <option value="pause" ${c.statut === 'pause' ? 'selected' : ''}>🟡 En pause</option>
+                <option value="arret" ${c.statut === 'arret' ? 'selected' : ''}>⚫ Arrêté</option>
               </select>
             </div>
             <div class="form-group">
@@ -2207,6 +2247,35 @@ const Actions = {
               <input class="form-input" name="metier" value="${escapeHtml(c.metier)}" placeholder="Ex. Designer, Manager…">
             </div>
           </div>
+
+          <!-- Bloc spécifique prospect (visible uniquement si statut=prospect) -->
+          <div id="prospect-fields" style="${c.statut === 'prospect' ? '' : 'display:none;'}background:linear-gradient(135deg,#fff7ed,var(--card));border:1px solid #fdba74;border-left:3px solid #f97316;border-radius:var(--radius);padding:14px;margin-bottom:14px;">
+            <div class="font-semibold mb-3" style="color:#c2410c;">🎯 Suivi prospect</div>
+            <div class="form-row cols-2">
+              <div class="form-group" style="margin-bottom:10px;">
+                <label class="form-label">Source du prospect</label>
+                <input class="form-input" name="prospect_source" value="${escapeHtml(c.prospect_source || '')}" placeholder="Ex. Recommandation, Instagram, salon…">
+              </div>
+              <div class="form-group" style="margin-bottom:10px;">
+                <label class="form-label">Avancement</label>
+                <select class="form-select" name="prospect_substate" onchange="Actions.toggleProspectRecallDate(this.value)">
+                  <option value="nouveau" ${c.prospect_substate === 'nouveau' ? 'selected' : ''}>🆕 Nouveau</option>
+                  <option value="lien_envoye" ${c.prospect_substate === 'lien_envoye' ? 'selected' : ''}>📤 Lien envoyé</option>
+                  <option value="a_rappeler" ${c.prospect_substate === 'a_rappeler' ? 'selected' : ''}>📞 À rappeler</option>
+                  <option value="ne_pas_rappeler" ${c.prospect_substate === 'ne_pas_rappeler' ? 'selected' : ''}>🚫 Ne pas rappeler</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" id="prospect-recall-date-group" style="margin-bottom:10px;${c.prospect_substate === 'a_rappeler' ? '' : 'display:none;'}">
+              <label class="form-label">Date du rappel</label>
+              <input class="form-input" type="date" name="prospect_recall_date" value="${normalizeDateForInput(c.prospect_recall_date)}">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Notes prospect</label>
+              <textarea class="form-textarea" name="prospect_notes" rows="2" placeholder="Contexte, attentes, ce qu'il faut lui dire au rappel…">${escapeHtml(c.prospect_notes || '')}</textarea>
+            </div>
+          </div>
+
           <div class="form-group">
             <label class="form-label">Typologie du client</label>
             <input class="form-input" name="typologie" value="${escapeHtml(c.typologie)}" placeholder="Ex. Performance, Reconversion…">
@@ -2228,6 +2297,16 @@ const Actions = {
     });
   },
 
+  toggleProspectFields(statut) {
+    const block = document.getElementById('prospect-fields');
+    if (block) block.style.display = (statut === 'prospect') ? '' : 'none';
+  },
+
+  toggleProspectRecallDate(substate) {
+    const group = document.getElementById('prospect-recall-date-group');
+    if (group) group.style.display = (substate === 'a_rappeler') ? '' : 'none';
+  },
+
   async saveClient(existingId) {
     const f = document.getElementById('client-form');
     // Normalisation du téléphone : on stocke toujours au format +XXXXXXXXXX
@@ -2244,6 +2323,11 @@ const Actions = {
       typologie: f.typologie.value.trim(),
       objectif: f.objectif.value.trim(),
       commentaires: f.commentaires.value.trim(),
+      // Champs prospect (toujours sauvegardés, mais effectifs uniquement si statut=prospect)
+      prospect_substate: f.prospect_substate ? f.prospect_substate.value : 'nouveau',
+      prospect_recall_date: (f.prospect_substate && f.prospect_substate.value === 'a_rappeler' && f.prospect_recall_date) ? f.prospect_recall_date.value : '',
+      prospect_source: f.prospect_source ? f.prospect_source.value.trim() : '',
+      prospect_notes: f.prospect_notes ? f.prospect_notes.value.trim() : '',
       date_modification: nowIso()
     };
     if (!data.nom_complet) { toast('Nom requis', 'error'); return; }
@@ -2763,11 +2847,31 @@ const Actions = {
       client_id: client.id
     };
 
+    // CONVERSION AUTO : si le client était prospect, il passe en actif
+    let prospectConverted = false;
+    if (client.statut === 'prospect') {
+      const cidx = state.data.clients.findIndex(c => c.id === client.id);
+      if (cidx >= 0) {
+        state.data.clients[cidx] = {
+          ...state.data.clients[cidx],
+          statut: 'actif',
+          date_modification: nowIso()
+        };
+        prospectConverted = true;
+        audit('prospect_auto_converted', { client_id: client.id, from_booking: bookingId });
+        syncToBackend('updateClient', state.data.clients[cidx]);
+      }
+    }
+
     audit('booking_validated', { booking_id: bookingId, client_id: client.id, session_id: session.id });
     App.saveToCache();
     closeModal();
     App.refreshCurrentView();
-    toast(`✓ Réservation validée et ajoutée au planning`, 'success', 5000);
+    if (prospectConverted) {
+      toast(`🎉 ${client.nom_complet} : prospect converti en client actif + séance ajoutée`, 'success', 6000);
+    } else {
+      toast(`✓ Réservation validée et ajoutée au planning`, 'success', 5000);
+    }
 
     // Sync backend (en parallèle)
     syncToBackend('addSession', session);
@@ -3143,6 +3247,172 @@ const Actions = {
     });
   },
 
+  // ===== PROSPECT WORKFLOW =====
+
+  // Envoie le lien cal.com au prospect via WhatsApp avec template pré-rempli
+  sendBookingLinkWhatsApp(client) {
+    if (!client.telephone) { toast('Pas de numéro de téléphone', 'warning'); return; }
+    const phoneIntl = formatPhoneE164(client.telephone);
+    if (!phoneIntl) { toast('Numéro invalide', 'error'); return; }
+    const firstName = client.nom_complet.split(' ')[0];
+    const message = `Bonjour ${firstName},
+
+Suite à notre échange, voici le lien pour réserver ta première séance avec moi :
+
+👉 https://cal.com/annuaire-youpi/30min
+
+Tu peux choisir le créneau qui te convient le mieux. Je reçois la confirmation directement.
+
+À très bientôt,
+Energy Force`;
+    const url = `https://wa.me/${phoneIntl}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+    audit('prospect_link_whatsapp', { client_id: client.id });
+    // Passe automatiquement le sous-statut en "lien_envoye" si c'était "nouveau"
+    if (client.prospect_substate === 'nouveau' || !client.prospect_substate) {
+      this._updateClientField(client.id, 'prospect_substate', 'lien_envoye');
+      toast('Lien envoyé · sous-statut mis à jour', 'success');
+    } else {
+      if (state.mode === 'demo') toast('WhatsApp ouvert (démo)', 'info');
+    }
+  },
+
+  // Programme un rappel à une date donnée
+  scheduleProspectRecall(clientId) {
+    const client = state.data.clients.find(c => c.id === clientId);
+    if (!client) return;
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 7);
+    const defaultIso = defaultDate.toISOString().slice(0, 10);
+    openModal({
+      title: '📞 Programmer un rappel',
+      body: `
+        <div class="text-sm text-muted mb-3">À quelle date veux-tu être rappelé pour relancer <b>${escapeHtml(client.nom_complet)}</b> ?</div>
+        <div class="form-group">
+          <label class="form-label">Date du rappel<span class="req">*</span></label>
+          <input class="form-input" type="date" id="recall-date-input" value="${defaultIso}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Note (optionnel)</label>
+          <textarea class="form-textarea" id="recall-note-input" rows="2" placeholder="Ce qu'il faut lui dire au moment du rappel…">${escapeHtml(client.prospect_notes || '')}</textarea>
+        </div>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="Actions._saveProspectRecall('${clientId}')">Programmer</button>
+      `
+    });
+  },
+
+  async _saveProspectRecall(clientId) {
+    const dateInput = document.getElementById('recall-date-input');
+    const noteInput = document.getElementById('recall-note-input');
+    if (!dateInput.value) { toast('Date requise', 'error'); return; }
+    const idx = state.data.clients.findIndex(c => c.id === clientId);
+    if (idx < 0) return;
+    state.data.clients[idx] = {
+      ...state.data.clients[idx],
+      prospect_substate: 'a_rappeler',
+      prospect_recall_date: dateInput.value,
+      prospect_notes: noteInput.value.trim(),
+      date_modification: nowIso()
+    };
+    audit('prospect_recall_scheduled', { client_id: clientId, date: dateInput.value });
+    App.saveToCache();
+    closeModal();
+    App.refreshCurrentView();
+    toast(`📞 Rappel programmé pour le ${fmtDate(dateInput.value)}`, 'success');
+    syncToBackend('updateClient', state.data.clients[idx]);
+  },
+
+  // Marque qu'un rappel a été effectué (et propose de re-programmer ou de changer de statut)
+  markProspectRecalled(clientId) {
+    const client = state.data.clients.find(c => c.id === clientId);
+    if (!client) return;
+    openModal({
+      title: '✓ Rappel effectué',
+      body: `
+        <div class="text-sm mb-3">Suite à ce rappel avec <b>${escapeHtml(client.nom_complet)}</b>, quelle est la suite ?</div>
+        <div class="settings-list">
+          <button class="settings-item" onclick="Actions._postRecall('${clientId}','link_resent')">
+            <div class="settings-item-icon">📤</div>
+            <div class="settings-item-label">J'ai renvoyé le lien cal.com</div>
+            <div class="settings-item-value">›</div>
+          </button>
+          <button class="settings-item" onclick="Actions._postRecall('${clientId}','reschedule')">
+            <div class="settings-item-icon">📅</div>
+            <div class="settings-item-label">Reprogrammer un autre rappel</div>
+            <div class="settings-item-value">›</div>
+          </button>
+          <button class="settings-item" onclick="Actions._postRecall('${clientId}','convert')">
+            <div class="settings-item-icon">🎯</div>
+            <div class="settings-item-label">Il devient client actif</div>
+            <div class="settings-item-value">›</div>
+          </button>
+          <button class="settings-item" onclick="Actions._postRecall('${clientId}','no_recall')">
+            <div class="settings-item-icon">🚫</div>
+            <div class="settings-item-label">Ne plus le rappeler</div>
+            <div class="settings-item-value">›</div>
+          </button>
+        </div>
+      `,
+      footer: `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>`
+    });
+  },
+
+  _postRecall(clientId, decision) {
+    closeModal();
+    const client = state.data.clients.find(c => c.id === clientId);
+    if (!client) return;
+    if (decision === 'link_resent') {
+      this.sendBookingLinkWhatsApp(client);
+    } else if (decision === 'reschedule') {
+      this.scheduleProspectRecall(clientId);
+    } else if (decision === 'convert') {
+      this.convertProspectToActive(clientId);
+    } else if (decision === 'no_recall') {
+      this._updateClientField(clientId, 'prospect_substate', 'ne_pas_rappeler');
+      toast(`${client.nom_complet} marqué comme « Ne pas rappeler »`, 'info');
+    }
+  },
+
+  // Convertit un prospect en client actif
+  convertProspectToActive(clientId) {
+    const client = state.data.clients.find(c => c.id === clientId);
+    if (!client) return;
+    confirmModal(
+      `Convertir ${client.nom_complet} en client actif ?`,
+      () => {
+        const idx = state.data.clients.findIndex(c => c.id === clientId);
+        state.data.clients[idx] = {
+          ...state.data.clients[idx],
+          statut: 'actif',
+          date_modification: nowIso()
+        };
+        audit('prospect_converted', { client_id: clientId });
+        App.saveToCache();
+        App.refreshCurrentView();
+        toast(`🎉 ${client.nom_complet} est maintenant client actif !`, 'success', 5000);
+        syncToBackend('updateClient', state.data.clients[idx]);
+      },
+      { confirmLabel: 'Convertir', title: '🎯 Conversion prospect' }
+    );
+  },
+
+  // Helper interne pour mettre à jour un seul champ d'un client
+  _updateClientField(clientId, field, value) {
+    const idx = state.data.clients.findIndex(c => c.id === clientId);
+    if (idx < 0) return;
+    state.data.clients[idx] = {
+      ...state.data.clients[idx],
+      [field]: value,
+      date_modification: nowIso()
+    };
+    App.saveToCache();
+    App.refreshCurrentView();
+    syncToBackend('updateClient', state.data.clients[idx]);
+  },
+
   exportData() {
     const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -3322,6 +3592,15 @@ const Views = {
     const totalWeekRdv = days.reduce((sum, d) => sum + d.rdvs.length, 0);
     const todayRdv = days[0].rdvs.length;
 
+    // ----- Prospects à rappeler / nouveaux -----
+    const prospects = state.data.clients.filter(c => c.statut === 'prospect');
+    const prospectsToRecallToday = prospects.filter(c =>
+      c.prospect_substate === 'a_rappeler' &&
+      c.prospect_recall_date &&
+      c.prospect_recall_date <= today
+    );
+    const newProspects = prospects.filter(c => c.prospect_substate === 'nouveau' || !c.prospect_substate);
+
     // ----- Dernières séances réalisées (passées ou avec contenu) -----
     const recentSessions = [...state.data.sessions]
       .filter(s => {
@@ -3349,6 +3628,11 @@ const Views = {
           <div class="stat-label">Clients actifs</div>
           <div class="stat-value">${activeClients}</div>
         </div>
+        <div class="stat-card" ${prospects.length > 0 ? `onclick="state.filters.clientStatut='prospect';App.go('clients');" style="cursor:pointer;"` : ''}>
+          <div class="stat-icon" style="background:#fff7ed;color:#c2410c;">🎯</div>
+          <div class="stat-label">Prospects en cours</div>
+          <div class="stat-value">${prospects.length}</div>
+        </div>
         <div class="stat-card">
           <div class="stat-icon" style="background:var(--info-soft);color:var(--info);">📋</div>
           <div class="stat-label">Séances ce mois</div>
@@ -3358,11 +3642,6 @@ const Views = {
           <div class="stat-icon" style="background:var(--warning-soft);color:var(--warning);">📅</div>
           <div class="stat-label">cal.com en attente</div>
           <div class="stat-value">${pendingBookings}</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:var(--success-soft);color:var(--success);">📆</div>
-          <div class="stat-label">RDV cette semaine</div>
-          <div class="stat-value">${totalWeekRdv}</div>
         </div>
       </div>
 
@@ -3417,6 +3696,37 @@ const Views = {
             <button class="btn btn-warning btn-sm" onclick="App.go('bookings')">Traiter →</button>
           </div>
           <div class="text-sm text-muted">Confirme-les pour qu'elles apparaissent dans ton agenda ci-dessus.</div>
+        </div>
+      ` : ''}
+
+      ${(prospectsToRecallToday.length + newProspects.length) > 0 ? `
+        <div class="card mt-4" style="border-color:#fdba74;background:linear-gradient(135deg,#fff7ed,var(--card));">
+          <div class="card-header">
+            <div class="card-title" style="color:#c2410c;">🎯 Prospects à traiter${prospectsToRecallToday.length > 0 ? ' · ' + prospectsToRecallToday.length + ' rappel' + (prospectsToRecallToday.length > 1 ? 's' : '') + ' aujourd\u2019hui' : ''}</div>
+            <button class="btn btn-sm" style="background:#c2410c;color:white;" onclick="state.filters.clientStatut='prospect';App.go('clients');">Voir tous →</button>
+          </div>
+          <div class="list">
+            ${prospectsToRecallToday.map(c => `
+              <div class="list-item" onclick="App.go('client', {id: '${c.id}'})" style="cursor:pointer;">
+                <div class="avatar sm" style="background:${avatarColor(c.nom_complet)}20;color:${avatarColor(c.nom_complet)};">${initials(c.nom_complet)}</div>
+                <div class="grow">
+                  <div class="font-semibold truncate">${escapeHtml(c.nom_complet)}</div>
+                  <div class="text-sm" style="color:#c2410c;">📞 À rappeler ${c.prospect_recall_date === today ? 'aujourd\u2019hui' : 'depuis le ' + fmtDate(c.prospect_recall_date)}</div>
+                </div>
+                <span class="badge badge-warning">RAPPEL</span>
+              </div>
+            `).join('')}
+            ${newProspects.slice(0, 3).map(c => `
+              <div class="list-item" onclick="App.go('client', {id: '${c.id}'})" style="cursor:pointer;">
+                <div class="avatar sm" style="background:${avatarColor(c.nom_complet)}20;color:${avatarColor(c.nom_complet)};">${initials(c.nom_complet)}</div>
+                <div class="grow">
+                  <div class="font-semibold truncate">${escapeHtml(c.nom_complet)}</div>
+                  <div class="text-sm text-muted">🆕 Nouveau prospect${c.prospect_source ? ' · ' + escapeHtml(c.prospect_source) : ''}</div>
+                </div>
+                <span class="badge badge-soft">À CONTACTER</span>
+              </div>
+            `).join('')}
+          </div>
         </div>
       ` : ''}
 
@@ -3478,6 +3788,28 @@ const Views = {
     const m = { initial: 'badge-info', suivi: 'badge-primary', controle: 'badge-warning' };
     return m[t] || 'badge-neutral';
   },
+  // ----- STATUS CLIENT HELPERS -----
+  clientStatutLabel(s) {
+    const m = { prospect: 'Prospect', actif: 'Actif', pause: 'En pause', arret: 'Arrêté' };
+    return m[s] || s || 'Actif';
+  },
+  clientStatutBadge(s) {
+    const m = { prospect: 'badge-warning', actif: 'badge-success', pause: 'badge-neutral', arret: 'badge-soft' };
+    return m[s] || 'badge-neutral';
+  },
+  clientStatutIcon(s) {
+    const m = { prospect: '🟠', actif: '🟢', pause: '🟡', arret: '⚫' };
+    return m[s] || '🟢';
+  },
+  prospectSubstateLabel(s) {
+    const m = {
+      nouveau: '🆕 Nouveau',
+      lien_envoye: '📤 Lien envoyé',
+      a_rappeler: '📞 À rappeler',
+      ne_pas_rappeler: '🚫 Ne pas rappeler'
+    };
+    return m[s] || '🆕 Nouveau';
+  },
 
   // ----- CLIENTS LIST -----
   clients() {
@@ -3512,8 +3844,10 @@ const Views = {
         </div>
         <div class="pill-row mt-3">
           <button class="filter-chip ${statut === 'tous' ? 'active' : ''}" data-statut="tous">Tous (${state.data.clients.length})</button>
-          <button class="filter-chip ${statut === 'actif' ? 'active' : ''}" data-statut="actif">Actifs (${state.data.clients.filter(c=>c.statut==='actif').length})</button>
-          <button class="filter-chip ${statut === 'pause' ? 'active' : ''}" data-statut="pause">En pause (${state.data.clients.filter(c=>c.statut==='pause').length})</button>
+          <button class="filter-chip ${statut === 'prospect' ? 'active' : ''}" data-statut="prospect">🟠 Prospects (${state.data.clients.filter(c=>c.statut==='prospect').length})</button>
+          <button class="filter-chip ${statut === 'actif' ? 'active' : ''}" data-statut="actif">🟢 Actifs (${state.data.clients.filter(c=>c.statut==='actif').length})</button>
+          <button class="filter-chip ${statut === 'pause' ? 'active' : ''}" data-statut="pause">🟡 Pause (${state.data.clients.filter(c=>c.statut==='pause').length})</button>
+          <button class="filter-chip ${statut === 'arret' ? 'active' : ''}" data-statut="arret">⚫ Arrêt (${state.data.clients.filter(c=>c.statut==='arret').length})</button>
         </div>
       </div>
 
@@ -3540,7 +3874,7 @@ const Views = {
                 <div class="grow">
                   <div class="row" style="gap:8px;flex-wrap:wrap;">
                     <div class="font-semibold">${escapeHtml(c.nom_complet)}</div>
-                    <span class="badge ${c.statut === 'actif' ? 'badge-success' : 'badge-neutral'}">${c.statut === 'actif' ? 'Actif' : 'En pause'}</span>
+                    <span class="badge ${this.clientStatutBadge(c.statut)}">${this.clientStatutLabel(c.statut)}</span>
                   </div>
                   <div class="text-sm text-muted truncate">${escapeHtml(c.metier || '—')} ${c.typologie ? '· ' + escapeHtml(c.typologie) : ''}</div>
                   <div class="text-xs text-soft mt-2">${sessionsCount} séance${sessionsCount>1?'s':''}${lastSession ? ' · dernière le ' + fmtDate(lastSession.date) : ''}</div>
@@ -3602,13 +3936,26 @@ const Views = {
       <div class="page-header">
         <button class="icon-btn" onclick="App.go('clients')" title="Retour">←</button>
         <h1 class="page-title">${escapeHtml(c.nom_complet)}</h1>
-        <span class="badge ${c.statut === 'actif' ? 'badge-success' : 'badge-neutral'}">${c.statut === 'actif' ? 'Actif' : 'En pause'}</span>
+        <span class="badge ${this.clientStatutBadge(c.statut)}">${this.clientStatutLabel(c.statut)}</span>
         <div class="page-actions">
           <button class="btn btn-secondary" onclick='Actions.openClientForm(${JSON.stringify(c).replace(/'/g, "&#39;")})'>✏️ Modifier</button>
         </div>
       </div>
 
-      ${lastSession ? `
+      ${c.statut === 'prospect' ? `
+        <!-- Bloc PROSPECT : actions spécifiques au pipeline de conversion -->
+        <div class="session-context" style="background:linear-gradient(135deg,#fff7ed,var(--card));border-color:#fdba74;">
+          <div class="session-context-label" style="color:#c2410c;">🎯 PROSPECT · ${this.prospectSubstateLabel(c.prospect_substate)}${c.prospect_substate === 'a_rappeler' && c.prospect_recall_date ? ' le ' + fmtDate(c.prospect_recall_date) : ''}</div>
+          ${c.prospect_source ? `<div class="text-sm mt-2"><strong>Source :</strong> ${escapeHtml(c.prospect_source)}</div>` : ''}
+          ${c.objectif ? `<div class="text-sm mt-2"><strong>Objectif :</strong> ${nl2br(c.objectif)}</div>` : ''}
+          ${c.prospect_notes ? `<div class="text-sm mt-2"><strong>Notes :</strong> ${nl2br(c.prospect_notes)}</div>` : ''}
+          <div class="row mt-3" style="gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick='Actions.sendBookingLinkWhatsApp(${JSON.stringify(c).replace(/'/g, "&#39;")})'>📤 Envoyer le lien cal.com</button>
+            ${c.prospect_substate !== 'a_rappeler' ? `<button class="btn btn-secondary btn-sm" onclick="Actions.scheduleProspectRecall('${c.id}')">📞 Programmer un rappel</button>` : `<button class="btn btn-success btn-sm" onclick="Actions.markProspectRecalled('${c.id}')">✓ Rappel effectué</button>`}
+            <button class="btn btn-success btn-sm" onclick="Actions.convertProspectToActive('${c.id}')">🎯 Convertir en client actif</button>
+          </div>
+        </div>
+      ` : (lastSession ? `
         <div class="session-context">
           <div class="session-context-label">📌 Contexte de la dernière séance · ${fmtDate(lastSession.date)}</div>
           ${c.objectif ? `<div class="text-sm mt-2"><strong>Objectif :</strong> ${nl2br(c.objectif)}</div>` : ''}
@@ -3622,7 +3969,7 @@ const Views = {
           ${c.objectif ? `<div class="text-sm mt-2"><strong>Objectif :</strong> ${nl2br(c.objectif)}</div>` : ''}
           <button class="btn btn-primary btn-sm mt-3" onclick="Actions.openSessionForm(null, '${c.id}')">▶️ Démarrer la séance initiale</button>
         </div>
-      `}
+      `)}
 
       <div class="quick-actions mb-4">
         <button class="qa-btn" onclick='Actions.whatsapp(${JSON.stringify(c).replace(/'/g, "&#39;")})'>

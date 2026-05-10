@@ -1101,7 +1101,7 @@
     <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
 
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.15</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.17</span> — 2026
     </div>
   </div>
 </div>
@@ -1144,16 +1144,6 @@
       <button class="nav-item" data-route="settings" onclick="App.go('settings')">
         <span class="nav-icon">⚙️</span><span>Paramètres</span>
       </button>
-
-      <div style="margin-top: 24px; padding: 0 14px;">
-        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-soft); margin-bottom: 8px;">Liens rapides</div>
-        <a href="https://cal.com/annuaire-youpi/30min" target="_blank" rel="noopener" class="nav-item" style="text-decoration:none;">
-          <span class="nav-icon">🔗</span><span style="font-size: 13px;">Page cal.com</span>
-        </a>
-        <a href="https://app.cal.com/event-types/1576938?tabName=availability" target="_blank" rel="noopener" class="nav-item" style="text-decoration:none;">
-          <span class="nav-icon">📆</span><span style="font-size: 13px;">Mes dispos</span>
-        </a>
-      </div>
     </aside>
 
     <main class="main" id="main"></main>
@@ -1189,7 +1179,7 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.15';
+const VERSION = 'v0.17';
 /* ============================================================
    🔧 CONFIGURATION — À MODIFIER UNE SEULE FOIS
    ============================================================
@@ -4538,13 +4528,7 @@ const Views = {
       <div class="card mb-4">
         <div class="card-title mb-3">☁️ Synchronisation</div>
         <div class="settings-list">
-          ${BACKEND_URL ? `
-            <div class="settings-item" style="cursor:default;">
-              <div class="settings-item-icon">🔗</div>
-              <div class="settings-item-label">Backend Apps Script</div>
-              <div class="settings-item-value">✓ Intégré au code</div>
-            </div>
-          ` : `
+          ${BACKEND_URL ? '' : `
             <button class="settings-item" onclick="Actions.setBackendUrl()">
               <div class="settings-item-icon">🔗</div>
               <div class="settings-item-label">URL du backend Apps Script</div>

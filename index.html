@@ -1101,7 +1101,7 @@
     <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
 
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.13</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.14</span> — 2026
     </div>
   </div>
 </div>
@@ -1189,7 +1189,7 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.13';
+const VERSION = 'v0.14';
 /* ============================================================
    🔧 CONFIGURATION — À MODIFIER UNE SEULE FOIS
    ============================================================
@@ -1743,6 +1743,9 @@ function generateDemoData() {
       statut: 'actif', metier: 'Designer UX', typologie: 'Performance / Confiance',
       objectif: 'Reprendre confiance pour parler en public et présenter mes projets sans stress.',
       commentaires: 'Très impliquée. Préfère les séances le matin.',
+      tarif_seance: '90',
+      prospect_first_contact: new Date(now - 50*86400000).toISOString().slice(0,10),
+      prospect_converted_at: new Date(now - 45*86400000).toISOString().slice(0,10),
       date_creation: days(45), date_modification: days(2)
     },
     {
@@ -1750,6 +1753,9 @@ function generateDemoData() {
       statut: 'actif', metier: 'Ingénieur logiciel', typologie: 'Reconversion',
       objectif: 'Préparer une transition vers un poste de manager d\'équipe.',
       commentaires: 'Aime la structure, demande des feuilles de route claires.',
+      tarif_seance: '100',
+      prospect_first_contact: new Date(now - 75*86400000).toISOString().slice(0,10),
+      prospect_converted_at: new Date(now - 60*86400000).toISOString().slice(0,10),
       date_creation: days(60), date_modification: days(5)
     },
     {
@@ -1757,6 +1763,9 @@ function generateDemoData() {
       statut: 'pause', metier: 'Infirmière', typologie: 'Burnout / Rééquilibrage',
       objectif: 'Sortir d\'un cycle d\'épuisement professionnel et retrouver de l\'énergie.',
       commentaires: 'Cliente belge. En arrêt de travail. Reprise du suivi prévue dans 2 semaines.',
+      tarif_seance: '85',
+      prospect_first_contact: new Date(now - 95*86400000).toISOString().slice(0,10),
+      prospect_converted_at: new Date(now - 90*86400000).toISOString().slice(0,10),
       date_creation: days(90), date_modification: days(15)
     },
     {
@@ -1764,6 +1773,9 @@ function generateDemoData() {
       statut: 'actif', metier: 'Dirigeant PME', typologie: 'Leadership',
       objectif: 'Mieux déléguer et structurer ma vision long terme pour l\'entreprise.',
       commentaires: 'Client local Martinique. Disponibilités limitées, séances de 30 min uniquement.',
+      tarif_seance: '120',
+      prospect_first_contact: new Date(now - 35*86400000).toISOString().slice(0,10),
+      prospect_converted_at: new Date(now - 30*86400000).toISOString().slice(0,10),
       date_creation: days(30), date_modification: days(1)
     },
     {
@@ -1771,6 +1783,9 @@ function generateDemoData() {
       statut: 'actif', metier: 'Professeure des écoles', typologie: 'Gestion du stress',
       objectif: 'Apprendre à mettre des limites avec les parents d\'élèves et la hiérarchie.',
       commentaires: 'Très sensible aux exercices de respiration.',
+      tarif_seance: '85',
+      prospect_first_contact: new Date(now - 25*86400000).toISOString().slice(0,10),
+      prospect_converted_at: new Date(now - 20*86400000).toISOString().slice(0,10),
       date_creation: days(20), date_modification: days(3)
     },
     // ----- PROSPECTS de démonstration -----
@@ -1782,6 +1797,7 @@ function generateDemoData() {
       prospect_substate: 'nouveau', prospect_recall_date: '',
       prospect_source: 'Recommandation Sophie Martin',
       prospect_notes: 'A vu le résultat de Sophie sur Instagram, très motivé.',
+      prospect_first_contact: todayIsoDate(),
       date_creation: days(1), date_modification: days(1)
     },
     {
@@ -1792,6 +1808,7 @@ function generateDemoData() {
       prospect_substate: 'lien_envoye', prospect_recall_date: '',
       prospect_source: 'Site web',
       prospect_notes: 'Cherche un accompagnement régulier de longue durée. Lien envoyé hier.',
+      prospect_first_contact: new Date(now - 3*86400000).toISOString().slice(0,10),
       date_creation: days(3), date_modification: days(1)
     },
     {
@@ -1803,7 +1820,21 @@ function generateDemoData() {
       prospect_recall_date: new Date(now).toISOString().slice(0, 10),
       prospect_source: 'Salon entrepreneurs',
       prospect_notes: 'Très intéressé mais voulait y réfléchir. Lui demander s\'il est prêt à démarrer.',
+      prospect_first_contact: new Date(now - 7*86400000).toISOString().slice(0,10),
       date_creation: days(7), date_modification: days(2)
+    },
+    // Prospect en RETARD critique pour montrer l'alerte rouge
+    {
+      id: 'c_demo_p4', nom_complet: 'Inès Cohen', telephone: '+33655443322', email: 'ines.cohen@exemple.fr',
+      statut: 'prospect', metier: 'Architecte', typologie: 'Confiance',
+      objectif: 'Oser prendre la parole dans les réunions clients sans se justifier.',
+      commentaires: '',
+      prospect_substate: 'a_rappeler',
+      prospect_recall_date: new Date(now - 6*86400000).toISOString().slice(0,10), // Rappel prévu il y a 6 jours
+      prospect_source: 'LinkedIn',
+      prospect_notes: 'Avait demandé un délai de réflexion. Relance importante.',
+      prospect_first_contact: new Date(now - 14*86400000).toISOString().slice(0,10),
+      date_creation: days(14), date_modification: days(8)
     }
   ];
 
@@ -2281,6 +2312,11 @@ const Actions = {
             <input class="form-input" name="typologie" value="${escapeHtml(c.typologie)}" placeholder="Ex. Performance, Reconversion…">
           </div>
           <div class="form-group">
+            <label class="form-label">Tarif d'une séance (€)</label>
+            <input class="form-input" type="number" name="tarif_seance" min="0" step="5" value="${escapeHtml(c.tarif_seance || '')}" placeholder="Ex. 80">
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Sert à calculer la valeur générée par le client (lifetime value).</div>
+          </div>
+          <div class="form-group">
             <label class="form-label">Objectif</label>
             <textarea class="form-textarea" name="objectif" rows="3">${escapeHtml(c.objectif)}</textarea>
           </div>
@@ -2313,6 +2349,7 @@ const Actions = {
     // pour éviter toute ambiguïté ultérieure
     const rawPhone = f.telephone.value.trim();
     const normalizedPhone = rawPhone ? '+' + formatPhoneE164(rawPhone) : '';
+    const tarif = f.tarif_seance ? parseFloat(f.tarif_seance.value) || 0 : 0;
     const data = {
       id: existingId || uid('cl'),
       nom_complet: f.nom_complet.value.trim(),
@@ -2323,6 +2360,7 @@ const Actions = {
       typologie: f.typologie.value.trim(),
       objectif: f.objectif.value.trim(),
       commentaires: f.commentaires.value.trim(),
+      tarif_seance: tarif > 0 ? String(tarif) : '',
       // Champs prospect (toujours sauvegardés, mais effectifs uniquement si statut=prospect)
       prospect_substate: f.prospect_substate ? f.prospect_substate.value : 'nouveau',
       prospect_recall_date: (f.prospect_substate && f.prospect_substate.value === 'a_rappeler' && f.prospect_recall_date) ? f.prospect_recall_date.value : '',
@@ -2331,6 +2369,26 @@ const Actions = {
       date_modification: nowIso()
     };
     if (!data.nom_complet) { toast('Nom requis', 'error'); return; }
+
+    // Détection des transitions de statut pour tracker les dates clés
+    const previousClient = existingId ? state.data.clients.find(c => c.id === existingId) : null;
+    const wasProspect = previousClient && previousClient.statut === 'prospect';
+    const isNowActive = data.statut === 'actif';
+    const isNowProspect = data.statut === 'prospect';
+
+    // Premier contact : date de création du prospect (ou maintenant pour un nouveau prospect direct)
+    if (isNowProspect && !previousClient) {
+      data.prospect_first_contact = todayIsoDate();
+    } else if (previousClient) {
+      data.prospect_first_contact = previousClient.prospect_first_contact || (previousClient.statut === 'prospect' ? (previousClient.date_creation || '').slice(0,10) : '');
+    }
+
+    // Date de conversion : à enregistrer la première fois qu'un prospect devient actif
+    if (wasProspect && isNowActive && !(previousClient && previousClient.prospect_converted_at)) {
+      data.prospect_converted_at = todayIsoDate();
+    } else if (previousClient && previousClient.prospect_converted_at) {
+      data.prospect_converted_at = previousClient.prospect_converted_at;
+    }
 
     if (existingId) {
       const idx = state.data.clients.findIndex(c => c.id === existingId);
@@ -2855,6 +2913,8 @@ const Actions = {
         state.data.clients[cidx] = {
           ...state.data.clients[cidx],
           statut: 'actif',
+          prospect_converted_at: state.data.clients[cidx].prospect_converted_at || todayIsoDate(),
+          prospect_first_contact: state.data.clients[cidx].prospect_first_contact || (state.data.clients[cidx].date_creation || '').slice(0,10),
           date_modification: nowIso()
         };
         prospectConverted = true;
@@ -3387,6 +3447,8 @@ Energy Force`;
         state.data.clients[idx] = {
           ...state.data.clients[idx],
           statut: 'actif',
+          prospect_converted_at: state.data.clients[idx].prospect_converted_at || todayIsoDate(),
+          prospect_first_contact: state.data.clients[idx].prospect_first_contact || (state.data.clients[idx].date_creation || '').slice(0,10),
           date_modification: nowIso()
         };
         audit('prospect_converted', { client_id: clientId });
@@ -3594,12 +3656,38 @@ const Views = {
 
     // ----- Prospects à rappeler / nouveaux -----
     const prospects = state.data.clients.filter(c => c.statut === 'prospect');
+    // Rappels dépassés de plus de 3 jours = urgent (alerte rouge)
+    const overdueProspects = prospects.filter(c => {
+      if (c.prospect_substate !== 'a_rappeler' || !c.prospect_recall_date) return false;
+      const ms = new Date(today) - new Date(c.prospect_recall_date);
+      return Math.floor(ms / 86400000) > 3;
+    });
+    const overdueIds = new Set(overdueProspects.map(c => c.id));
+    // Rappels d'aujourd'hui ou récents (mais pas en retard critique)
     const prospectsToRecallToday = prospects.filter(c =>
+      !overdueIds.has(c.id) &&
       c.prospect_substate === 'a_rappeler' &&
       c.prospect_recall_date &&
       c.prospect_recall_date <= today
     );
     const newProspects = prospects.filter(c => c.prospect_substate === 'nouveau' || !c.prospect_substate);
+
+    // Stats globales prospects
+    const pstats = this.prospectStats();
+    // CA généré ce mois (basé sur les séances réalisées * tarif)
+    const monthlyRevenue = state.data.sessions
+      .filter(s => {
+        const sIso = (s.date || '').slice(0, 10);
+        const now = new Date();
+        const d = new Date(s.date);
+        return d.getFullYear() === now.getFullYear() &&
+               d.getMonth() === now.getMonth() &&
+               sIso <= today; // séances passées seulement
+      })
+      .reduce((sum, s) => {
+        const c = state.data.clients.find(cl => cl.id === s.client_id);
+        return sum + (c ? (parseFloat(c.tarif_seance) || 0) : 0);
+      }, 0);
 
     // ----- Dernières séances réalisées (passées ou avec contenu) -----
     const recentSessions = [...state.data.sessions]
@@ -3638,11 +3726,19 @@ const Views = {
           <div class="stat-label">Séances ce mois</div>
           <div class="stat-value">${sessionsThisMonth}</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon" style="background:var(--warning-soft);color:var(--warning);">📅</div>
-          <div class="stat-label">cal.com en attente</div>
-          <div class="stat-value">${pendingBookings}</div>
-        </div>
+        ${monthlyRevenue > 0 ? `
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--success-soft);color:var(--success);">💰</div>
+            <div class="stat-label">CA ce mois</div>
+            <div class="stat-value">${monthlyRevenue.toLocaleString('fr-FR')} €</div>
+          </div>
+        ` : `
+          <div class="stat-card">
+            <div class="stat-icon" style="background:var(--warning-soft);color:var(--warning);">📅</div>
+            <div class="stat-label">cal.com en attente</div>
+            <div class="stat-value">${pendingBookings}</div>
+          </div>
+        `}
       </div>
 
       <div class="card mt-4">
@@ -3688,6 +3784,32 @@ const Views = {
           }).join('')}
         </div>
       </div>
+
+      ${overdueProspects.length > 0 ? `
+        <div class="card mt-4" style="border-color:var(--danger);background:linear-gradient(135deg,#fef2f2,var(--card));border-left:4px solid var(--danger);">
+          <div class="card-header">
+            <div class="card-title" style="color:#b91c1c;">🔴 ${overdueProspects.length} prospect${overdueProspects.length > 1 ? 's' : ''} en retard de rappel</div>
+            <button class="btn btn-sm" style="background:#b91c1c;color:white;" onclick="state.filters.clientStatut='prospect';App.go('clients');">Traiter →</button>
+          </div>
+          <div class="text-sm" style="color:#7f1d1d;margin-bottom:8px;">Ces prospects auraient dû être rappelés. Contacte-les vite pour ne pas perdre l'opportunité.</div>
+          <div class="list">
+            ${overdueProspects.slice(0, 3).map(c => {
+              const days = this.recallOverdue(c);
+              return `
+                <div class="list-item" onclick="App.go('client', {id: '${c.id}'})" style="cursor:pointer;">
+                  <div class="avatar sm" style="background:${avatarColor(c.nom_complet)}20;color:${avatarColor(c.nom_complet)};">${initials(c.nom_complet)}</div>
+                  <div class="grow">
+                    <div class="font-semibold truncate">${escapeHtml(c.nom_complet)}</div>
+                    <div class="text-sm" style="color:#b91c1c;">⏰ Retard de ${days} jour${days > 1 ? 's' : ''} · prévu le ${fmtDate(c.prospect_recall_date)}</div>
+                  </div>
+                  <span class="badge badge-danger">RETARD</span>
+                </div>
+              `;
+            }).join('')}
+            ${overdueProspects.length > 3 ? `<div class="text-sm text-muted mt-2" style="text-align:center;">+ ${overdueProspects.length - 3} autre${overdueProspects.length - 3 > 1 ? 's' : ''}…</div>` : ''}
+          </div>
+        </div>
+      ` : ''}
 
       ${pendingBookings > 0 ? `
         <div class="card mt-4" style="border-color: var(--warning); background: linear-gradient(135deg, #fffbeb, var(--card));">
@@ -3760,6 +3882,34 @@ const Views = {
         `}
       </div>
 
+      ${(pstats.converted > 0 || pstats.inProgress > 0) ? `
+        <div class="card mt-4">
+          <div class="card-title mb-3">📊 Statistiques prospection</div>
+          <div class="stat-grid" style="margin-bottom:0;">
+            <div class="stat-card" style="background:linear-gradient(135deg,var(--success-soft),var(--card));border:1px solid var(--success);">
+              <div class="stat-icon" style="background:var(--card);color:var(--success);">📈</div>
+              <div class="stat-label">Taux de conversion</div>
+              <div class="stat-value" style="color:#15803d;">${pstats.conversionRate}%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:var(--info-soft);color:var(--info);">🎯</div>
+              <div class="stat-label">Convertis</div>
+              <div class="stat-value">${pstats.converted}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#fff7ed;color:#c2410c;">⏳</div>
+              <div class="stat-label">En cours</div>
+              <div class="stat-value">${pstats.inProgress}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:var(--bg-soft);color:var(--text-muted);">⏱️</div>
+              <div class="stat-label">Temps moyen conversion</div>
+              <div class="stat-value" style="font-size:18px;">${pstats.avgConversionDays !== null ? pstats.avgConversionDays + ' j' : '—'}</div>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
       <div class="card mt-4">
         <div class="card-title mb-3">🚀 Liens rapides cal.com</div>
         <div class="quick-actions">
@@ -3809,6 +3959,54 @@ const Views = {
       ne_pas_rappeler: '🚫 Ne pas rappeler'
     };
     return m[s] || '🆕 Nouveau';
+  },
+
+  // Calcule la lifetime value d'un client (nombre de séances réalisées × tarif)
+  clientLifetimeValue(client) {
+    const tarif = parseFloat(client.tarif_seance) || 0;
+    if (tarif === 0) return null;
+    const today = todayIsoDate();
+    // On compte les séances passées ou avec contenu "réalisé"
+    const sessionsCount = state.data.sessions.filter(s =>
+      s.client_id === client.id &&
+      ((s.date || '').slice(0, 10) <= today || (s.realise && s.realise.length > 0))
+    ).length;
+    return { sessionsCount, value: sessionsCount * tarif };
+  },
+
+  // Calcule l'urgence d'un rappel (en jours de retard, ou 0 si pas en retard)
+  recallOverdue(client) {
+    if (client.prospect_substate !== 'a_rappeler' || !client.prospect_recall_date) return 0;
+    const today = todayIsoDate();
+    if (client.prospect_recall_date >= today) return 0;
+    const ms = new Date(today) - new Date(client.prospect_recall_date);
+    return Math.floor(ms / 86400000);
+  },
+
+  // Stats prospect globales : taux de conversion, temps moyen
+  prospectStats() {
+    const all = state.data.clients;
+    const converted = all.filter(c => c.prospect_converted_at);
+    const stillProspects = all.filter(c => c.statut === 'prospect');
+    const lostProspects = all.filter(c =>
+      c.statut === 'prospect' && c.prospect_substate === 'ne_pas_rappeler'
+    );
+    // Taux de conversion = convertis / (convertis + perdus + en cours)
+    const totalProspectsEver = converted.length + stillProspects.length;
+    const conversionRate = totalProspectsEver > 0 ? Math.round((converted.length / totalProspectsEver) * 100) : 0;
+    // Temps moyen entre premier contact et conversion (en jours)
+    const conversionDays = converted
+      .filter(c => c.prospect_first_contact && c.prospect_converted_at)
+      .map(c => Math.floor((new Date(c.prospect_converted_at) - new Date(c.prospect_first_contact)) / 86400000))
+      .filter(d => d >= 0);
+    const avgDays = conversionDays.length > 0 ? Math.round(conversionDays.reduce((a, b) => a + b, 0) / conversionDays.length) : null;
+    return {
+      conversionRate,
+      avgConversionDays: avgDays,
+      converted: converted.length,
+      inProgress: stillProspects.length,
+      lost: lostProspects.length
+    };
   },
 
   // ----- CLIENTS LIST -----
@@ -3990,6 +4188,7 @@ const Views = {
           <div class="info-line"><div class="info-line-label">Email</div><div class="info-line-value">${c.email ? `<a href="mailto:${escapeHtml(c.email)}">${escapeHtml(c.email)}</a>` : '<span class="text-soft">—</span>'}</div></div>
           <div class="info-line"><div class="info-line-label">Métier</div><div class="info-line-value">${escapeHtml(c.metier || '—')}</div></div>
           <div class="info-line"><div class="info-line-label">Typologie</div><div class="info-line-value">${escapeHtml(c.typologie || '—')}</div></div>
+          ${c.tarif_seance ? `<div class="info-line"><div class="info-line-label">Tarif séance</div><div class="info-line-value">${escapeHtml(c.tarif_seance)} €</div></div>` : ''}
           <div class="info-line"><div class="info-line-label">Créé le</div><div class="info-line-value">${fmtDate(c.date_creation)}</div></div>
         </div>
 
@@ -3999,6 +4198,32 @@ const Views = {
           <div class="info-line"><div class="info-line-label">Commentaires</div><div class="info-line-value">${c.commentaires ? nl2br(c.commentaires) : '<span class="text-soft">—</span>'}</div></div>
         </div>
       </div>
+
+      ${(() => {
+        // Bloc valeur générée pour les clients actifs / pause / arrêt avec un tarif renseigné
+        if (c.statut === 'prospect') return '';
+        const ltv = this.clientLifetimeValue(c);
+        if (!ltv) return '';
+        const conversionInfo = (c.prospect_first_contact && c.prospect_converted_at) ? (() => {
+          const days = Math.floor((new Date(c.prospect_converted_at) - new Date(c.prospect_first_contact)) / 86400000);
+          return days >= 0 ? `<div class="info-line"><div class="info-line-label">Converti en</div><div class="info-line-value">${days} jour${days > 1 ? 's' : ''}</div></div>` : '';
+        })() : '';
+        return `
+          <div class="card mt-4" style="background:linear-gradient(135deg,#f0fdf4,var(--card));border-left:3px solid var(--success);">
+            <div class="card-title mb-3" style="color:#15803d;">💰 Valeur générée par ce client</div>
+            <div class="grid-2">
+              <div>
+                <div class="info-line"><div class="info-line-label">Séances réalisées</div><div class="info-line-value"><b>${ltv.sessionsCount}</b></div></div>
+                <div class="info-line"><div class="info-line-label">Tarif unitaire</div><div class="info-line-value">${escapeHtml(c.tarif_seance)} €</div></div>
+              </div>
+              <div>
+                <div class="info-line"><div class="info-line-label" style="font-size:13px;font-weight:700;">Total facturé</div><div class="info-line-value" style="font-size:18px;font-weight:700;color:#15803d;">${ltv.value.toLocaleString('fr-FR')} €</div></div>
+                ${conversionInfo}
+              </div>
+            </div>
+          </div>
+        `;
+      })()}
 
       <div class="card mt-4">
         <div class="card-header">

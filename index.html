@@ -1101,7 +1101,7 @@
     <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
 
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.14</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.15</span> — 2026
     </div>
   </div>
 </div>
@@ -1189,7 +1189,7 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.14';
+const VERSION = 'v0.15';
 /* ============================================================
    🔧 CONFIGURATION — À MODIFIER UNE SEULE FOIS
    ============================================================
@@ -3705,7 +3705,6 @@ const Views = {
       <div class="page-header">
         <h1 class="page-title">Bonjour 👋</h1>
         <div class="page-actions">
-          <button class="btn btn-secondary" onclick="Actions.openSessionForm()">＋ Séance</button>
           <button class="btn btn-primary" onclick="Actions.openClientForm()">＋ Client</button>
         </div>
       </div>
@@ -3922,9 +3921,6 @@ const Views = {
           <a class="qa-btn" href="https://app.cal.com/bookings/upcoming" target="_blank" rel="noopener">
             <span class="icon">📥</span><span>Mes RDV cal.com</span>
           </a>
-          <button class="qa-btn" onclick="Actions.openBookingForm()">
-            <span class="icon">＋</span><span>Saisir un RDV</span>
-          </button>
         </div>
       </div>
     `;
@@ -4294,9 +4290,6 @@ const Views = {
     return `
       <div class="page-header">
         <h1 class="page-title">Séances</h1>
-        <div class="page-actions">
-          <button class="btn btn-primary" onclick="Actions.openSessionForm()">＋ Nouvelle séance</button>
-        </div>
       </div>
 
       <div class="card mb-4">
@@ -4313,8 +4306,8 @@ const Views = {
           <div class="empty-state">
             <div class="empty-state-icon">📋</div>
             <div class="empty-state-title">Aucune séance</div>
-            <div class="text-sm mb-4">Crée ta première séance.</div>
-            <button class="btn btn-primary" onclick="Actions.openSessionForm()">＋ Nouvelle séance</button>
+            <div class="text-sm mb-4">Pour créer une séance, ouvre la fiche d'un client et clique sur « ▶️ Démarrer la séance ».</div>
+            <button class="btn btn-primary" onclick="App.go('clients')">Voir mes clients</button>
           </div>
         </div>
       ` : `
@@ -4423,7 +4416,8 @@ const Views = {
       .sort((a,b) => new Date(b.date_reception) - new Date(a.date_reception));
 
     const renderBooking = (b) => {
-      const dateStr = `${fmtDate(b.date_rdv)} · ${escapeHtml(b.heure_rdv)}`;
+      const heureAff = normalizeTimeForInput(b.heure_rdv);
+      const dateStr = `${fmtDate(b.date_rdv)}${heureAff ? ' · ' + escapeHtml(heureAff) : ''}`;
       const cls = b.statut === 'en_attente' ? '' : (b.statut === 'valide' ? 'confirmed' : 'refused');
       return `
         <div class="booking-card ${cls} mb-3">
@@ -4463,13 +4457,12 @@ const Views = {
         <h1 class="page-title">Réservations</h1>
         <div class="page-actions">
           <a class="btn btn-secondary" href="https://app.cal.com/bookings/upcoming" target="_blank" rel="noopener">📥 Voir cal.com</a>
-          <button class="btn btn-primary" onclick="Actions.openBookingForm()">＋ Saisir un RDV</button>
         </div>
       </div>
 
       <div class="card mb-4" style="background:var(--info-soft);border-color:#bae6fd;">
-        <div class="text-sm" style="color:#075985;">
-          💡 <strong>Workflow :</strong> Les réservations cal.com arrivent par email. Saisis les infos via <em>＋ Saisir un RDV</em>, puis valide ou refuse. Une validation propose automatiquement de créer la fiche client.
+        <div class="text-sm" style="color:#075985;line-height:1.6;">
+          💡 <strong>Workflow automatique :</strong> Les réservations effectuées via cal.com arrivent <strong>directement ici</strong>, sans intervention de ta part. Pour chacune, tu peux <strong>valider</strong> (ce qui rattache un client existant ou en crée un, puis ajoute la séance dans ton planning) ou <strong>refuser</strong>. Si un client reprogramme ou annule sur cal.com, le RDV se met à jour automatiquement.
         </div>
       </div>
 
@@ -4498,8 +4491,8 @@ const Views = {
           <div class="empty-state">
             <div class="empty-state-icon">📅</div>
             <div class="empty-state-title">Aucune réservation</div>
-            <div class="text-sm mb-4">Quand tu reçois un email de cal.com, saisis-le ici.</div>
-            <button class="btn btn-primary" onclick="Actions.openBookingForm()">＋ Saisir un RDV</button>
+            <div class="text-sm mb-4">Les réservations cal.com apparaîtront ici automatiquement dès qu'un client réservera un créneau sur ta page publique.</div>
+            <a class="btn btn-secondary" href="https://cal.com/annuaire-youpi/30min" target="_blank" rel="noopener">🔗 Voir ma page publique</a>
           </div>
         </div>
       ` : ''}

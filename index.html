@@ -1100,7 +1100,7 @@
     <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
 
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.8</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.9</span> — 2026
     </div>
   </div>
 </div>
@@ -1188,7 +1188,7 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.8';
+const VERSION = 'v0.9';
 /* ============================================================
    🔧 CONFIGURATION — À MODIFIER UNE SEULE FOIS
    ============================================================
@@ -2421,47 +2421,289 @@ const Actions = {
     const idx = state.data.bookings.findIndex(b => b.id === id);
     if (idx < 0) return;
     const b = state.data.bookings[idx];
+
+    // VALIDATION → workflow complet (matching client + création séance)
+    if (statut === 'valide') {
+      this.openValidateBookingFlow(b);
+      return;
+    }
+
+    // Sinon (refuse, en_attente) : changement direct
     state.data.bookings[idx] = { ...b, statut };
     audit('booking_status', { id, statut });
     App.saveToCache();
     App.refreshCurrentView();
-    const labels = { valide: 'validée', refuse: 'refusée', en_attente: 'remise en attente' };
+    const labels = { refuse: 'refusée', en_attente: 'remise en attente' };
     toast(`Réservation ${labels[statut] || statut}`, 'success');
+    await syncToBackend('updateBooking', state.data.bookings[idx]);
+  },
 
-    // Si validation : créer le client s'il n'existe pas
-    if (statut === 'valide') {
-      const existing = state.data.clients.find(c =>
-        (c.email && c.email.toLowerCase() === (b.email || '').toLowerCase() && b.email) ||
-        c.nom_complet.toLowerCase() === b.nom.toLowerCase()
-      );
-      if (!existing) {
-        confirmModal(
-          `Créer la fiche client pour ${b.nom} ?`,
-          () => {
-            const newClient = {
-              id: uid('cl'),
-              nom_complet: b.nom,
-              telephone: b.telephone || '',
-              email: b.email || '',
-              statut: 'actif',
-              metier: '', typologie: '', objectif: '',
-              commentaires: b.message ? `Message initial : ${b.message}` : '',
-              date_creation: nowIso(),
-              date_modification: nowIso()
-            };
-            state.data.clients.push(newClient);
-            audit('client_auto_create', { id: newClient.id, from_booking: id });
-            App.saveToCache();
-            App.refreshCurrentView();
-            toast('Fiche client créée', 'success');
-            syncToBackend('addClient', newClient);
-          },
-          { confirmLabel: 'Créer la fiche', title: 'Créer le client' }
-        );
-      }
+  // ===== WORKFLOW DE VALIDATION D'UNE RÉSERVATION =====
+  // Étape 1 : identifier le client (match auto, choix manuel, ou création)
+  // Étape 2 : créer la séance correspondante dans le planning
+  // Étape 3 : marquer le booking comme validé + lié au client_id
+
+  openValidateBookingFlow(booking) {
+    // Recherche de candidats client
+    const emailLow = (booking.email || '').toLowerCase().trim();
+    const nomLow = (booking.nom || '').toLowerCase().trim();
+    const phoneNorm = formatPhoneE164(booking.telephone || '');
+
+    // Match exact email = très haute confiance
+    const exactByEmail = emailLow ? state.data.clients.find(c =>
+      (c.email || '').toLowerCase().trim() === emailLow
+    ) : null;
+
+    // Match exact téléphone E164 = haute confiance
+    const exactByPhone = (!exactByEmail && phoneNorm) ? state.data.clients.find(c =>
+      formatPhoneE164(c.telephone || '') === phoneNorm
+    ) : null;
+
+    // Match nom (sensibilité moindre, juste suggestion)
+    const candidatesByName = (!exactByEmail && !exactByPhone && nomLow) ? state.data.clients.filter(c =>
+      c.nom_complet.toLowerCase().trim() === nomLow
+    ) : [];
+
+    const exactMatch = exactByEmail || exactByPhone;
+    const matchReason = exactByEmail ? 'email identique' : exactByPhone ? 'téléphone identique' : '';
+
+    let bodyHtml = `
+      <div style="background:var(--info-soft);border-left:3px solid var(--info);padding:12px;border-radius:var(--radius-sm);margin-bottom:16px;">
+        <div class="font-semibold mb-1">📅 Réservation à valider</div>
+        <div class="text-sm" style="line-height:1.5;">
+          <b>${escapeHtml(booking.nom)}</b><br>
+          ${booking.email ? `📧 ${escapeHtml(booking.email)}<br>` : ''}
+          ${booking.telephone ? `📱 ${escapeHtml(displayPhone(booking.telephone))}<br>` : ''}
+          🕐 ${escapeHtml(fmtDate(booking.date_rdv))} à ${escapeHtml(booking.heure_rdv || '—')}
+        </div>
+      </div>
+    `;
+
+    if (exactMatch) {
+      bodyHtml += `
+        <div style="background:var(--success-soft);border-left:3px solid var(--success);padding:12px;border-radius:var(--radius-sm);margin-bottom:12px;">
+          <div class="font-semibold mb-1">✓ Client reconnu (${matchReason})</div>
+          <div class="list" style="margin-top:8px;">
+            <div class="list-item" style="cursor:default;">
+              <div class="avatar sm" style="background:${avatarColor(exactMatch.nom_complet)}20;color:${avatarColor(exactMatch.nom_complet)};">${initials(exactMatch.nom_complet)}</div>
+              <div class="grow">
+                <div class="font-semibold">${escapeHtml(exactMatch.nom_complet)}</div>
+                <div class="text-xs text-muted">${escapeHtml(exactMatch.metier || '—')} · ${escapeHtml(exactMatch.statut)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (candidatesByName.length > 0) {
+      bodyHtml += `
+        <div style="background:var(--warning-soft);border-left:3px solid var(--warning);padding:12px;border-radius:var(--radius-sm);margin-bottom:12px;">
+          <div class="font-semibold mb-1">⚠ Même nom détecté (à vérifier)</div>
+          <div class="text-xs mb-2" style="color:var(--text-muted);">Email/téléphone différents — assure-toi que c'est bien la même personne.</div>
+          <div class="list">
+            ${candidatesByName.map(c => `
+              <div class="list-item" onclick="Actions._validateWithClient('${booking.id}','${c.id}')" style="cursor:pointer;">
+                <div class="avatar sm" style="background:${avatarColor(c.nom_complet)}20;color:${avatarColor(c.nom_complet)};">${initials(c.nom_complet)}</div>
+                <div class="grow">
+                  <div class="font-semibold">${escapeHtml(c.nom_complet)}</div>
+                  <div class="text-xs text-muted">${escapeHtml(c.email || '—')} · ${escapeHtml(displayPhone(c.telephone) || '—')}</div>
+                </div>
+                <span class="text-xs" style="color:var(--primary);">Choisir →</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    } else {
+      bodyHtml += `
+        <div style="background:var(--card);border:1px dashed var(--border);padding:12px;border-radius:var(--radius-sm);margin-bottom:12px;text-align:center;">
+          <div class="font-semibold mb-1">🆕 Nouveau client</div>
+          <div class="text-xs text-muted">Aucune correspondance trouvée dans tes fiches existantes.</div>
+        </div>
+      `;
     }
 
-    await syncToBackend('updateBooking', state.data.bookings[idx]);
+    // Boutons d'action selon le contexte
+    let footerHtml = `<button class="btn btn-secondary" onclick="closeModal()">Annuler</button>`;
+    if (exactMatch) {
+      footerHtml += `
+        <button class="btn btn-ghost" onclick="Actions.openClientPicker('${booking.id}')">Choisir un autre client</button>
+        <button class="btn btn-primary" onclick="Actions._validateWithClient('${booking.id}','${exactMatch.id}')">✓ Confirmer ce client</button>
+      `;
+    } else {
+      footerHtml += `
+        <button class="btn btn-secondary" onclick="Actions.openClientPicker('${booking.id}')">📂 Client existant</button>
+        <button class="btn btn-primary" onclick="Actions._validateWithNewClient('${booking.id}')">＋ Créer une fiche client</button>
+      `;
+    }
+
+    openModal({
+      title: '✓ Valider la réservation',
+      size: 'lg',
+      body: bodyHtml,
+      footer: footerHtml
+    });
+  },
+
+  // Sélecteur manuel d'un client existant (recherche)
+  openClientPicker(bookingId) {
+    const clients = [...state.data.clients].sort((a,b) => a.nom_complet.localeCompare(b.nom_complet));
+    openModal({
+      title: 'Rattacher à un client existant',
+      size: 'lg',
+      body: `
+        <div class="form-group">
+          <input class="form-input" id="picker-search" placeholder="🔍 Rechercher par nom, email, téléphone…" oninput="Actions._filterClientPicker(this.value)" autofocus>
+        </div>
+        <div id="picker-list" style="max-height:50vh;overflow-y:auto;">
+          ${clients.map(c => `
+            <div class="list-item picker-item" data-search="${escapeHtml((c.nom_complet + ' ' + (c.email||'') + ' ' + (c.telephone||'')).toLowerCase())}"
+                 onclick="Actions._validateWithClient('${bookingId}','${c.id}')" style="cursor:pointer;">
+              <div class="avatar sm" style="background:${avatarColor(c.nom_complet)}20;color:${avatarColor(c.nom_complet)};">${initials(c.nom_complet)}</div>
+              <div class="grow">
+                <div class="font-semibold">${escapeHtml(c.nom_complet)}</div>
+                <div class="text-xs text-muted">${escapeHtml(c.email || '—')} · ${escapeHtml(displayPhone(c.telephone) || '—')}</div>
+              </div>
+              <span class="badge ${c.statut === 'actif' ? 'badge-success' : 'badge-warning'}">${escapeHtml(c.statut)}</span>
+            </div>
+          `).join('')}
+        </div>
+        ${clients.length === 0 ? '<div class="empty-state"><div class="empty-state-icon">📂</div><div>Aucun client</div></div>' : ''}
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="Actions.openValidateBookingFlow(state.data.bookings.find(b=>b.id==='${bookingId}'))">← Retour</button>
+      `
+    });
+  },
+
+  _filterClientPicker(query) {
+    const q = (query || '').toLowerCase().trim();
+    document.querySelectorAll('.picker-item').forEach(el => {
+      const haystack = el.dataset.search || '';
+      el.style.display = (!q || haystack.indexOf(q) !== -1) ? '' : 'none';
+    });
+  },
+
+  // Sous-flow : on a un client, on passe à la création de séance
+  _validateWithClient(bookingId, clientId) {
+    const booking = state.data.bookings.find(b => b.id === bookingId);
+    const client = state.data.clients.find(c => c.id === clientId);
+    if (!booking || !client) { toast('Erreur : booking ou client introuvable', 'error'); return; }
+    this.openSessionFromBookingForm(booking, client, false);
+  },
+
+  // Sous-flow : pas de client trouvé, on crée d'abord la fiche
+  _validateWithNewClient(bookingId) {
+    const booking = state.data.bookings.find(b => b.id === bookingId);
+    if (!booking) { toast('Erreur : booking introuvable', 'error'); return; }
+
+    // Création directe d'une fiche client minimale à partir du booking
+    const newClient = {
+      id: uid('cl'),
+      nom_complet: booking.nom,
+      telephone: booking.telephone || '',
+      email: booking.email || '',
+      statut: 'actif',
+      metier: '', typologie: '', objectif: '',
+      commentaires: booking.message ? `Message initial (cal.com) : ${booking.message}` : '',
+      date_creation: nowIso(),
+      date_modification: nowIso()
+    };
+    state.data.clients.push(newClient);
+    audit('client_auto_create', { id: newClient.id, from_booking: bookingId });
+    App.saveToCache();
+    syncToBackend('addClient', newClient);
+    toast(`Fiche créée pour ${newClient.nom_complet}`, 'success');
+
+    // Enchaîne sur la création de la séance
+    this.openSessionFromBookingForm(booking, newClient, true);
+  },
+
+  // Étape 2 du workflow : créer la séance dans le planning
+  openSessionFromBookingForm(booking, client, isNewClient) {
+    const sessionType = isNewClient ? 'initial' : 'suivi';
+    openModal({
+      title: '📅 Ajouter au planning',
+      size: 'lg',
+      body: `
+        <div style="background:var(--success-soft);border-left:3px solid var(--success);padding:12px;border-radius:var(--radius-sm);margin-bottom:16px;">
+          <div class="font-semibold mb-1">✓ Client ${isNewClient ? 'créé' : 'rattaché'} : ${escapeHtml(client.nom_complet)}</div>
+          <div class="text-xs" style="color:var(--text-muted);">Maintenant, ajoute cette réservation dans ton planning.</div>
+        </div>
+        <form id="session-from-booking-form" onsubmit="event.preventDefault();Actions._finalizeBookingValidation('${booking.id}','${client.id}');">
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">Date<span class="req">*</span></label>
+              <input class="form-input" type="date" name="date" required value="${escapeHtml(booking.date_rdv || todayIsoDate())}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Heure</label>
+              <input class="form-input" type="time" name="heure" value="${escapeHtml(booking.heure_rdv || '')}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type de séance<span class="req">*</span></label>
+            <select class="form-select" name="type" required>
+              <option value="initial" ${sessionType === 'initial' ? 'selected' : ''}>Initiale (1ʳᵉ rencontre)</option>
+              <option value="suivi" ${sessionType === 'suivi' ? 'selected' : ''}>Suivi</option>
+              <option value="controle">Contrôle</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes / contexte</label>
+            <textarea class="form-input" name="notes" rows="3" placeholder="Préparations, attentes, contexte du RDV…">${escapeHtml(booking.message || '')}</textarea>
+          </div>
+        </form>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="Actions.openValidateBookingFlow(state.data.bookings.find(b=>b.id==='${booking.id}'))">← Retour</button>
+        <button class="btn btn-primary" onclick="document.getElementById('session-from-booking-form').requestSubmit()">✓ Valider et ajouter</button>
+      `
+    });
+  },
+
+  // Étape finale : on enregistre tout (séance, booking validé, client_id rattaché)
+  async _finalizeBookingValidation(bookingId, clientId) {
+    const booking = state.data.bookings.find(b => b.id === bookingId);
+    const client = state.data.clients.find(c => c.id === clientId);
+    if (!booking || !client) { toast('Erreur', 'error'); return; }
+
+    const f = document.getElementById('session-from-booking-form');
+    const session = {
+      id: uid('se'),
+      client_id: client.id,
+      client_nom: client.nom_complet,
+      date: f.date.value,
+      heure: f.heure.value || '',
+      type: f.type.value,
+      realise: '',
+      notes: f.notes.value.trim(),
+      recommandations: '',
+      date_creation: nowIso()
+    };
+
+    // Mise à jour atomique des deux entités
+    state.data.sessions.push(session);
+    const idx = state.data.bookings.findIndex(b => b.id === bookingId);
+    state.data.bookings[idx] = {
+      ...booking,
+      statut: 'valide',
+      client_id: client.id
+    };
+
+    audit('booking_validated', { booking_id: bookingId, client_id: client.id, session_id: session.id });
+    App.saveToCache();
+    closeModal();
+    App.refreshCurrentView();
+    toast(`✓ Réservation validée et ajoutée au planning`, 'success', 5000);
+
+    // Sync backend (en parallèle)
+    syncToBackend('addSession', session);
+    syncToBackend('updateBooking', state.data.bookings[idx]);
+
+    // Propose d'ouvrir la fiche client pour avoir le contexte complet
+    setTimeout(() => {
+      App.go('client', { id: client.id });
+    }, 800);
   },
 
   deleteBooking(id) {
@@ -3280,6 +3522,10 @@ const Views = {
       .sort((a,b) => new Date(b.date) - new Date(a.date));
     const lastSession = sessions[0];
     const color = avatarColor(c.nom_complet);
+    // Bookings cal.com rattachés à ce client
+    const linkedBookings = state.data.bookings
+      .filter(b => b.client_id === id)
+      .sort((a,b) => (b.date_rdv + (b.heure_rdv || '')).localeCompare(a.date_rdv + (a.heure_rdv || '')));
 
     return `
       <div class="page-header">
@@ -3354,7 +3600,7 @@ const Views = {
         ` : sessions.map(s => `
           <div class="history-item" onclick="App.go('session', {id: '${s.id}'})" style="cursor:pointer;">
             <div class="history-item-head">
-              <div class="history-item-date">${fmtDate(s.date)}</div>
+              <div class="history-item-date">${fmtDate(s.date)}${s.heure ? ' · ' + escapeHtml(s.heure) : ''}</div>
               <span class="badge ${this.sessionTypeBadge(s.type)}">${this.sessionTypeLabel(s.type)}</span>
               <div style="margin-left:auto;color:var(--text-soft);">›</div>
             </div>
@@ -3362,6 +3608,24 @@ const Views = {
           </div>
         `).join('')}
       </div>
+
+      ${linkedBookings.length > 0 ? `
+        <div class="card mt-4">
+          <div class="card-header">
+            <div class="card-title">🌐 Réservations cal.com · ${linkedBookings.length}</div>
+          </div>
+          ${linkedBookings.map(b => `
+            <div class="history-item" onclick="App.go('bookings')" style="cursor:pointer;">
+              <div class="history-item-head">
+                <div class="history-item-date">${fmtDate(b.date_rdv)}${b.heure_rdv ? ' · ' + escapeHtml(b.heure_rdv) : ''}</div>
+                <span class="badge ${b.statut === 'valide' ? 'badge-success' : (b.statut === 'refuse' ? 'badge-neutral' : 'badge-warning')}">${b.statut === 'valide' ? 'validée' : (b.statut === 'refuse' ? 'refusée' : 'en attente')}</span>
+                <div style="margin-left:auto;color:var(--text-soft);">›</div>
+              </div>
+              ${b.message ? `<div class="history-item-text">${escapeHtml(b.message.slice(0, 200))}${b.message.length > 200 ? '…' : ''}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
 
       <div class="mt-6" style="text-align:center;">
         <button class="btn btn-ghost" style="color:var(--danger);" onclick="Actions.deleteClient('${c.id}')">🗑️ Supprimer ce client</button>

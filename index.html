@@ -1097,8 +1097,10 @@
       🎭 Mode démonstration
     </button>
 
+    <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
+
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.5</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.6</span> — 2026
     </div>
   </div>
 </div>
@@ -1186,7 +1188,7 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.5';
+const VERSION = 'v0.6';
 const APP_NAME = 'EnergyForce';
 
 /* ============================================================
@@ -1195,11 +1197,11 @@ const APP_NAME = 'EnergyForce';
 const CONFIG = {
   // 👇 À REMPLACER par l'URL de déploiement Apps Script (voir apps-script.js)
   BACKEND_URL: localStorage.getItem('ef_backend_url') || '',
-  // PIN par défaut (à changer dans les Paramètres)
+  // PIN par défaut au tout premier démarrage (à changer dans les Paramètres)
   DEFAULT_PIN: '141214',
-  // Indicatif téléphonique par défaut (modifiable dans Paramètres)
-  // Utilisé si le numéro saisi n'a pas de + ni de 00
-  PHONE_PREFIX: localStorage.getItem('ef_phone_prefix') || '+596'
+  // Indicatif téléphonique par défaut
+  // Source de vérité = backend (Settings.phone_prefix). Cache local pour boot offline.
+  PHONE_PREFIX: localStorage.getItem('ef_phone_prefix_cache') || '+596'
 };
 
 /* ============================================================
@@ -1312,6 +1314,91 @@ function displayPhone(phone, defaultPrefix) {
   const e164 = formatPhoneE164(phone, defaultPrefix);
   return e164 ? '+' + e164 : (phone || '');
 }
+
+/* ============================================================
+   CRYPTO — hash SHA-256 pour stocker le PIN sans le révéler
+   ============================================================ */
+async function sha256(str) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(String(str));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+/* ============================================================
+   SETTINGS SYNC — stocke les préférences dans le backend
+   pour qu'elles soient partagées entre tous les appareils.
+   Cache local pour résilience hors-ligne.
+   Clés gérées : pin_hash, phone_prefix
+   ============================================================ */
+const Settings = {
+  cache: {},
+
+  /** Charge les paramètres depuis le backend, fallback sur cache local */
+  async loadFromBackend(silent = true) {
+    if (state.mode === 'demo') return;
+    if (!CONFIG.BACKEND_URL) {
+      this._loadFromCache();
+      return;
+    }
+    try {
+      const res = await apiCall('getSettings');
+      if (res && res.ok && Array.isArray(res.data)) {
+        const remote = {};
+        res.data.forEach(s => { if (s.key) remote[s.key] = s.value; });
+        this.cache = remote;
+        localStorage.setItem('ef_settings_cache', JSON.stringify(remote));
+        this._applyToConfig(remote);
+        log('Settings synced from backend', remote);
+      } else {
+        this._loadFromCache();
+      }
+    } catch (e) {
+      err('settings load failed, fallback to local cache', e);
+      this._loadFromCache();
+      if (!silent) toast('Paramètres chargés depuis le cache local', 'info');
+    }
+  },
+
+  _loadFromCache() {
+    try {
+      const raw = localStorage.getItem('ef_settings_cache');
+      if (raw) {
+        this.cache = JSON.parse(raw);
+        this._applyToConfig(this.cache);
+      }
+    } catch (e) { /* ignore */ }
+  },
+
+  _applyToConfig(s) {
+    if (s.phone_prefix) {
+      CONFIG.PHONE_PREFIX = s.phone_prefix;
+      localStorage.setItem('ef_phone_prefix_cache', s.phone_prefix);
+    }
+    // pin_hash est lu directement depuis Settings.cache au moment de la vérification
+  },
+
+  /** Persiste un paramètre vers le backend ET le cache local */
+  async setValue(key, value) {
+    this.cache[key] = value;
+    localStorage.setItem('ef_settings_cache', JSON.stringify(this.cache));
+    if (state.mode === 'demo') return { ok: true, demo: true };
+    if (!CONFIG.BACKEND_URL) {
+      throw new Error('Backend non configuré');
+    }
+    const res = await apiCall('setSetting', { key: key, value: String(value) });
+    if (!res || !res.ok) {
+      throw new Error('Échec de l\u2019enregistrement distant');
+    }
+    return res;
+  },
+
+  get(key, fallback) {
+    return this.cache[key] !== undefined ? this.cache[key] : fallback;
+  }
+};
 
 /* ============================================================
    AUDIT LOG (LOCAL + DISTANT)
@@ -1457,14 +1544,39 @@ const PIN = {
     return false;
   },
 
-  submit() {
+  async submit() {
     if (this.isLocked()) return;
-    const stored = localStorage.getItem('ef_pin') || CONFIG.DEFAULT_PIN;
-    if (state.pin === stored) {
+    const enteredHash = await sha256(state.pin);
+    const remoteHash = Settings.get('pin_hash', '');
+    const localPlain = localStorage.getItem('ef_pin') || CONFIG.DEFAULT_PIN;
+
+    let isValid = false;
+    if (remoteHash) {
+      // Source de vérité : hash dans le Settings backend (partagé entre appareils)
+      isValid = (enteredHash === remoteHash);
+    } else {
+      // Pas encore de hash distant (premier appareil ou backend down)
+      // → fallback sur PIN clair local + DEFAULT_PIN
+      isValid = (state.pin === localPlain);
+    }
+
+    if (isValid) {
       pinAttempts = 0;
       localStorage.setItem('ef_pin_attempts', '0');
       localStorage.setItem('ef_pin_locked_until', '0');
       audit('login_success');
+
+      // Migration douce : si pas de hash distant mais PIN valide localement,
+      // on push le hash vers le backend pour partager entre appareils
+      if (!remoteHash && state.mode !== 'demo' && CONFIG.BACKEND_URL) {
+        try {
+          await Settings.setValue('pin_hash', enteredHash);
+          log('PIN hash pushed to backend (migration)');
+        } catch (e) {
+          err('PIN hash push failed', e);
+        }
+      }
+
       App.enterReal();
     } else {
       pinAttempts++;
@@ -1708,7 +1820,7 @@ function generateDemoData() {
    APP CORE
    ============================================================ */
 const App = {
-  init() {
+  async init() {
     log(`booting ${VERSION}`);
     PIN.init();
 
@@ -1721,6 +1833,39 @@ const App = {
 
     // Persiste la dernière route
     state.route = localStorage.getItem('ef_last_route') || 'dashboard';
+
+    // Synchronisation des paramètres partagés (PIN hash, indicatif, etc.)
+    // depuis le backend AVANT l'écran de PIN, pour que tous les appareils
+    // utilisent le même PIN et les mêmes préférences.
+    Settings._loadFromCache(); // charge instantanément depuis le cache local
+    if (CONFIG.BACKEND_URL) {
+      // Affiche un petit indicateur "syncing"
+      const splashFooter = document.querySelector('.splash-footer');
+      const originalFooter = splashFooter ? splashFooter.innerHTML : '';
+      if (splashFooter) splashFooter.innerHTML = originalFooter + ' · 🔄 sync…';
+      Settings.loadFromBackend(true).finally(() => {
+        if (splashFooter) splashFooter.innerHTML = originalFooter;
+        // Refresh l'UI splash : indication discrète si PIN partagé en place
+        this._updateSplashSecurityHint();
+      });
+    } else {
+      this._updateSplashSecurityHint();
+    }
+  },
+
+  _updateSplashSecurityHint() {
+    const hint = document.getElementById('splash-security-hint');
+    if (!hint) return;
+    const hasRemoteHash = !!Settings.get('pin_hash', '');
+    if (!CONFIG.BACKEND_URL) {
+      hint.innerHTML = '⚙️ <a href="#" onclick="event.preventDefault();Actions.setupBackendFromSplash()" style="color:var(--primary);">Configurer le serveur de données</a>';
+      hint.style.display = 'block';
+    } else if (hasRemoteHash) {
+      hint.innerHTML = '🔗 PIN partagé entre tes appareils';
+      hint.style.display = 'block';
+    } else {
+      hint.style.display = 'none';
+    }
   },
 
   installManifest() {
@@ -1769,8 +1914,9 @@ const App = {
     this.loadFromCache();
     this.go(state.route || 'dashboard');
 
-    // Sync depuis backend
+    // Sync depuis backend (settings + data)
     if (CONFIG.BACKEND_URL) {
+      Settings.loadFromBackend(true); // refresh settings en arrière-plan
       this.syncNow(true);
       this.startAutoSync();
     } else {
@@ -2479,18 +2625,37 @@ const Actions = {
     });
   },
 
-  savePin() {
+  async savePin() {
     const f = document.getElementById('pin-form');
     const cur = f.current.value, n1 = f.new1.value, n2 = f.new2.value;
-    const stored = localStorage.getItem('ef_pin') || CONFIG.DEFAULT_PIN;
-    if (cur !== stored) { toast('PIN actuel incorrect', 'error'); return; }
+
+    // Vérifie l'ancien PIN : d'abord contre le hash distant, sinon fallback local
+    const remoteHash = Settings.get('pin_hash', '');
+    const localPlain = localStorage.getItem('ef_pin') || CONFIG.DEFAULT_PIN;
+    const curHash = await sha256(cur);
+    const curOk = remoteHash ? (curHash === remoteHash) : (cur === localPlain);
+    if (!curOk) { toast('PIN actuel incorrect', 'error'); return; }
+
     if (n1 !== n2) { toast('Les PIN ne correspondent pas', 'error'); return; }
     if (!/^[0-9#]{6}$/.test(n1)) { toast('PIN invalide (6 caractères, chiffres ou #)', 'error'); return; }
     if (PIN.isWeak(n1)) { toast('PIN trop faible', 'error'); return; }
-    localStorage.setItem('ef_pin', n1);
-    audit('pin_changed');
-    closeModal();
-    toast('PIN modifié', 'success');
+
+    const newHash = await sha256(n1);
+    showLoader('Synchronisation du PIN…');
+    try {
+      // Source de vérité = backend
+      await Settings.setValue('pin_hash', newHash);
+      // On supprime l'ancien PIN clair local (devenu obsolète)
+      localStorage.removeItem('ef_pin');
+      audit('pin_changed');
+      hideLoader();
+      closeModal();
+      toast('PIN modifié — synchronisé sur tous tes appareils', 'success', 5000);
+    } catch (e) {
+      hideLoader();
+      err('savePin failed', e);
+      toast('Échec de la synchronisation : ' + e.message, 'error');
+    }
   },
 
   setBackendUrl() {
@@ -2511,14 +2676,69 @@ const Actions = {
     });
   },
 
-  saveBackendUrl() {
+  setupBackendFromSplash() {
+    openModal({
+      title: '⚙️ Configurer le serveur de données',
+      body: `
+        <div class="text-sm text-muted mb-3">
+          Pour utiliser le mode réel, colle l'URL de ton backend Apps Script. Tu peux la récupérer depuis ton autre appareil ou depuis Apps Script (Déployer → Gérer les déploiements).
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL Apps Script<span class="req">*</span></label>
+          <input class="form-input" id="splash-backend-url-input" placeholder="https://script.google.com/macros/s/.../exec" required>
+          <div class="form-help">L'URL doit commencer par https://script.google.com et finir par /exec</div>
+        </div>
+        <div style="background:var(--info-soft);border-left:3px solid var(--info);padding:10px;border-radius:var(--radius-sm);margin-top:12px;font-size:12px;">
+          💡 Une fois configuré, ton PIN et tes préférences seront récupérés automatiquement depuis le serveur. Plus besoin de tout reconfigurer sur chaque appareil.
+        </div>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="Actions.saveBackendUrlFromSplash()">Enregistrer & synchroniser</button>
+      `
+    });
+  },
+
+  async saveBackendUrlFromSplash() {
+    const v = document.getElementById('splash-backend-url-input').value.trim();
+    if (!v || !/^https:\/\/script\.google\.com\/.*\/exec$/.test(v)) {
+      toast('URL invalide. Format attendu : https://script.google.com/macros/s/.../exec', 'error');
+      return;
+    }
+    localStorage.setItem('ef_backend_url', v);
+    CONFIG.BACKEND_URL = v;
+    closeModal();
+    showLoader('Connexion au serveur…');
+    try {
+      await Settings.loadFromBackend(true);
+      hideLoader();
+      App._updateSplashSecurityHint();
+      const hasHash = !!Settings.get('pin_hash', '');
+      if (hasHash) {
+        toast('✓ Serveur connecté. Utilise le PIN défini sur ton autre appareil.', 'success', 6000);
+      } else {
+        toast('✓ Serveur connecté. PIN par défaut : ' + CONFIG.DEFAULT_PIN, 'success', 6000);
+      }
+    } catch (e) {
+      hideLoader();
+      err('splash backend setup failed', e);
+      toast('Connexion échouée. Vérifie l\u2019URL.', 'error');
+    }
+  },
+
+  async saveBackendUrl() {
     const v = document.getElementById('backend-url-input').value.trim();
     if (v && !/^https:\/\//.test(v)) { toast('URL invalide (https:// requis)', 'error'); return; }
     localStorage.setItem('ef_backend_url', v);
     CONFIG.BACKEND_URL = v;
     closeModal();
     toast('URL backend enregistrée', 'success');
-    if (v) App.syncNow();
+    if (v) {
+      // Synchronise d'abord les settings (PIN hash, indicatif), puis les données
+      await Settings.loadFromBackend(true);
+      App.syncNow();
+      App.startAutoSync();
+    }
     App.refreshCurrentView();
   },
 
@@ -2567,18 +2787,26 @@ const Actions = {
     });
   },
 
-  savePhonePrefix() {
+  async savePhonePrefix() {
     const v = document.getElementById('phone-prefix-input').value.trim();
     if (!/^\+\d{1,4}$/.test(v)) {
       toast('Indicatif invalide. Format : +33, +596, +1, etc.', 'error');
       return;
     }
-    localStorage.setItem('ef_phone_prefix', v);
-    CONFIG.PHONE_PREFIX = v;
-    audit('phone_prefix_changed', { new: v });
-    closeModal();
-    toast(`Indicatif par défaut : ${v}`, 'success');
-    App.refreshCurrentView();
+    showLoader('Synchronisation…');
+    try {
+      await Settings.setValue('phone_prefix', v);
+      CONFIG.PHONE_PREFIX = v;
+      audit('phone_prefix_changed', { new: v });
+      hideLoader();
+      closeModal();
+      toast(`Indicatif par défaut : ${v} — synchronisé`, 'success');
+      App.refreshCurrentView();
+    } catch (e) {
+      hideLoader();
+      err('savePhonePrefix failed', e);
+      toast('Échec : ' + e.message, 'error');
+    }
   },
 
   resetDemo() {

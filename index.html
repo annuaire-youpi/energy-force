@@ -1100,7 +1100,7 @@
     <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
 
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.6</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.8</span> — 2026
     </div>
   </div>
 </div>
@@ -1188,15 +1188,25 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.6';
+const VERSION = 'v0.8';
+/* ============================================================
+   🔧 CONFIGURATION — À MODIFIER UNE SEULE FOIS
+   ============================================================
+   Colle ci-dessous l'URL de ton backend Apps Script (celle qui
+   finit par /exec). Une fois renseignée et le fichier redéployé
+   sur Netlify, tous tes appareils l'utiliseront automatiquement.
+   ============================================================ */
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwJeDUaa8WAyO3VKObcR2izTpll_PyYb66hoE809adrj7o2Xb9uXdDGCnDPTrPTrHsW/exec';
+/* ============================================================ */
+
 const APP_NAME = 'EnergyForce';
 
 /* ============================================================
    CONFIG
    ============================================================ */
 const CONFIG = {
-  // 👇 À REMPLACER par l'URL de déploiement Apps Script (voir apps-script.js)
-  BACKEND_URL: localStorage.getItem('ef_backend_url') || '',
+  // Priorité : URL hardcodée > URL localStorage (fallback de migration)
+  BACKEND_URL: BACKEND_URL || localStorage.getItem('ef_backend_url') || '',
   // PIN par défaut au tout premier démarrage (à changer dans les Paramètres)
   DEFAULT_PIN: '141214',
   // Indicatif téléphonique par défaut
@@ -1858,6 +1868,7 @@ const App = {
     if (!hint) return;
     const hasRemoteHash = !!Settings.get('pin_hash', '');
     if (!CONFIG.BACKEND_URL) {
+      // URL ni hardcodée ni en localStorage : on propose de la saisir (cas exceptionnel)
       hint.innerHTML = '⚙️ <a href="#" onclick="event.preventDefault();Actions.setupBackendFromSplash()" style="color:var(--primary);">Configurer le serveur de données</a>';
       hint.style.display = 'block';
     } else if (hasRemoteHash) {
@@ -3626,11 +3637,19 @@ const Views = {
       <div class="card mb-4">
         <div class="card-title mb-3">☁️ Synchronisation</div>
         <div class="settings-list">
-          <button class="settings-item" onclick="Actions.setBackendUrl()">
-            <div class="settings-item-icon">🔗</div>
-            <div class="settings-item-label">URL du backend Apps Script</div>
-            <div class="settings-item-value">${backendUrl ? '✓ Configuré' : 'Non configuré'} ›</div>
-          </button>
+          ${BACKEND_URL ? `
+            <div class="settings-item" style="cursor:default;">
+              <div class="settings-item-icon">🔗</div>
+              <div class="settings-item-label">Backend Apps Script</div>
+              <div class="settings-item-value">✓ Intégré au code</div>
+            </div>
+          ` : `
+            <button class="settings-item" onclick="Actions.setBackendUrl()">
+              <div class="settings-item-icon">🔗</div>
+              <div class="settings-item-label">URL du backend Apps Script</div>
+              <div class="settings-item-value">${backendUrl ? '✓ Configuré (local)' : 'Non configuré'} ›</div>
+            </button>
+          `}
           <button class="settings-item" onclick="App.syncNow()">
             <div class="settings-item-icon">🔄</div>
             <div class="settings-item-label">Synchroniser maintenant</div>

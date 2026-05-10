@@ -1100,7 +1100,7 @@
     <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
 
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.9</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.10</span> — 2026
     </div>
   </div>
 </div>
@@ -1188,7 +1188,7 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.9';
+const VERSION = 'v0.10';
 /* ============================================================
    🔧 CONFIGURATION — À MODIFIER UNE SEULE FOIS
    ============================================================
@@ -1267,6 +1267,54 @@ function fmtDateTime(d) {
 }
 function todayIsoDate() {
   return new Date().toISOString().slice(0, 10);
+}
+
+/* Normalise une date pour <input type="date"> (format yyyy-mm-dd).
+   Gère : déjà bon format, ISO complet, format français, objet Date,
+   ou valeur retournée par Google Sheets (qui peut être un timestamp). */
+function normalizeDateForInput(d) {
+  if (!d && d !== 0) return '';
+  // Déjà bon format
+  if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+  // Format français dd/mm/yyyy ou dd-mm-yyyy
+  if (typeof d === 'string') {
+    const m = d.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+    if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  }
+  // Sinon : tentative de parsing
+  try {
+    const date = new Date(d);
+    if (isNaN(date.getTime())) return '';
+    // On veut la date locale (pas UTC) pour éviter le décalage de fuseau
+    const y = date.getFullYear();
+    const mo = String(date.getMonth() + 1).padStart(2, '0');
+    const da = String(date.getDate()).padStart(2, '0');
+    return `${y}-${mo}-${da}`;
+  } catch (e) { return ''; }
+}
+
+/* Normalise une heure pour <input type="time"> (format HH:mm). */
+function normalizeTimeForInput(t) {
+  if (!t && t !== 0) return '';
+  // Déjà bon format
+  if (typeof t === 'string' && /^\d{2}:\d{2}$/.test(t)) return t;
+  // Format avec secondes
+  if (typeof t === 'string' && /^\d{2}:\d{2}:\d{2}/.test(t)) return t.slice(0, 5);
+  // Format ISO ou objet Date : extraire les heures locales
+  try {
+    const date = new Date(t);
+    if (!isNaN(date.getTime())) {
+      const h = String(date.getHours()).padStart(2, '0');
+      const m = String(date.getMinutes()).padStart(2, '0');
+      return `${h}:${m}`;
+    }
+  } catch (e) {}
+  // Format texte type "9h30", "9:30", "09h30"
+  if (typeof t === 'string') {
+    const m = t.match(/(\d{1,2})[h:.](\d{0,2})/);
+    if (m) return `${m[1].padStart(2,'0')}:${(m[2] || '00').padStart(2,'0')}`;
+  }
+  return '';
 }
 function escapeHtml(s) {
   if (s === null || s === undefined) return '';
@@ -2241,13 +2289,13 @@ const Actions = {
             </div>
             <div class="form-group">
               <label class="form-label">Date<span class="req">*</span></label>
-              <input class="form-input" type="date" name="date" required value="${(s.date || '').slice(0,10)}">
+              <input class="form-input" type="date" name="date" required value="${normalizeDateForInput(s.date)}">
             </div>
           </div>
           <div class="form-row cols-2">
             <div class="form-group">
               <label class="form-label">Heure</label>
-              <input class="form-input" type="time" name="heure" value="${escapeHtml(s.heure || '')}" placeholder="—">
+              <input class="form-input" type="time" name="heure" value="${normalizeTimeForInput(s.heure)}" placeholder="—">
             </div>
             <div class="form-group">
               <label class="form-label">Type<span class="req">*</span></label>
@@ -2363,11 +2411,11 @@ const Actions = {
           <div class="form-row cols-2">
             <div class="form-group">
               <label class="form-label">Date du RDV<span class="req">*</span></label>
-              <input class="form-input" type="date" name="date_rdv" required value="${b.date_rdv || ''}">
+              <input class="form-input" type="date" name="date_rdv" required value="${normalizeDateForInput(b.date_rdv)}">
             </div>
             <div class="form-group">
               <label class="form-label">Heure du RDV<span class="req">*</span></label>
-              <input class="form-input" type="time" name="heure_rdv" required value="${b.heure_rdv || ''}">
+              <input class="form-input" type="time" name="heure_rdv" required value="${normalizeTimeForInput(b.heure_rdv)}">
             </div>
           </div>
           <div class="form-group">
@@ -2621,23 +2669,25 @@ const Actions = {
   // Étape 2 du workflow : créer la séance dans le planning
   openSessionFromBookingForm(booking, client, isNewClient) {
     const sessionType = isNewClient ? 'initial' : 'suivi';
+    const presetDate = normalizeDateForInput(booking.date_rdv) || todayIsoDate();
+    const presetTime = normalizeTimeForInput(booking.heure_rdv) || '';
     openModal({
       title: '📅 Ajouter au planning',
       size: 'lg',
       body: `
         <div style="background:var(--success-soft);border-left:3px solid var(--success);padding:12px;border-radius:var(--radius-sm);margin-bottom:16px;">
           <div class="font-semibold mb-1">✓ Client ${isNewClient ? 'créé' : 'rattaché'} : ${escapeHtml(client.nom_complet)}</div>
-          <div class="text-xs" style="color:var(--text-muted);">Maintenant, ajoute cette réservation dans ton planning.</div>
+          <div class="text-xs" style="color:var(--text-muted);">Date et heure récupérées depuis cal.com — modifiables si besoin.</div>
         </div>
         <form id="session-from-booking-form" onsubmit="event.preventDefault();Actions._finalizeBookingValidation('${booking.id}','${client.id}');">
           <div class="form-row cols-2">
             <div class="form-group">
               <label class="form-label">Date<span class="req">*</span></label>
-              <input class="form-input" type="date" name="date" required value="${escapeHtml(booking.date_rdv || todayIsoDate())}">
+              <input class="form-input" type="date" name="date" required value="${escapeHtml(presetDate)}">
             </div>
             <div class="form-group">
               <label class="form-label">Heure</label>
-              <input class="form-input" type="time" name="heure" value="${escapeHtml(booking.heure_rdv || '')}">
+              <input class="form-input" type="time" name="heure" value="${escapeHtml(presetTime)}">
             </div>
           </div>
           <div class="form-group">

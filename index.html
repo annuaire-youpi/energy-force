@@ -1,364 +1,3527 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#2563eb" />
-  <title>Energy Force — Version finale</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#5B7FBF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Energy Force">
+  <title>Energy Force — CRM Coaching</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%235B7FBF'/><text x='50%25' y='58%25' font-family='Arial' font-size='110' text-anchor='middle' fill='white' font-weight='bold'>EF</text></svg>">
+  <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%235B7FBF'/><text x='50%25' y='62%25' font-family='Arial' font-size='38' text-anchor='middle' fill='white' font-weight='bold'>EF</text></svg>">
   <style>
-    :root{--bg:#f4f7fb;--panel:#fff;--text:#0f172a;--muted:#64748b;--line:#dbe3ee;--primary:#2563eb;--primary2:#14b8a6;--danger:#ef4444;--warn:#f59e0b;--success:#10b981;--shadow:0 18px 40px rgba(15,23,42,.08);--r:22px;--r2:16px}
-    *{box-sizing:border-box} html,body{margin:0;height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top,#fff 0,#f4f7fb 30%,#eef4ff 100%);color:var(--text)}
-    body{overscroll-behavior:none} button,input,textarea,select{font:inherit}
-    .app{display:grid;grid-template-columns:300px 1fr;min-height:100dvh}
-    .sidebar{background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-right:1px solid var(--line);padding:20px;position:sticky;top:0;height:100dvh;display:flex;flex-direction:column;gap:16px}
-    .brand{display:flex;align-items:center;gap:12px}.logo{width:50px;height:50px;border-radius:18px;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 16px 30px rgba(37,99,235,.25)}.brand h1{margin:0;font-size:19px}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
-    .nav{display:grid;gap:8px}.nav button{border:0;background:transparent;text-align:left;padding:14px 16px;border-radius:16px;color:var(--text);cursor:pointer;min-height:48px;display:flex;justify-content:space-between;align-items:center}.nav button.active,.nav button:hover{background:#edf4ff;color:var(--primary)}.badge{background:var(--primary);color:#fff;border-radius:999px;padding:2px 8px;font-size:11px;font-weight:900;min-width:20px;text-align:center}
-    .sidebar-card{margin-top:auto;padding:16px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,#fff,#f8fbff)}
-    .main{padding:16px 16px 26px;min-width:0}
-    .view{display:none}.view.active{display:block}
-    .topbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(244,247,251,.98),rgba(244,247,251,.6));backdrop-filter:blur(10px);padding:4px 0 10px}
-    .search{flex:1;display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow)}.search input{border:0;outline:0;width:100%;background:transparent}.search .hint{color:var(--muted);font-size:12px}
-    .btn,.iconbtn{border:0;border-radius:16px;min-height:50px;padding:0 16px;cursor:pointer;font-weight:800}.iconbtn{width:50px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}.btn.primary{background:linear-gradient(135deg,var(--primary),#3b82f6);color:#fff;box-shadow:0 14px 30px rgba(37,99,235,.25)}.btn.soft{background:#eef4ff;color:var(--primary)}.btn.danger{background:#fee2e2;color:#991b1b}
-    .btn-icon{border:0;background:#fff;border:1px solid var(--line);border-radius:12px;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s}.btn-icon:hover{transform:scale(1.08);box-shadow:0 6px 16px rgba(15,23,42,.12)}.btn-icon.edit{background:#eef4ff;border-color:#bfdbfe}.btn-icon.delete{background:#fee2e2;border-color:#fecaca}.btn-icon.open{background:#ecfdf5;border-color:#a7f3d0}.btn-icon.confirm{background:#d1fae5;border-color:#6ee7b7}
-    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-bottom:14px}
-    .panel,.card{background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border:1px solid rgba(219,227,238,.9);border-radius:var(--r);box-shadow:var(--shadow)}.panel{padding:18px}.card{padding:16px}.kpi{font-size:30px;font-weight:900;margin:8px 0 2px}.muted{color:var(--muted)}
-    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.grid2{display:grid;grid-template-columns:1.06fr .94fr;gap:14px;margin-top:14px}
-    .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.section-title h2{margin:0;font-size:18px}
-    .year-selector{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#eef4ff;border:1px solid #bfdbfe;border-radius:999px}.year-selector select{border:0;background:transparent;outline:0;font-weight:800;color:var(--primary);cursor:pointer;padding:4px 8px;border-radius:8px}
-    .stats-table{width:100%;border-collapse:collapse;margin-top:12px}.stats-table th{padding:14px;border:1px solid var(--line);background:#dbeafe;color:#1e40af;font-weight:800;text-align:center;font-size:13px}.stats-table td{padding:16px;border:1px solid var(--line);background:#fff;font-size:24px;font-weight:900;color:var(--primary);text-align:center}
-    .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}.toolbar .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:0 14px;height:48px;display:flex;align-items:center;min-width:0}.toolbar select,.toolbar input{border:0;outline:0;background:transparent;width:100%}
-    .list{display:grid;gap:10px}.row{display:flex;justify-content:space-between;gap:10px;padding:14px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#fbfdff)}.row strong{display:block}.tag{font-size:12px;padding:8px 11px;border-radius:999px;background:#ecfeff;color:#0f766e;white-space:nowrap;font-weight:800}.tag.upcoming{background:#dbeafe;color:#1e40af}.tag.confirmed{background:#d1fae5;color:#065f46}
-    .profile{display:flex;gap:14px;align-items:center}.avatar{width:66px;height:66px;border-radius:22px;background:linear-gradient(135deg,#dbeafe,#cffafe)}
-    .timeline{position:relative;padding-left:18px}.timeline:before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:#dbe5f5}.event{position:relative;margin-bottom:12px;padding:14px 14px 14px 18px;border:1px solid var(--line);border-radius:18px;background:#fff}.event:before{content:'';position:absolute;left:-22px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--primary)}
-    .appointment{position:relative;padding:16px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#fff,#f0fdfa);border-left:4px solid var(--success);margin-bottom:12px}.appointment .time{font-size:24px;font-weight:900;color:var(--primary)}.appointment .date{color:var(--muted);font-size:13px;margin-top:2px}
-    .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.full{grid-column:1/-1}.field{display:grid;gap:8px}.field label{font-size:13px;font-weight:800}.input,select,textarea{width:100%;border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;outline:none;min-height:50px}.textarea{min-height:120px;resize:vertical}.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
-    .footer-mobile{display:none;position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:10px 12px;grid-template-columns:repeat(5,1fr);gap:8px}.footer-mobile button{border:0;background:transparent;padding:8px 6px;border-radius:14px;color:var(--muted);min-height:54px;font-size:11px}.footer-mobile button.active{background:#eef4ff;color:var(--primary)}
-    .floating{position:fixed;right:16px;bottom:82px;z-index:25;width:60px;height:60px;border-radius:22px;border:0;background:linear-gradient(135deg,var(--primary),#3b82f6);color:#fff;font-size:30px;box-shadow:0 20px 38px rgba(37,99,235,.35)}
-    .modalBackdrop{position:fixed;inset:0;background:rgba(15,23,42,.52);display:none;align-items:center;justify-content:center;z-index:60;padding:14px;overflow-y:auto}.modalBackdrop.show{display:flex}.modal{width:100%;max-width:900px;background:#fff;border-radius:26px;box-shadow:var(--shadow);overflow:hidden;margin:auto}.modalHeader{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modalBody{padding:16px 18px;max-height:calc(90vh - 140px);overflow-y:auto}.modalActions{padding:16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.modalHeader h3{margin:0}.empty{padding:18px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center}
-    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-    @media (max-width:1024px){.app{grid-template-columns:1fr}.sidebar{display:none}.hero,.cards,.grid2{grid-template-columns:1fr 1fr}.main{padding-bottom:92px}}
-    @media (max-width:760px){.hero,.cards,.grid2,.form{grid-template-columns:1fr}.topbar{gap:8px}.search{padding:12px 14px}.btn,.iconbtn{min-height:50px}.panel,.card{border-radius:20px}.floating,.footer-mobile{display:grid}.modalBackdrop{align-items:flex-start;padding:0}.modal{max-width:none;min-height:auto;border-radius:26px 26px 0 0;margin-top:60px}.modalBody{max-height:calc(100vh - 200px)}.form-grid{grid-template-columns:1fr}.stats-table{font-size:11px}.stats-table th{padding:10px 6px;font-size:11px}.stats-table td{padding:12px 6px;font-size:18px}}
+    /* ============================================================
+       RESET + BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+    button, input, select, textarea {
+      font-family: inherit; font-size: inherit; color: inherit;
+    }
+    button { cursor: pointer; border: none; background: none; }
+    input, textarea, select { outline: none; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ============================================================
+       VARIABLES
+       ============================================================ */
+    :root {
+      --bg: #f7f8fa;
+      --bg-soft: #f1f3f6;
+      --card: #ffffff;
+      --border: #e4e7ec;
+      --border-strong: #d0d5dd;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-soft: #94a3b8;
+      --primary: #5B7FBF;
+      --primary-hover: #4567A8;
+      --primary-soft: #DDE6F5;
+      --primary-soft-2: #EEF3FB;
+      --accent: #1e293b;
+      --success: #16a34a;
+      --success-soft: #dcfce7;
+      --warning: #d97706;
+      --warning-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --info: #0284c7;
+      --info-soft: #e0f2fe;
+      --shadow-sm: 0 1px 2px rgba(15,23,42,.04);
+      --shadow: 0 2px 12px rgba(15,23,42,.06);
+      --shadow-lg: 0 12px 32px rgba(15,23,42,.14);
+      --radius-sm: 6px;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --header-h: 60px;
+      --bottom-nav-h: 64px;
+      --sidebar-w: 240px;
+    }
+
+    /* ============================================================
+       UTILITAIRES
+       ============================================================ */
+    .hidden { display: none !important; }
+    .center { display: flex; align-items: center; justify-content: center; }
+    .row { display: flex; align-items: center; gap: 8px; }
+    .col { display: flex; flex-direction: column; gap: 8px; }
+    .grow { flex: 1; min-width: 0; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .text-muted { color: var(--text-muted); }
+    .text-soft { color: var(--text-soft); }
+    .text-sm { font-size: 13px; }
+    .text-xs { font-size: 12px; }
+    .text-lg { font-size: 17px; }
+    .text-xl { font-size: 20px; }
+    .text-2xl { font-size: 26px; }
+    .font-medium { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .font-bold { font-weight: 700; }
+    .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
+    .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-6 { margin-bottom: 24px; }
+
+    /* ============================================================
+       SPLASH SCREEN
+       ============================================================ */
+    #splash {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px;
+      background: linear-gradient(180deg, #EEF3FB 0%, #f7f8fa 60%);
+      z-index: 100;
+    }
+    .splash-card {
+      width: 100%; max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      box-shadow: var(--shadow);
+    }
+    .splash-logo {
+      width: 64px; height: 64px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #5B7FBF, #7B9DD0);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 24px;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 24px rgba(13,148,136,.25);
+    }
+    .splash-title {
+      text-align: center;
+      font-size: 26px; font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    .splash-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .pin-display {
+      display: flex; gap: 10px; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .pin-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--bg-soft);
+      border: 2px solid var(--border-strong);
+      transition: all 0.2s ease;
+    }
+    .pin-dot.filled {
+      background: var(--primary);
+      border-color: var(--primary);
+      transform: scale(1.1);
+    }
+    .pin-dot.error {
+      background: var(--danger);
+      border-color: var(--danger);
+      animation: shake 0.4s;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+    .pin-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .pin-key {
+      aspect-ratio: 1.4;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 20px; font-weight: 600;
+      transition: all 0.15s ease;
+      color: var(--text);
+    }
+    .pin-key:hover { background: var(--bg-soft); }
+    .pin-key:active { transform: scale(0.95); background: var(--primary-soft); }
+    .pin-key.action {
+      background: transparent;
+      border-color: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .pin-msg {
+      text-align: center;
+      font-size: 13px;
+      min-height: 18px;
+      margin: 12px 0;
+      color: var(--text-muted);
+    }
+    .pin-msg.error { color: var(--danger); }
+    .pin-msg.success { color: var(--success); }
+    .splash-divider {
+      display: flex; align-items: center;
+      margin: 24px 0 16px;
+      color: var(--text-soft);
+      font-size: 12px;
+      gap: 12px;
+    }
+    .splash-divider::before, .splash-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .demo-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #fb923c, #f97316);
+      color: white;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(249,115,22,.25);
+    }
+    .demo-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(249,115,22,.35); }
+    .demo-btn:active { transform: translateY(0); }
+    .splash-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    /* ============================================================
+       APP SHELL
+       ============================================================ */
+    #app {
+      display: none;
+      min-height: 100vh; min-height: 100dvh;
+    }
+    #app.active { display: block; }
+
+    .header {
+      position: sticky; top: 0;
+      height: var(--header-h);
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+      z-index: 50;
+    }
+    .header-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+    .header-logo-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #5B7FBF, #7B9DD0);
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px;
+    }
+    .header-actions {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .icon-btn {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s ease;
+      font-size: 18px;
+    }
+    .icon-btn:hover { background: var(--bg-soft); color: var(--text); }
+    .icon-btn.spin svg { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .demo-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: linear-gradient(135deg, #fb923c, #f97316);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      box-shadow: 0 2px 8px rgba(249,115,22,.3);
+    }
+
+    /* Layout */
+    .layout {
+      display: flex;
+    }
+    .sidebar {
+      display: none;
+      width: var(--sidebar-w);
+      min-height: calc(100vh - var(--header-h));
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      padding: 20px 12px;
+      flex-shrink: 0;
+      position: sticky; top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      overflow-y: auto;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-align: left;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+    }
+    .nav-item:hover { background: var(--bg-soft); color: var(--text); }
+    .nav-item.active {
+      background: var(--primary-soft-2);
+      color: var(--primary-hover);
+      font-weight: 600;
+    }
+    .nav-icon { font-size: 18px; line-height: 1; }
+    .nav-badge {
+      margin-left: auto;
+      background: var(--danger);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .main {
+      flex: 1; min-width: 0;
+      padding: 20px 16px 100px;
+      max-width: 100%;
+    }
+
+    /* Bottom nav (mobile) */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: var(--bottom-nav-h);
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      z-index: 40;
+    }
+    .bottom-nav-item {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3px;
+      color: var(--text-soft);
+      font-size: 10px;
+      font-weight: 500;
+      transition: color 0.15s ease;
+      padding: 6px 4px;
+      position: relative;
+    }
+    .bottom-nav-item .nav-icon { font-size: 20px; }
+    .bottom-nav-item.active { color: var(--primary); }
+    .bottom-nav-item .nav-badge {
+      position: absolute; top: 6px; right: 50%;
+      transform: translateX(16px);
+      margin: 0;
+      font-size: 10px;
+      padding: 1px 5px;
+      min-width: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .sidebar { display: block; }
+      .bottom-nav { display: none; }
+      .main { padding: 28px 32px 40px; }
+    }
+
+    /* ============================================================
+       PAGE TITLES
+       ============================================================ */
+    .page-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .page-title {
+      font-size: 22px; font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+    .page-actions {
+      margin-left: auto;
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    @media (min-width: 600px) {
+      .page-title { font-size: 26px; }
+    }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: var(--radius);
+      font-size: 14px; font-weight: 600;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary {
+      background: var(--card);
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .btn-secondary:hover { background: var(--bg-soft); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover { background: var(--bg-soft); color: var(--text); }
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    .btn-success:hover { background: #15803d; }
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+    .btn-sm { padding: 6px 12px; font-size: 13px; }
+    .btn-lg { padding: 12px 20px; font-size: 15px; }
+    .btn-block { width: 100%; }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    /* ============================================================
+       CARDS
+       ============================================================ */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-header {
+      display: flex; align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+    .card-subtitle {
+      font-size: 13px; color: var(--text-muted);
+    }
+
+    /* Stat grid */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    @media (min-width: 600px) { .stat-grid { grid-template-columns: repeat(4, 1fr); } }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-value {
+      font-size: 28px; font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-top: 4px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-weight: 600;
+    }
+    .stat-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .grid-2 {
+      display: grid; gap: 16px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ============================================================
+       LISTS
+       ============================================================ */
+    .list { display: flex; flex-direction: column; gap: 8px; }
+    .list-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      transition: all 0.15s ease;
+      display: flex; align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+    .list-item:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--primary-soft-2);
+      color: var(--primary-hover);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .avatar.lg { width: 56px; height: 56px; font-size: 20px; }
+    .avatar.sm { width: 32px; height: 32px; font-size: 12px; }
+
+    /* ============================================================
+       BADGES
+       ============================================================ */
+    .badge {
+      display: inline-flex; align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .badge-success { background: var(--success-soft); color: #15803d; }
+    .badge-warning { background: var(--warning-soft); color: #b45309; }
+    .badge-danger { background: var(--danger-soft); color: #b91c1c; }
+    .badge-info { background: var(--info-soft); color: #0369a1; }
+    .badge-neutral { background: var(--bg-soft); color: var(--text-muted); }
+    .badge-primary { background: var(--primary-soft); color: var(--primary-hover); }
+
+    /* ============================================================
+       FORMS
+       ============================================================ */
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .form-label .req { color: var(--danger); margin-left: 2px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--text);
+      font-size: 14px;
+      transition: all 0.15s ease;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13,148,136,.12);
+    }
+    .form-textarea { resize: vertical; min-height: 90px; font-family: inherit; }
+    .form-help {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .form-row {
+      display: grid; gap: 12px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 600px) {
+      .form-row.cols-2 { grid-template-columns: 1fr 1fr; }
+      .form-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .search-bar {
+      position: relative;
+      flex: 1; min-width: 0;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px 12px 10px 38px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      background: var(--card);
+      font-size: 14px;
+    }
+    .search-bar::before {
+      content: '🔍';
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 0.6;
+    }
+
+    .filter-chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--card);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+    .filter-chip:hover { background: var(--bg-soft); }
+    .filter-chip.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* ============================================================
+       MODAL
+       ============================================================ */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(15,23,42,.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex; align-items: flex-end; justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: var(--card);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      animation: slideUp 0.25s ease;
+      display: flex; flex-direction: column;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @media (min-width: 700px) {
+      .modal-backdrop { align-items: center; padding: 24px; }
+      .modal { max-width: 600px; border-radius: var(--radius-lg); }
+      .modal.modal-lg { max-width: 800px; }
+    }
+    .modal-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      gap: 12px;
+      position: sticky; top: 0;
+      background: var(--card);
+      z-index: 1;
+    }
+    .modal-title {
+      font-size: 17px; font-weight: 700;
+      letter-spacing: -0.3px;
+      flex: 1;
+    }
+    .modal-body { padding: 20px; flex: 1; }
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 8px; justify-content: flex-end;
+      flex-wrap: wrap;
+      position: sticky; bottom: 0;
+      background: var(--card);
+    }
+
+    /* ============================================================
+       TOAST
+       ============================================================ */
+    #toast-container {
+      position: fixed; top: 16px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 300;
+      display: flex; flex-direction: column;
+      gap: 8px;
+      width: calc(100% - 32px);
+      max-width: 400px;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow-lg);
+      border-left: 4px solid var(--info);
+      font-size: 14px;
+      font-weight: 500;
+      animation: toastIn 0.25s ease;
+      display: flex; align-items: center; gap: 10px;
+      pointer-events: all;
+    }
+    @keyframes toastIn {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.warning { border-left-color: var(--warning); }
+    .toast-icon { font-size: 18px; }
+
+    /* ============================================================
+       LOADER
+       ============================================================ */
+    #loader {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,.7);
+      backdrop-filter: blur(2px);
+      z-index: 250;
+      display: none;
+      align-items: center; justify-content: center;
+    }
+    #loader.active { display: flex; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* ============================================================
+       SESSION VIEW
+       ============================================================ */
+    .session-context {
+      background: linear-gradient(135deg, var(--primary-soft-2), #F4F7FC);
+      border: 1px solid var(--primary-soft);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+    .session-context-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--primary-hover);
+      margin-bottom: 4px;
+    }
+
+    /* History items */
+    .history-item {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .history-item:last-child { border-bottom: none; }
+    .history-item-head {
+      display: flex; align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .history-item-date {
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .history-item-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+    .empty-state-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    /* Quick actions row */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    @media (min-width: 500px) {
+      .quick-actions { grid-template-columns: repeat(4, 1fr); }
+    }
+    .qa-btn {
+      padding: 12px 8px;
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      transition: all 0.15s ease;
+      font-size: 12px; font-weight: 600;
+      color: var(--text-muted);
+    }
+    .qa-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+    .qa-btn .icon { font-size: 22px; }
+
+    /* Booking card */
+    .booking-card {
+      background: var(--card);
+      border: 1px solid var(--warning);
+      border-left: 4px solid var(--warning);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .booking-card.confirmed {
+      border-color: var(--success);
+      border-left-color: var(--success);
+    }
+    .booking-card.refused {
+      opacity: 0.6;
+      border-color: var(--border);
+      border-left-color: var(--text-soft);
+    }
+
+    /* ============================================================
+       AGENDA HEBDOMADAIRE
+       ============================================================ */
+    .agenda-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .agenda-legend {
+      display: flex;
+      gap: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+    .agenda-legend-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 3px;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .week-agenda {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    @media (min-width: 900px) {
+      .week-agenda { grid-template-columns: repeat(7, 1fr); gap: 8px; }
+    }
+    .day-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: auto;
+      transition: box-shadow .15s ease;
+    }
+    @media (min-width: 900px) {
+      .day-card { min-height: 160px; padding: 10px 8px 8px; }
+    }
+    .day-card.today {
+      background: var(--primary-soft-2);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-soft);
+    }
+    .day-card.weekend {
+      background: #fafbfc;
+    }
+    .day-card.today.weekend { background: var(--primary-soft-2); }
+    .day-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .day-name {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    .day-num {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .day-month {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-left: auto;
+      font-weight: 500;
+    }
+    .day-card.today .day-num,
+    .day-card.today .day-name { color: var(--primary-hover); }
+    .day-card.today .day-name::after { content: ' · auj.'; font-weight: 600; }
+    .day-rdvs {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+    }
+    .rdv-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: transform .1s ease, box-shadow .1s ease, border-color .1s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .rdv-item:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    .rdv-item.rdv-booking {
+      border-left-color: var(--info);
+      background: var(--info-soft);
+    }
+    .rdv-time-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .rdv-time {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary-hover);
+      font-variant-numeric: tabular-nums;
+    }
+    .rdv-item.rdv-booking .rdv-time { color: var(--info); }
+    .rdv-source-icon {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+    .rdv-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+    .rdv-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .day-empty {
+      font-size: 11px;
+      color: var(--text-soft);
+      text-align: center;
+      padding: 8px 0;
+      font-style: italic;
+    }
+
+    /* ============================================================
+       SETTINGS MENU
+       ============================================================ */
+    .settings-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; }
+    .settings-item {
+      background: var(--card);
+      padding: 14px 16px;
+      display: flex; align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      width: 100%;
+      text-align: left;
+    }
+    .settings-item:hover { background: var(--bg-soft); }
+    .settings-item-icon {
+      font-size: 18px;
+      width: 32px; text-align: center;
+    }
+    .settings-item-label { flex: 1; font-weight: 500; font-size: 14px; }
+    .settings-item-value { color: var(--text-muted); font-size: 13px; }
+
+    /* ============================================================
+       SCROLLBAR
+       ============================================================ */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-soft); }
+
+    /* small helpers */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+    .pill-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .info-line {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .info-line:last-child { border-bottom: none; }
+    .info-line-label {
+      width: 110px;
+      flex-shrink: 0;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .info-line-value {
+      flex: 1;
+      min-width: 0;
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand"><div class="logo"></div><div><h1>Energy Force</h1><p>Version finale premium</p></div></div>
-    <div class="nav">
-      <button class="active" data-view="dashboard">Accueil</button>
-      <button data-view="appointments"><span>RDV</span><span class="badge" id="appointmentBadge">0</span></button>
-      <button data-view="clients">Clients</button>
-      <button data-view="historique">Séances</button>
-      <button data-view="settings">Réglages</button>
-    </div>
-    <div class="sidebar-card">
-      <div class="muted" style="font-size:13px">Prochain RDV</div>
-      <div id="nextAppointment" style="font-weight:900;margin-top:6px">—</div>
-      <div class="muted" style="margin-top:4px">À confirmer</div>
-    </div>
-  </aside>
 
-  <main class="main">
-    <div class="topbar">
-      <div class="search"><span>🔎</span><input id="searchInput" placeholder="Rechercher par nom, téléphone, email, objectif..." /><span class="hint">Smart search</span></div>
-      <button class="iconbtn" id="exportBtn" title="Exporter JSON">⤓</button>
-      <button class="btn soft" id="seedBtn">Démo</button>
-      <button class="btn primary" id="newClientBtn">+ Client</button>
+<!-- ============================================================
+     SPLASH
+     ============================================================ -->
+<div id="splash">
+  <div class="splash-card">
+    <div class="splash-logo">EF</div>
+    <h1 class="splash-title">Energy Force</h1>
+    <p class="splash-subtitle">CRM Coaching · Accès sécurisé</p>
+
+    <div class="pin-display" id="pin-display">
+      <div class="pin-dot"></div>
+      <div class="pin-dot"></div>
+      <div class="pin-dot"></div>
+      <div class="pin-dot"></div>
+      <div class="pin-dot"></div>
+      <div class="pin-dot"></div>
     </div>
 
-    <section class="view active" id="view-dashboard">
-      <div class="hero">
-        <div class="panel">
-          <div class="section-title">
-            <h2>Vue d'ensemble</h2>
-            <div class="year-selector">
-              <span>📅</span>
-              <select id="yearSelector"></select>
-            </div>
-          </div>
-          <table class="stats-table">
-            <thead>
-              <tr>
-                <th>Clients</th>
-                <th>Séances</th>
-                <th>Ratio séances/client</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td id="statTotalClients">0</td>
-                <td id="statTotalSessions">0</td>
-                <td id="statRatio">0.0</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="panel">
-          <div class="section-title"><h2>Prochains RDV</h2><span class="tag">Agenda</span></div>
-          <div class="list" id="upcomingList"></div>
-        </div>
-      </div>
-      <div class="grid2">
-        <div class="panel">
-          <div class="section-title"><h2>Derniers clients</h2><span class="tag">Top 10</span></div>
-          <div class="list" id="recentList"></div>
-        </div>
-        <div class="panel">
-          <div class="section-title"><h2>Utilisation</h2><span class="tag">Demo</span></div>
-          <div class="muted">Cette version comprend la gestion des rendez-vous à venir, synchronisés depuis Google Sheets via Make. Les données incluent clients existants et historique des séances avec compteur automatique.</div>
-        </div>
-      </div>
-    </section>
+    <div class="pin-msg" id="pin-msg">Saisis ton code PIN à 6 chiffres</div>
 
-    <section class="view" id="view-appointments">
-      <div class="panel">
-        <div class="section-title"><h2>Rendez-vous à venir</h2><span class="tag" id="appointmentCount">0 RDV</span></div>
-        <div class="muted" style="margin-bottom:16px">📅 Les rendez-vous sont synchronisés automatiquement depuis Google Sheets via Make. Vous pouvez confirmer ou annuler les RDV directement ici.</div>
-        <div id="appointmentsList"></div>
-      </div>
-      <div class="panel" style="margin-top:14px">
-        <div class="section-title"><h2>Configuration Make</h2><span class="tag">API</span></div>
-        <div class="muted" style="margin-bottom:12px">🔗 Format attendu depuis Google Sheets :</div>
-        <pre style="background:#f8fafc;padding:14px;border-radius:12px;border:1px solid var(--line);overflow-x:auto;font-size:12px">{
-  "appointments": [
-    {
-      "id": "rdv1",
-      "clientName": "Nom du client",
-      "phone": "+596 696 XX XX XX",
-      "email": "email@example.com",
-      "date": "2026-05-10",
-      "time": "14:00",
-      "type": "Initiale",
-      "objective": "Objectif de la séance",
-      "status": "pending"
-    }
-  ]
-}</pre>
-      </div>
-    </section>
+    <div class="pin-keypad" id="pin-keypad"></div>
 
-    <section class="view" id="view-clients">
-      <div class="panel">
-        <div class="section-title"><h2>Clients</h2><span class="tag" id="resultCount">0 résultats</span></div>
-        <div class="toolbar">
-          <div class="chip" style="flex:1;min-width:220px"><input id="clientFilter" placeholder="Filtrer..." /></div>
-          <div class="chip" style="max-width:180px"><select id="statusFilter"><option value="all">Tous statuts</option><option value="actif">Actif</option><option value="pause">Pause</option></select></div>
-        </div>
-        <div class="list" id="clientsList"></div>
-      </div>
-    </section>
+    <div class="splash-divider">ou</div>
 
-    <section class="view" id="view-historique">
-      <div class="grid2">
-        <div class="panel">
-          <div class="section-title"><h2>Fiche client</h2><span class="tag" id="clientTag">—</span></div>
-          <div id="clientDetail"></div>
-          <div class="actions">
-            <button class="btn-icon edit" id="editClientBtn" title="Éditer le client">✏️</button>
-            <button class="btn-icon delete" id="deleteClientBtn" title="Supprimer le client">🗑️</button>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="section-title"><h2>Historique</h2><span class="tag">Timeline</span></div>
-          <div class="timeline" id="timeline"></div>
-        </div>
-      </div>
-      <div class="panel" style="margin-top:14px">
-        <div class="section-title"><h2>Nouvelle séance</h2><span class="tag">Rapide</span></div>
-        <form id="sessionForm" class="form">
-          <div class="field"><label>Client</label><select id="sessionClient"></select></div>
-          <div class="field"><label>Date</label><input class="input" id="sessionDate" type="date" /></div>
-          <div class="field"><label>Type</label><select id="sessionType"><option>Suivi</option><option>Initiale</option><option>Contrôle</option></select></div>
-          <div class="field"><label>État initial</label><input class="input" id="sessionState" placeholder="Stress, fatigue, douleur..." /></div>
-          <div class="field full"><label>Réalisé</label><textarea class="textarea" id="sessionReason" placeholder="Décrivez ce qui a été réalisé..."></textarea></div>
-          <div class="field full"><label>Notes / recommandations</label><textarea class="textarea" id="sessionNotes" placeholder="Observations, conseils, suivi..."></textarea></div>
-          <div class="actions full"><button type="button" class="btn soft" id="clearForm">Effacer</button><button class="btn primary" type="submit">Enregistrer la séance</button></div>
-        </form>
-      </div>
-    </section>
+    <button class="demo-btn" onclick="App.activateDemo()">
+      🎭 Mode démonstration
+    </button>
 
-    <section class="view" id="view-settings">
-      <div class="panel">
-        <div class="section-title"><h2>Paramètres</h2><span class="tag">JSON</span></div>
-        <p class="muted">Le fichier exporté contient les clients, les séances, les rendez-vous et les métadonnées utiles pour construire tes scénarios Make, sans perte de structure.</p>
-      </div>
-    </section>
-  </main>
-</div>
-
-<button class="floating" id="fab">+</button>
-<footer class="footer-mobile">
-  <button class="active" data-view="dashboard">Accueil</button>
-  <button data-view="appointments">RDV</button>
-  <button data-view="clients">Clients</button>
-  <button data-view="historique">Séances</button>
-  <button data-view="settings">Réglages</button>
-</footer>
-
-<div class="modalBackdrop" id="clientModalBackdrop">
-  <div class="modal">
-    <div class="modalHeader"><h3 id="modalTitle">Nouveau client</h3><button class="iconbtn" id="closeModal">✕</button></div>
-    <form id="clientForm">
-      <div class="modalBody">
-        <div class="form-grid">
-          <div class="field"><label>Nom complet</label><input class="input" id="cName" required placeholder="Ex. Jean Dupont" /></div>
-          <div class="field"><label>Téléphone</label><input class="input" id="cPhone" required placeholder="Ex. +596 ..." /></div>
-          <div class="field"><label>Email</label><input class="input" id="cEmail" type="email" placeholder="exemple@email.com" /></div>
-          <div class="field"><label>Statut</label><select id="cStatus"><option value="actif">Actif</option><option value="pause">Pause</option></select></div>
-          <div class="field"><label>Métier</label><input class="input" id="cJob" placeholder="Ex. Développeur, Enseignant..." /></div>
-          <div class="field"><label>Typologie du client</label><input class="input" id="cTypology" placeholder="Ex. Stressé, Sportif, Détendu..." /></div>
-          <div class="field full"><label>Objectif</label><textarea class="textarea" id="cObjective" placeholder="Ex. Gestion du stress"></textarea></div>
-          <div class="field full"><label>Commentaire</label><textarea class="textarea" id="cComment" placeholder="Informations utiles, contre-indications, préférences..."></textarea></div>
-        </div>
-      </div>
-      <div class="modalActions"><button type="button" class="btn soft" id="cancelModal">Annuler</button><button class="btn primary" type="submit">Enregistrer</button></div>
-    </form>
+    <div class="splash-footer">
+      Energy Force CRM · <span id="splash-version">v0.5</span> — 2026
+    </div>
   </div>
 </div>
 
-<script>
-const storageKey='energy_force_final_v9';
-let selectedYear = new Date().getFullYear();
-const sample={
-  clients:[
-    {id:'c1',name:'Jean Dupont',phone:'+596 696 00 00 00',email:'jean@example.com',status:'actif',job:'Développeur',typology:'Stressé',objective:'Gestion du stress',comment:'Très ponctuel, apprécie les séances courtes.',updated:'2026-05-02'},
-    {id:'c2',name:'Marie Legrand',phone:'+596 696 11 11 11',email:'marie@example.com',status:'actif',job:'Infirmière',typology:'Fatiguée',objective:'Sommeil et récupération',comment:'Travaille de nuit.',updated:'2026-04-28'},
-    {id:'c3',name:'Nathalie Morel',phone:'+596 696 22 22 22',email:'nathalie@example.com',status:'pause',job:'Enseignante',typology:'Anxieuse',objective:'Équilibre émotionnel',comment:'Suivi irrégulier.',updated:'2025-04-25'},
-    {id:'c4',name:'David Pierre',phone:'+596 696 33 33 33',email:'david@example.com',status:'actif',job:'Coach sportif',typology:'Sportif',objective:'Relâchement musculaire',comment:'Sportif amateur.',updated:'2026-04-22'},
-    {id:'c5',name:'Sophie Lambert',phone:'+596 696 44 44 44',email:'sophie@example.com',status:'actif',job:'Commerciale',typology:'Stressée',objective:'Recentrage',comment:'Déplacements fréquents.',updated:'2025-04-20'}
-  ],
-  sessions:[
-    {id:'s1',clientId:'c1',date:'2026-05-02',type:'Suivi',reason:'Séance de relaxation profonde avec exercices respiratoires',state:'Tendu',notes:'Respiration, recentrage, conseil repos.'},
-    {id:'s2',clientId:'c1',date:'2026-04-18',type:'Initiale',reason:'Bilan complet, évaluation posturale et énergétique',state:'Épuisé',notes:'Bilan complet, mise en route du suivi.'},
-    {id:'s3',clientId:'c2',date:'2026-04-28',type:'Contrôle',reason:'Travail sur le sommeil, protocole relaxation',state:'Fatigue légère',notes:'Progrès nets, maintien du protocole.'},
-    {id:'s4',clientId:'c4',date:'2026-04-22',type:'Suivi',reason:'Libération tensions musculaires épaules et nuque',state:'Raide',notes:'Relâchement et conseils posture.'},
-    {id:'s5',clientId:'c5',date:'2025-04-20',type:'Initiale',reason:'Évaluation globale et mise en place protocole',state:'Surmenée',notes:'Première séance, suivi prévu.'},
-    {id:'s6',clientId:'c1',date:'2026-03-15',type:'Suivi',reason:'Séance de recentrage',state:'Normal',notes:'Bon état général.'},
-    {id:'s7',clientId:'c2',date:'2025-02-10',type:'Suivi',reason:'Travail respiratoire',state:'Calme',notes:'Progression continue.'},
-    {id:'s8',clientId:'c3',date:'2025-06-12',type:'Initiale',reason:'Première consultation',state:'Anxieuse',notes:'Mise en place suivi.'},
-    {id:'s9',clientId:'c1',date:'2025-12-08',type:'Contrôle',reason:'Bilan fin année',state:'Détendu',notes:'Excellents résultats.'}
-  ],
-  appointments:[
-    {id:'rdv1',clientName:'Lucas Martin',phone:'+596 696 10 10 10',email:'lucas@example.com',date:'2026-05-05',time:'10:00',type:'Initiale',objective:'Gestion du stress professionnel',status:'pending'},
-    {id:'rdv2',clientName:'Emma Dubois',phone:'+596 696 20 20 20',email:'emma@example.com',date:'2026-05-06',time:'14:30',type:'Suivi',objective:'Amélioration du sommeil',status:'pending'},
-    {id:'rdv3',clientName:'Thomas Roux',phone:'+596 696 30 30 30',email:'thomas@example.com',date:'2026-05-08',time:'09:00',type:'Initiale',objective:'Récupération sportive',status:'pending'},
-    {id:'rdv4',clientName:'Camille Petit',phone:'+596 696 40 40 40',email:'camille@example.com',date:'2026-05-10',time:'16:00',type:'Contrôle',objective:'Suivi anxiété',status:'confirmed'},
-    {id:'rdv5',clientName:'Hugo Bernard',phone:'+596 696 50 50 50',email:'hugo@example.com',date:'2026-05-12',time:'11:30',type:'Initiale',objective:'Équilibre énergétique',status:'pending'}
-  ]
-};
-let state=JSON.parse(JSON.stringify(sample)); state.selectedClientId='c1'; let editingId=null;
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const save=()=>localStorage.setItem(storageKey,JSON.stringify(state));
-const load=()=>{const raw=localStorage.getItem(storageKey); if(raw){state=JSON.parse(raw)} save();};
-function clientSessions(id){return state.sessions.filter(s=>s.clientId===id).sort((a,b)=>b.date.localeCompare(a.date));}
-function getSessionsForYear(year){return state.sessions.filter(s=>s.date.startsWith(year.toString()));}
-function getClientsForYear(year){return state.clients.filter(c=>c.updated && c.updated.startsWith(year.toString()));}
-function getAvailableYears(){
-  const years = new Set();
-  state.sessions.forEach(s=>years.add(parseInt(s.date.substring(0,4))));
-  state.clients.forEach(c=>{if(c.updated)years.add(parseInt(c.updated.substring(0,4)))});
-  return Array.from(years).sort((a,b)=>b-a);
-}
-function populateYearSelector(){
-  const years = getAvailableYears();
-  const sel = $('#yearSelector');
-  sel.innerHTML = years.map(y=>`<option value="${y}" ${y===selectedYear?'selected':''}>${y}</option>`).join('');
-}
-function goView(view){ $$('.view').forEach(v=>v.classList.remove('active')); $('#view-'+view).classList.add('active'); $$('.nav button, .footer-mobile button').forEach(b=>b.classList.toggle('active',b.dataset.view===view)); }
-function formatDate(date){const d=new Date(date);return d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});}
-function renderStats(){ 
-  const clientsForYear = getClientsForYear(selectedYear);
-  const sessionsForYear = getSessionsForYear(selectedYear);
-  const totalClients = clientsForYear.length;
-  const totalSessions = sessionsForYear.length;
-  const ratio = totalClients > 0 ? (totalSessions / totalClients).toFixed(1) : '0.0';
+<!-- ============================================================
+     APP
+     ============================================================ -->
+<div id="app">
+  <header class="header">
+    <div class="header-logo">
+      <div class="header-logo-icon">EF</div>
+      <span>Energy Force</span>
+    </div>
+    <div class="header-actions">
+      <span id="demo-badge" class="demo-badge hidden">🎭 MODE DÉMO</span>
+      <button class="icon-btn" id="sync-btn" title="Synchroniser" onclick="App.syncNow()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9c-2.6 0-5-1.1-6.7-3"/><path d="M3 12a9 9 0 0 1 9-9c2.6 0 5 1.1 6.7 3"/><polyline points="21 3 21 9 15 9"/><polyline points="3 21 3 15 9 15"/></svg>
+      </button>
+      <button class="icon-btn" title="Déconnexion" onclick="App.logout()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </header>
 
-  $('#statTotalClients').textContent = totalClients;
-  $('#statTotalSessions').textContent = totalSessions;
-  $('#statRatio').textContent = ratio;
-  $('#appointmentBadge').textContent = state.appointments?.length||0;
+  <div class="layout">
+    <aside class="sidebar">
+      <button class="nav-item" data-route="dashboard" onclick="App.go('dashboard')">
+        <span class="nav-icon">🏠</span><span>Accueil</span>
+      </button>
+      <button class="nav-item" data-route="clients" onclick="App.go('clients')">
+        <span class="nav-icon">👥</span><span>Clients</span>
+      </button>
+      <button class="nav-item" data-route="sessions" onclick="App.go('sessions')">
+        <span class="nav-icon">📋</span><span>Séances</span>
+      </button>
+      <button class="nav-item" data-route="bookings" onclick="App.go('bookings')">
+        <span class="nav-icon">📅</span><span>Réservations</span>
+        <span class="nav-badge hidden" id="bookings-badge">0</span>
+      </button>
+      <button class="nav-item" data-route="settings" onclick="App.go('settings')">
+        <span class="nav-icon">⚙️</span><span>Paramètres</span>
+      </button>
+
+      <div style="margin-top: 24px; padding: 0 14px;">
+        <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-soft); margin-bottom: 8px;">Liens rapides</div>
+        <a href="https://cal.com/annuaire-youpi/30min" target="_blank" rel="noopener" class="nav-item" style="text-decoration:none;">
+          <span class="nav-icon">🔗</span><span style="font-size: 13px;">Page cal.com</span>
+        </a>
+        <a href="https://app.cal.com/event-types/1576938?tabName=availability" target="_blank" rel="noopener" class="nav-item" style="text-decoration:none;">
+          <span class="nav-icon">📆</span><span style="font-size: 13px;">Mes dispos</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main" id="main"></main>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="bottom-nav-item" data-route="dashboard" onclick="App.go('dashboard')">
+      <span class="nav-icon">🏠</span><span>Accueil</span>
+    </button>
+    <button class="bottom-nav-item" data-route="clients" onclick="App.go('clients')">
+      <span class="nav-icon">👥</span><span>Clients</span>
+    </button>
+    <button class="bottom-nav-item" data-route="sessions" onclick="App.go('sessions')">
+      <span class="nav-icon">📋</span><span>Séances</span>
+    </button>
+    <button class="bottom-nav-item" data-route="bookings" onclick="App.go('bookings')">
+      <span class="nav-icon">📅</span><span>RDV</span>
+      <span class="nav-badge hidden" id="bookings-badge-mobile">0</span>
+    </button>
+    <button class="bottom-nav-item" data-route="settings" onclick="App.go('settings')">
+      <span class="nav-icon">⚙️</span><span>Plus</span>
+    </button>
+  </nav>
+</div>
+
+<div id="toast-container"></div>
+<div id="modal-container"></div>
+<div id="loader"><div class="spinner"></div></div>
+
+<script>
+/* ============================================================
+   ENERGY FORCE — CRM Coaching
+   v0.1 — 2026
+   ============================================================ */
+
+const VERSION = 'v0.5';
+const APP_NAME = 'EnergyForce';
+
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const CONFIG = {
+  // 👇 À REMPLACER par l'URL de déploiement Apps Script (voir apps-script.js)
+  BACKEND_URL: localStorage.getItem('ef_backend_url') || '',
+  // PIN par défaut (à changer dans les Paramètres)
+  DEFAULT_PIN: '141214',
+  // Indicatif téléphonique par défaut (modifiable dans Paramètres)
+  // Utilisé si le numéro saisi n'a pas de + ni de 00
+  PHONE_PREFIX: localStorage.getItem('ef_phone_prefix') || '+596'
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let state = {
+  mode: 'real',           // 'real' | 'demo'
+  authed: false,
+  route: 'dashboard',
+  routeParams: {},
+  pin: '',
+  data: {
+    clients: [],
+    sessions: [],
+    bookings: []
+  },
+  filters: {
+    clientSearch: '',
+    clientStatut: 'tous',
+    sessionType: 'tous'
+  }
+};
+
+let demoSnapshot = null;
+let pinAttempts = parseInt(localStorage.getItem('ef_pin_attempts') || '0', 10);
+let pinLockedUntil = parseInt(localStorage.getItem('ef_pin_locked_until') || '0', 10);
+
+/* ============================================================
+   UTIL — LOG, ID, DATE, ESCAPE
+   ============================================================ */
+function log(...args) { console.log(`[${APP_NAME}]`, ...args); }
+function warn(...args) { console.warn(`[${APP_NAME}]`, ...args); }
+function err(...args) { console.error(`[${APP_NAME}]`, ...args); }
+
+function uid(prefix = 'id') {
+  return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
 }
-function renderUpcoming(){
-  const el=$('#upcomingList');
-  el.innerHTML='';
-  const upcoming=(state.appointments||[]).slice(0,3);
-  if(!upcoming.length){el.innerHTML='<div class="empty">Aucun rendez-vous programmé</div>';return;}
-  upcoming.forEach(a=>{
-    el.insertAdjacentHTML('beforeend',`<div class="row"><div><strong>${a.clientName}</strong><div class="muted">${formatDate(a.date)} à ${a.time}</div><div class="muted">${a.objective}</div></div><div class="tag ${a.status==='confirmed'?'confirmed':'upcoming'}">${a.status==='confirmed'?'Confirmé':'En attente'}</div></div>`);
+
+function nowIso() { return new Date().toISOString(); }
+
+function fmtDate(d) {
+  if (!d) return '';
+  const dt = (d instanceof Date) ? d : new Date(d);
+  if (isNaN(dt)) return '';
+  return dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function fmtDateTime(d) {
+  if (!d) return '';
+  const dt = (d instanceof Date) ? d : new Date(d);
+  if (isNaN(dt)) return '';
+  return dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) +
+    ' à ' + dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+function todayIsoDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+function escapeHtml(s) {
+  if (s === null || s === undefined) return '';
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function nl2br(s) { return escapeHtml(s).replace(/\n/g, '<br>'); }
+function initials(name) {
+  if (!name) return '?';
+  return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+}
+function avatarColor(name) {
+  const palette = ['#5B7FBF','#0284c7','#7c3aed','#db2777','#f59e0b','#16a34a','#dc2626','#475569'];
+  let h = 0;
+  for (let i = 0; i < (name || '').length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+  return palette[Math.abs(h) % palette.length];
+}
+function debounce(fn, ms) {
+  let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
+
+/* ============================================================
+   PHONE FORMAT
+   Convertit un numéro saisi en format international E.164 sans le +
+   (utilisable directement dans https://wa.me/...)
+   Accepte tous les formats :
+   - "+596696123456" → "596696123456"
+   - "00596696123456" → "596696123456"
+   - "0696123456" + indicatif "+596" → "596696123456"
+   - "696 12 34 56" + indicatif "+596" → "596696123456"
+   ============================================================ */
+function formatPhoneE164(phone, defaultPrefix) {
+  if (!phone) return '';
+  const prefix = (defaultPrefix || CONFIG.PHONE_PREFIX || '+33').replace(/[^0-9]/g, '');
+  // Supprime tout ce qui n'est pas chiffre ou +
+  let s = String(phone).replace(/[\s.\-()_/]/g, '').trim();
+  if (!s) return '';
+  // Format international avec +
+  if (s.charAt(0) === '+') {
+    return s.substring(1).replace(/\D/g, '');
+  }
+  // Format international avec 00
+  if (s.indexOf('00') === 0 && s.length > 4) {
+    return s.substring(2).replace(/\D/g, '');
+  }
+  // Numéro local : on enlève chiffres non-numériques, retire le 0 initial s'il y en a un, préfixe
+  s = s.replace(/\D/g, '');
+  if (s.charAt(0) === '0') s = s.substring(1);
+  return prefix + s;
+}
+
+/* Affichage lisible d'un numéro avec le + devant (pour UI) */
+function displayPhone(phone, defaultPrefix) {
+  const e164 = formatPhoneE164(phone, defaultPrefix);
+  return e164 ? '+' + e164 : (phone || '');
+}
+
+/* ============================================================
+   AUDIT LOG (LOCAL + DISTANT)
+   ============================================================ */
+function audit(action, details = {}) {
+  try {
+    const entry = { timestamp: nowIso(), action, details, mode: state.mode };
+    const local = JSON.parse(localStorage.getItem('ef_audit') || '[]');
+    local.unshift(entry);
+    localStorage.setItem('ef_audit', JSON.stringify(local.slice(0, 200)));
+    log('audit', entry);
+    if (state.mode === 'real' && CONFIG.BACKEND_URL) {
+      // Fire and forget — pas critique
+      fetch(CONFIG.BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'audit', data: entry })
+      }).catch(() => {});
+    }
+  } catch (e) { warn('audit failed', e); }
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function toast(message, type = 'info', duration = 3500) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  t.innerHTML = `<span class="toast-icon">${icons[type] || ''}</span><span>${escapeHtml(message)}</span>`;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.style.transition = 'all 0.3s ease';
+    t.style.opacity = '0'; t.style.transform = 'translateY(-10px)';
+    setTimeout(() => t.remove(), 300);
+  }, duration);
+}
+
+/* ============================================================
+   LOADER
+   ============================================================ */
+function showLoader() { document.getElementById('loader').classList.add('active'); }
+function hideLoader() { document.getElementById('loader').classList.remove('active'); }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function openModal({ title, body, footer, size = '' }) {
+  const c = document.getElementById('modal-container');
+  c.innerHTML = `
+    <div class="modal-backdrop" onclick="if(event.target===this)closeModal()">
+      <div class="modal ${size === 'lg' ? 'modal-lg' : ''}">
+        <div class="modal-header">
+          <div class="modal-title">${escapeHtml(title)}</div>
+          <button class="icon-btn" onclick="closeModal()" aria-label="Fermer">✕</button>
+        </div>
+        <div class="modal-body">${body}</div>
+        ${footer ? `<div class="modal-footer">${footer}</div>` : ''}
+      </div>
+    </div>`;
+}
+function closeModal() {
+  document.getElementById('modal-container').innerHTML = '';
+}
+
+function confirmModal(message, onConfirm, opts = {}) {
+  openModal({
+    title: opts.title || 'Confirmer',
+    body: `<p style="font-size:14px;line-height:1.6;">${escapeHtml(message)}</p>`,
+    footer: `
+      <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn ${opts.danger ? 'btn-danger' : 'btn-primary'}" id="confirm-ok-btn">${opts.confirmLabel || 'Confirmer'}</button>
+    `
   });
+  document.getElementById('confirm-ok-btn').onclick = () => { closeModal(); onConfirm(); };
 }
-function renderAppointments(){
-  const el=$('#appointmentsList');
-  const appointments=state.appointments||[];
-  $('#appointmentCount').textContent=`${appointments.length} RDV`;
-  if(!appointments.length){el.innerHTML='<div class="empty">Aucun rendez-vous. Les données seront synchronisées depuis Google Sheets via Make.</div>';return;}
-  el.innerHTML='';
-  appointments.forEach(a=>{
-    el.insertAdjacentHTML('beforeend',`
-      <div class="appointment">
-        <div style="display:flex;justify-content:space-between;align-items:start;gap:12px">
-          <div style="flex:1">
-            <div class="time">${a.time}</div>
-            <div class="date">${formatDate(a.date)}</div>
-            <div style="margin-top:12px"><strong style="font-size:18px">${a.clientName}</strong></div>
-            <div class="muted" style="margin-top:4px">📞 ${a.phone} ${a.email?'· ✉️ '+a.email:''}</div>
-            <div class="muted" style="margin-top:8px">Type : ${a.type}</div>
-            <div class="muted">Objectif : ${a.objective}</div>
+
+/* ============================================================
+   PIN / AUTH (Schéma B)
+   ============================================================ */
+const PIN = {
+  init() {
+    const keypad = document.getElementById('pin-keypad');
+    const layout = ['1','2','3','4','5','6','7','8','9','#','0','⌫'];
+    keypad.innerHTML = layout.map(k => {
+      const isAction = (k === '#' || k === '⌫');
+      return `<button class="pin-key ${isAction ? 'action' : ''}" data-k="${k}">${k}</button>`;
+    }).join('');
+    keypad.addEventListener('click', e => {
+      const btn = e.target.closest('.pin-key');
+      if (!btn) return;
+      const k = btn.dataset.k;
+      this.handleKey(k);
+    });
+    document.addEventListener('keydown', e => {
+      if (state.authed) return;
+      if (/^[0-9]$/.test(e.key)) this.handleKey(e.key);
+      else if (e.key === '#') this.handleKey('#');
+      else if (e.key === 'Backspace') this.handleKey('⌫');
+      else if (e.key === 'Enter' && state.pin.length === 6) this.submit();
+    });
+    this.refresh();
+  },
+
+  handleKey(k) {
+    if (this.isLocked()) { this.refresh(); return; }
+    if (k === '⌫') {
+      state.pin = state.pin.slice(0, -1);
+    } else if (state.pin.length < 6) {
+      state.pin += k;
+    }
+    this.refresh();
+    if (state.pin.length === 6) {
+      setTimeout(() => this.submit(), 150);
+    }
+  },
+
+  isLocked() {
+    return Date.now() < pinLockedUntil;
+  },
+
+  refresh() {
+    const dots = document.querySelectorAll('#pin-display .pin-dot');
+    dots.forEach((d, i) => {
+      d.classList.toggle('filled', i < state.pin.length);
+      d.classList.remove('error');
+    });
+    const msg = document.getElementById('pin-msg');
+    if (this.isLocked()) {
+      const mins = Math.ceil((pinLockedUntil - Date.now()) / 60000);
+      msg.textContent = `🔒 Verrouillé. Réessaie dans ${mins} min`;
+      msg.className = 'pin-msg error';
+    } else {
+      msg.textContent = 'Saisis ton code PIN à 6 chiffres';
+      msg.className = 'pin-msg';
+    }
+  },
+
+  isWeak(pin) {
+    if (/^(\d)\1{5}$/.test(pin)) return true; // 000000, 111111…
+    if (/^123456$|^654321$|^012345$|^543210$/.test(pin)) return true;
+    return false;
+  },
+
+  submit() {
+    if (this.isLocked()) return;
+    const stored = localStorage.getItem('ef_pin') || CONFIG.DEFAULT_PIN;
+    if (state.pin === stored) {
+      pinAttempts = 0;
+      localStorage.setItem('ef_pin_attempts', '0');
+      localStorage.setItem('ef_pin_locked_until', '0');
+      audit('login_success');
+      App.enterReal();
+    } else {
+      pinAttempts++;
+      localStorage.setItem('ef_pin_attempts', String(pinAttempts));
+      audit('login_fail', { attempts: pinAttempts });
+      const dots = document.querySelectorAll('#pin-display .pin-dot');
+      dots.forEach(d => d.classList.add('error'));
+      const msg = document.getElementById('pin-msg');
+      msg.className = 'pin-msg error';
+      msg.textContent = 'PIN incorrect';
+      setTimeout(() => {
+        state.pin = '';
+        if (pinAttempts >= 15) {
+          pinLockedUntil = Date.now() + 24*60*60*1000;
+          localStorage.setItem('ef_pin_locked_until', String(pinLockedUntil));
+        } else if (pinAttempts >= 10) {
+          pinLockedUntil = Date.now() + 60*60*1000;
+          localStorage.setItem('ef_pin_locked_until', String(pinLockedUntil));
+        } else if (pinAttempts >= 5) {
+          pinLockedUntil = Date.now() + 5*60*1000;
+          localStorage.setItem('ef_pin_locked_until', String(pinLockedUntil));
+        }
+        this.refresh();
+      }, 600);
+    }
+  }
+};
+
+/* ============================================================
+   API / SYNC
+   ============================================================ */
+async function apiCall(action, data = {}, retries = 3) {
+  if (state.mode === 'demo') {
+    log('apiCall (demo - skipped):', action);
+    return { ok: true, demo: true };
+  }
+  if (!CONFIG.BACKEND_URL) {
+    warn('Pas d\'URL backend configurée');
+    return { ok: false, error: 'no_backend' };
+  }
+  const delays = [300, 800, 2000];
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(CONFIG.BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action, data })
+      });
+      const json = await res.json();
+      if (json.ok === false) throw new Error(json.error || 'Backend error');
+      return json;
+    } catch (e) {
+      warn(`apiCall ${action} attempt ${i+1} failed`, e);
+      if (i < retries - 1) await new Promise(r => setTimeout(r, delays[i]));
+      else throw e;
+    }
+  }
+}
+
+async function syncToBackend(action, data) {
+  if (state.mode === 'demo') {
+    log('syncToBackend skipped (demo):', action);
+    return { ok: true, demo: true };
+  }
+  if (!CONFIG.BACKEND_URL) {
+    warn('syncToBackend: pas d\'URL backend, données stockées localement');
+    return { ok: false, error: 'no_backend' };
+  }
+  try {
+    return await apiCall(action, data);
+  } catch (e) {
+    err('syncToBackend failed', e);
+    return { ok: false, error: e.message };
+  }
+}
+
+/* ============================================================
+   DEMO DATA
+   ============================================================ */
+function generateDemoData() {
+  const now = Date.now();
+  const days = (n) => new Date(now - n * 86400000).toISOString();
+
+  const clients = [
+    {
+      id: 'c_demo_1', nom_complet: 'Sophie Martin', telephone: '+33612345678', email: 'sophie.martin@exemple.fr',
+      statut: 'actif', metier: 'Designer UX', typologie: 'Performance / Confiance',
+      objectif: 'Reprendre confiance pour parler en public et présenter mes projets sans stress.',
+      commentaires: 'Très impliquée. Préfère les séances le matin.',
+      date_creation: days(45), date_modification: days(2)
+    },
+    {
+      id: 'c_demo_2', nom_complet: 'Jean Dupont', telephone: '+33698765432', email: 'jean.dupont@exemple.fr',
+      statut: 'actif', metier: 'Ingénieur logiciel', typologie: 'Reconversion',
+      objectif: 'Préparer une transition vers un poste de manager d\'équipe.',
+      commentaires: 'Aime la structure, demande des feuilles de route claires.',
+      date_creation: days(60), date_modification: days(5)
+    },
+    {
+      id: 'c_demo_3', nom_complet: 'Aïcha Benali', telephone: '+32475123456', email: 'aicha.benali@exemple.fr',
+      statut: 'pause', metier: 'Infirmière', typologie: 'Burnout / Rééquilibrage',
+      objectif: 'Sortir d\'un cycle d\'épuisement professionnel et retrouver de l\'énergie.',
+      commentaires: 'Cliente belge. En arrêt de travail. Reprise du suivi prévue dans 2 semaines.',
+      date_creation: days(90), date_modification: days(15)
+    },
+    {
+      id: 'c_demo_4', nom_complet: 'Pierre Lefevre', telephone: '+596696543210', email: 'pierre.lefevre@exemple.fr',
+      statut: 'actif', metier: 'Dirigeant PME', typologie: 'Leadership',
+      objectif: 'Mieux déléguer et structurer ma vision long terme pour l\'entreprise.',
+      commentaires: 'Client local Martinique. Disponibilités limitées, séances de 30 min uniquement.',
+      date_creation: days(30), date_modification: days(1)
+    },
+    {
+      id: 'c_demo_5', nom_complet: 'Marie Lambert', telephone: '+33676543210', email: 'marie.lambert@exemple.fr',
+      statut: 'actif', metier: 'Professeure des écoles', typologie: 'Gestion du stress',
+      objectif: 'Apprendre à mettre des limites avec les parents d\'élèves et la hiérarchie.',
+      commentaires: 'Très sensible aux exercices de respiration.',
+      date_creation: days(20), date_modification: days(3)
+    }
+  ];
+
+  const sessions = [
+    // ----- Séances FUTURES (RDV programmés manuellement) -----
+    { id: 's_d_f1', client_id: 'c_demo_1', client_nom: 'Sophie Martin',
+      date: new Date(now + 1*86400000).toISOString().slice(0,10), heure: '09:00', type: 'suivi',
+      realise: '', notes: '', recommandations: '',
+      date_creation: days(0) },
+    { id: 's_d_f2', client_id: 'c_demo_4', client_nom: 'Pierre Lefevre',
+      date: new Date(now + 2*86400000).toISOString().slice(0,10), heure: '11:30', type: 'suivi',
+      realise: '', notes: '', recommandations: '',
+      date_creation: days(0) },
+    { id: 's_d_f3', client_id: 'c_demo_5', client_nom: 'Marie Lambert',
+      date: new Date(now + 3*86400000).toISOString().slice(0,10), heure: '15:00', type: 'suivi',
+      realise: '', notes: '', recommandations: '',
+      date_creation: days(0) },
+    { id: 's_d_f4', client_id: 'c_demo_2', client_nom: 'Jean Dupont',
+      date: new Date(now + 4*86400000).toISOString().slice(0,10), heure: '17:00', type: 'controle',
+      realise: '', notes: '', recommandations: '',
+      date_creation: days(0) },
+    { id: 's_d_f5', client_id: 'c_demo_1', client_nom: 'Sophie Martin',
+      date: new Date(now + 6*86400000).toISOString().slice(0,10), heure: '09:30', type: 'suivi',
+      realise: '', notes: '', recommandations: '',
+      date_creation: days(0) },
+
+    // ----- Séances PASSÉES (historique) -----
+    { id: 's_d_1', client_id: 'c_demo_1', client_nom: 'Sophie Martin', date: days(2), type: 'suivi',
+      realise: 'Travail sur 3 situations professionnelles récentes. Identifié un schéma de retrait en réunion.',
+      notes: 'Sophie a beaucoup avancé. Visualisation positive testée et bien intégrée. Voix plus posée en fin de séance.',
+      recommandations: 'Pratiquer la respiration 4-7-8 chaque matin. Préparer ses 3 prochaines réunions par écrit.',
+      date_creation: days(2) },
+    { id: 's_d_2', client_id: 'c_demo_1', client_nom: 'Sophie Martin', date: days(15), type: 'suivi',
+      realise: 'Bilan mi-parcours. Exercice du miroir.',
+      notes: 'Premier vrai déclic. Sophie a parlé en réunion la semaine dernière sans rougir.',
+      recommandations: 'Tenir un journal quotidien des micro-victoires.',
+      date_creation: days(15) },
+    { id: 's_d_3', client_id: 'c_demo_1', client_nom: 'Sophie Martin', date: days(45), type: 'initial',
+      realise: 'Bilan initial complet. Histoire personnelle, contexte pro, objectifs SMART.',
+      notes: 'Personnalité réfléchie, très consciente de ses blocages. Forte motivation.',
+      recommandations: 'Lire "Oser" de Frédéric Fanget. Poser un objectif court terme par semaine.',
+      date_creation: days(45) },
+
+    { id: 's_d_4', client_id: 'c_demo_2', client_nom: 'Jean Dupont', date: days(5), type: 'suivi',
+      realise: 'Mise en situation managériale. Jeu de rôle entretien annuel.',
+      notes: 'Jean reste très technique dans sa posture. Travail à faire sur l\'écoute active.',
+      recommandations: 'Poser au moins 3 questions ouvertes par échange cette semaine.',
+      date_creation: days(5) },
+    { id: 's_d_5', client_id: 'c_demo_2', client_nom: 'Jean Dupont', date: days(20), type: 'controle',
+      realise: 'Point d\'étape sur l\'avancement. Revue des objectifs initiaux.',
+      notes: 'Bonne progression sur la délégation. Encore bloqué sur le conflit interpersonnel.',
+      recommandations: 'Préparer un plan de communication pour le sujet conflit avec Marc.',
+      date_creation: days(20) },
+    { id: 's_d_6', client_id: 'c_demo_2', client_nom: 'Jean Dupont', date: days(60), type: 'initial',
+      realise: 'Bilan initial. Cadrage du parcours sur 3 mois.',
+      notes: 'Profil très analytique. Demandera une approche structurée.',
+      recommandations: 'Identifier 3 personnes inspirantes dans son réseau.',
+      date_creation: days(60) },
+
+    { id: 's_d_7', client_id: 'c_demo_3', client_nom: 'Aïcha Benali', date: days(20), type: 'suivi',
+      realise: 'Séance de pause volontaire. Discussion sur la décision d\'arrêt.',
+      notes: 'Aïcha est apaisée par sa décision. Beaucoup d\'émotion en début de séance.',
+      recommandations: 'Pas d\'objectif imposé. Repos. Reprise du suivi à son initiative.',
+      date_creation: days(20) },
+    { id: 's_d_8', client_id: 'c_demo_3', client_nom: 'Aïcha Benali', date: days(40), type: 'suivi',
+      realise: 'Travail sur les croyances limitantes liées au métier.',
+      notes: 'Aïcha porte une charge mentale très lourde. Fatigue physique visible.',
+      recommandations: 'Consulter son médecin. Déposer un arrêt si besoin.',
+      date_creation: days(40) },
+
+    { id: 's_d_9', client_id: 'c_demo_4', client_nom: 'Pierre Lefevre', date: days(1), type: 'suivi',
+      realise: 'Cartographie des projets en cours. Priorisation par impact.',
+      notes: 'Pierre identifie 3 projets à abandonner. Soulagement visible.',
+      recommandations: 'Annoncer les arrêts de projets cette semaine. Réunion équipe lundi.',
+      date_creation: days(1) },
+    { id: 's_d_10', client_id: 'c_demo_4', client_nom: 'Pierre Lefevre', date: days(10), type: 'suivi',
+      realise: 'Travail sur la délégation. Liste des tâches à transférer.',
+      notes: 'Difficulté à lâcher prise sur les tâches techniques.',
+      recommandations: 'Confier 2 tâches précises à son adjoint cette semaine.',
+      date_creation: days(10) },
+    { id: 's_d_11', client_id: 'c_demo_4', client_nom: 'Pierre Lefevre', date: days(30), type: 'initial',
+      realise: 'Bilan initial. Vision 3 ans co-construite.',
+      notes: 'Énergie débordante. Manque de structure dans la priorisation.',
+      recommandations: 'Bloquer 2h par semaine pour la stratégie.',
+      date_creation: days(30) },
+
+    { id: 's_d_12', client_id: 'c_demo_5', client_nom: 'Marie Lambert', date: days(3), type: 'suivi',
+      realise: 'Identification des situations déclenchantes. Mise en place d\'un protocole de respiration.',
+      notes: 'Marie a déjà réussi à dire non à un parent d\'élève. Gros pas.',
+      recommandations: 'Continuer la respiration 4-7-8. Tenir son journal de limites.',
+      date_creation: days(3) },
+    { id: 's_d_13', client_id: 'c_demo_5', client_nom: 'Marie Lambert', date: days(12), type: 'suivi',
+      realise: 'Jeu de rôle entretien parents difficile.',
+      notes: 'Voix plus assurée. Posture corporelle à travailler encore.',
+      recommandations: 'Exercice posture devant le miroir 5 min/jour.',
+      date_creation: days(12) },
+    { id: 's_d_14', client_id: 'c_demo_5', client_nom: 'Marie Lambert', date: days(20), type: 'initial',
+      realise: 'Bilan initial. Test de l\'estime de soi.',
+      notes: 'Score faible mais conscience claire des leviers.',
+      recommandations: 'Lecture "Imparfaits, libres et heureux" de Christophe André.',
+      date_creation: days(20) }
+  ];
+
+  const bookings = [
+    { id: 'b_d_1', nom: 'Thomas Bernard', email: 'thomas.bernard@exemple.ch', telephone: '+41791223344',
+      date_rdv: new Date(now + 86400000).toISOString().slice(0, 10),
+      heure_rdv: '14:00', message: 'Première séance de découverte. J\'ai été recommandé par Sophie Martin. Je suis basé à Genève.',
+      statut: 'en_attente', date_reception: days(0), source: 'cal.com' },
+    { id: 'b_d_2', nom: 'Sarah Cohen', email: 'sarah.cohen@exemple.ca', telephone: '+15149887766',
+      date_rdv: new Date(now + 3*86400000).toISOString().slice(0, 10),
+      heure_rdv: '10:30', message: 'Coaching pour gestion du temps. Je suis à Montréal, prévoir le décalage horaire.',
+      statut: 'en_attente', date_reception: days(0), source: 'cal.com' },
+    { id: 'b_d_3', nom: 'Karim Ali', email: 'karim.ali@exemple.ma', telephone: '+212661334455',
+      date_rdv: new Date(now + 5*86400000).toISOString().slice(0, 10),
+      heure_rdv: '16:00', message: 'Renouvellement du cycle après pause. Casablanca.',
+      statut: 'valide', date_reception: days(2), source: 'cal.com' }
+  ];
+
+  return { clients, sessions, bookings };
+}
+
+/* ============================================================
+   APP CORE
+   ============================================================ */
+const App = {
+  init() {
+    log(`booting ${VERSION}`);
+    PIN.init();
+
+    // Affichage dynamique de la version sur l'écran de connexion (toujours à jour)
+    const splashVer = document.getElementById('splash-version');
+    if (splashVer) splashVer.textContent = VERSION;
+
+    // Service worker / PWA manifest dynamique
+    this.installManifest();
+
+    // Persiste la dernière route
+    state.route = localStorage.getItem('ef_last_route') || 'dashboard';
+  },
+
+  installManifest() {
+    const manifest = {
+      name: 'Energy Force CRM',
+      short_name: 'Energy Force',
+      start_url: '.',
+      display: 'standalone',
+      background_color: '#f7f8fa',
+      theme_color: '#5B7FBF',
+      icons: [
+        { src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='42' fill='%235B7FBF'/><text x='50%25' y='62%25' font-family='Arial' font-size='110' text-anchor='middle' fill='white' font-weight='bold'>EF</text></svg>",
+          sizes: '192x192', type: 'image/svg+xml' }
+      ]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('link');
+    link.rel = 'manifest'; link.href = url;
+    document.head.appendChild(link);
+  },
+
+  async activateDemo() {
+    log('Activating demo mode');
+    state.mode = 'demo';
+    demoSnapshot = generateDemoData();
+    state.data = JSON.parse(JSON.stringify(demoSnapshot));
+    state.authed = true;
+    audit('demo_activated');
+    document.getElementById('splash').style.display = 'none';
+    document.getElementById('app').classList.add('active');
+    document.getElementById('demo-badge').classList.remove('hidden');
+    toast('Mode démonstration activé', 'success');
+    this.go(state.route || 'dashboard');
+  },
+
+  async enterReal() {
+    log('Entering real mode');
+    state.mode = 'real';
+    state.authed = true;
+    document.getElementById('splash').style.display = 'none';
+    document.getElementById('app').classList.add('active');
+    document.getElementById('demo-badge').classList.add('hidden');
+
+    // Charger depuis cache local pour résilience
+    this.loadFromCache();
+    this.go(state.route || 'dashboard');
+
+    // Sync depuis backend
+    if (CONFIG.BACKEND_URL) {
+      this.syncNow(true);
+      this.startAutoSync();
+    } else {
+      toast('Aucun backend configuré — données locales uniquement', 'warning', 5000);
+    }
+  },
+
+  loadFromCache() {
+    try {
+      const cached = localStorage.getItem('ef_data_cache');
+      if (cached) {
+        state.data = JSON.parse(cached);
+        log('Loaded from cache', state.data);
+      }
+    } catch (e) { warn('Cache load failed', e); }
+  },
+
+  saveToCache() {
+    if (state.mode === 'demo') return;
+    try {
+      localStorage.setItem('ef_data_cache', JSON.stringify(state.data));
+    } catch (e) { warn('Cache save failed', e); }
+  },
+
+  async syncNow(silent = false) {
+    if (state.mode === 'demo') {
+      if (!silent) toast('Pas de sync en mode démo', 'info');
+      return;
+    }
+    if (!CONFIG.BACKEND_URL) {
+      if (!silent) toast('Configurez l\'URL du backend dans Paramètres', 'warning');
+      return;
+    }
+    const btn = document.getElementById('sync-btn');
+    btn.classList.add('spin');
+    if (!silent) showLoader();
+    try {
+      // Snapshot avant sync : on retient les ids et statuts des bookings actuels
+      const beforeIds = new Set(state.data.bookings.filter(b => b.statut === 'en_attente').map(b => b.id));
+      const beforePendingCount = beforeIds.size;
+
+      const res = await apiCall('getAllData');
+      if (res && res.ok) {
+        state.data = {
+          clients: res.data.clients || [],
+          sessions: res.data.sessions || [],
+          bookings: res.data.bookings || []
+        };
+        this.saveToCache();
+        this.refreshCurrentView();
+
+        // Détection nouveaux bookings en_attente (probablement reçus via webhook)
+        const afterPending = state.data.bookings.filter(b => b.statut === 'en_attente');
+        const newOnes = afterPending.filter(b => !beforeIds.has(b.id));
+        if (newOnes.length > 0) {
+          const noms = newOnes.slice(0, 2).map(b => b.nom || 'Inconnu').join(', ');
+          const more = newOnes.length > 2 ? ` (+${newOnes.length - 2})` : '';
+          toast(`📥 ${newOnes.length} nouvelle${newOnes.length > 1 ? 's' : ''} réservation${newOnes.length > 1 ? 's' : ''} cal.com : ${noms}${more}`, 'success', 6000);
+        } else if (!silent) {
+          toast('Synchronisation réussie', 'success');
+        }
+      } else {
+        if (!silent) toast('Erreur de synchronisation', 'error');
+      }
+    } catch (e) {
+      err('sync failed', e);
+      if (!silent) toast('Synchronisation échouée — données locales conservées', 'error');
+    } finally {
+      btn.classList.remove('spin');
+      hideLoader();
+    }
+  },
+
+  startAutoSync() {
+    // Auto-refresh toutes les 3 minutes en mode réel pour récupérer les nouveaux webhooks cal.com
+    if (this._autoSyncTimer) clearInterval(this._autoSyncTimer);
+    this._autoSyncTimer = setInterval(() => {
+      if (state.mode !== 'real') return;
+      if (!CONFIG.BACKEND_URL) return;
+      // Skip si un modal est ouvert (utilisateur en train de saisir quelque chose)
+      const modal = document.querySelector('.modal-backdrop:not(.hidden)');
+      if (modal) return;
+      // Skip si onglet pas visible
+      if (document.hidden) return;
+      log('autosync tick');
+      this.syncNow(true);
+    }, 180000); // 3 min
+  },
+
+  stopAutoSync() {
+    if (this._autoSyncTimer) {
+      clearInterval(this._autoSyncTimer);
+      this._autoSyncTimer = null;
+    }
+  },
+
+  logout() {
+    confirmModal('Se déconnecter ?', () => {
+      audit('logout');
+      this.stopAutoSync();
+      state.authed = false;
+      if (state.mode === 'demo') {
+        state.data = { clients: [], sessions: [], bookings: [] };
+        demoSnapshot = null;
+      }
+      state.mode = 'real';
+      state.pin = '';
+      document.getElementById('app').classList.remove('active');
+      document.getElementById('splash').style.display = 'flex';
+      document.getElementById('demo-badge').classList.add('hidden');
+      PIN.refresh();
+    });
+  },
+
+  go(route, params = {}) {
+    state.route = route;
+    state.routeParams = params;
+    localStorage.setItem('ef_last_route', route);
+    this.refreshNav();
+    this.render();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  },
+
+  refreshNav() {
+    document.querySelectorAll('[data-route]').forEach(el => {
+      const r = el.dataset.route;
+      const isActive =
+        r === state.route ||
+        (r === 'clients' && state.route === 'client') ||
+        (r === 'sessions' && (state.route === 'session' || state.route === 'session-edit')) ||
+        (r === 'settings' && state.route === 'audit');
+      el.classList.toggle('active', isActive);
+    });
+
+    // Badge réservations en attente
+    const pendingCount = state.data.bookings.filter(b => b.statut === 'en_attente').length;
+    ['bookings-badge', 'bookings-badge-mobile'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (pendingCount > 0) {
+        el.classList.remove('hidden');
+        el.textContent = String(pendingCount);
+      } else {
+        el.classList.add('hidden');
+      }
+    });
+  },
+
+  refreshCurrentView() {
+    this.render();
+    this.refreshNav();
+  },
+
+  render() {
+    const main = document.getElementById('main');
+    switch (state.route) {
+      case 'dashboard':     main.innerHTML = Views.dashboard(); break;
+      case 'clients':       main.innerHTML = Views.clients(); Views.attachClientsHandlers(); break;
+      case 'client':        main.innerHTML = Views.clientDetail(state.routeParams.id); break;
+      case 'sessions':      main.innerHTML = Views.sessions(); Views.attachSessionsHandlers(); break;
+      case 'session':       main.innerHTML = Views.sessionDetail(state.routeParams.id); break;
+      case 'bookings':      main.innerHTML = Views.bookings(); break;
+      case 'settings':      main.innerHTML = Views.settings(); break;
+      case 'audit':         main.innerHTML = Views.audit(); break;
+      default:              main.innerHTML = Views.dashboard();
+    }
+  }
+};
+
+/* ============================================================
+   ACTIONS — CRUD CLIENTS
+   ============================================================ */
+const Actions = {
+  // ----- CLIENT -----
+  openClientForm(client = null) {
+    const isEdit = !!client;
+    const c = client || {
+      nom_complet: '', telephone: '', email: '', statut: 'actif',
+      metier: '', typologie: '', objectif: '', commentaires: ''
+    };
+    openModal({
+      title: isEdit ? 'Modifier le client' : 'Nouveau client',
+      body: `
+        <form id="client-form" onsubmit="event.preventDefault();Actions.saveClient(${isEdit ? `'${c.id}'` : 'null'});">
+          <div class="form-group">
+            <label class="form-label">Nom complet<span class="req">*</span></label>
+            <input class="form-input" name="nom_complet" required value="${escapeHtml(c.nom_complet)}" autofocus>
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            ${a.status==='pending'?`<button class="btn-icon confirm" data-confirm="${a.id}" title="Confirmer">✓</button>`:''}
-            <button class="btn-icon delete" data-cancel="${a.id}" title="Annuler">✕</button>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">Téléphone</label>
+              <input class="form-input" name="telephone" type="tel" id="client-phone-input" value="${escapeHtml(c.telephone)}" placeholder="${escapeHtml(CONFIG.PHONE_PREFIX)} 696 12 34 56" oninput="Actions.updatePhonePreview()">
+              <div class="form-hint" id="client-phone-hint" style="font-size:11px;color:var(--text-muted);margin-top:4px;">Indicatif par défaut : <b>${escapeHtml(CONFIG.PHONE_PREFIX)}</b> · Pour un autre pays, saisis le numéro avec son indicatif (ex : +33612345678).</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-input" name="email" type="email" value="${escapeHtml(c.email)}" placeholder="prenom@exemple.fr">
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">Statut<span class="req">*</span></label>
+              <select class="form-select" name="statut" required>
+                <option value="actif" ${c.statut === 'actif' ? 'selected' : ''}>Actif</option>
+                <option value="pause" ${c.statut === 'pause' ? 'selected' : ''}>En pause</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Métier</label>
+              <input class="form-input" name="metier" value="${escapeHtml(c.metier)}" placeholder="Ex. Designer, Manager…">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Typologie du client</label>
+            <input class="form-input" name="typologie" value="${escapeHtml(c.typologie)}" placeholder="Ex. Performance, Reconversion…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Objectif</label>
+            <textarea class="form-textarea" name="objectif" rows="3">${escapeHtml(c.objectif)}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Commentaires</label>
+            <textarea class="form-textarea" name="commentaires" rows="3">${escapeHtml(c.commentaires)}</textarea>
+          </div>
+        </form>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="document.getElementById('client-form').requestSubmit()">${isEdit ? 'Enregistrer' : 'Créer'}</button>
+      `
+    });
+  },
+
+  async saveClient(existingId) {
+    const f = document.getElementById('client-form');
+    const data = {
+      id: existingId || uid('cl'),
+      nom_complet: f.nom_complet.value.trim(),
+      telephone: f.telephone.value.trim(),
+      email: f.email.value.trim(),
+      statut: f.statut.value,
+      metier: f.metier.value.trim(),
+      typologie: f.typologie.value.trim(),
+      objectif: f.objectif.value.trim(),
+      commentaires: f.commentaires.value.trim(),
+      date_modification: nowIso()
+    };
+    if (!data.nom_complet) { toast('Nom requis', 'error'); return; }
+
+    if (existingId) {
+      const idx = state.data.clients.findIndex(c => c.id === existingId);
+      if (idx >= 0) state.data.clients[idx] = { ...state.data.clients[idx], ...data };
+      audit('client_update', { id: data.id, nom: data.nom_complet });
+    } else {
+      data.date_creation = nowIso();
+      state.data.clients.push(data);
+      audit('client_create', { id: data.id, nom: data.nom_complet });
+    }
+    App.saveToCache();
+    closeModal();
+    App.refreshCurrentView();
+
+    showLoader();
+    const res = await syncToBackend(existingId ? 'updateClient' : 'addClient', data);
+    hideLoader();
+    if (res.ok) toast(`Client ${existingId ? 'modifié' : 'créé'}`, 'success');
+    else if (res.demo) toast(`Client ${existingId ? 'modifié' : 'créé'} (démo)`, 'success');
+    else toast('Sauvegardé localement (sync échouée)', 'warning');
+
+    if (state.route === 'client') App.go('client', { id: data.id });
+  },
+
+  deleteClient(id) {
+    const c = state.data.clients.find(x => x.id === id);
+    if (!c) return;
+    confirmModal(`Supprimer définitivement ${c.nom_complet} et tout son historique ?`, async () => {
+      state.data.clients = state.data.clients.filter(x => x.id !== id);
+      state.data.sessions = state.data.sessions.filter(s => s.client_id !== id);
+      audit('client_delete', { id, nom: c.nom_complet });
+      App.saveToCache();
+      App.go('clients');
+      toast('Client supprimé', 'success');
+      const res = await syncToBackend('deleteClient', { id });
+      if (!res.ok && !res.demo) toast('Suppression locale OK, sync échouée', 'warning');
+    }, { danger: true, confirmLabel: 'Supprimer' });
+  },
+
+  // ----- SESSION -----
+  openSessionForm(session = null, clientId = null) {
+    const isEdit = !!session;
+    const s = session || {
+      client_id: clientId || '',
+      date: todayIsoDate(),
+      heure: '',
+      type: 'suivi', realise: '', notes: '', recommandations: ''
+    };
+    const clients = [...state.data.clients].sort((a,b)=>a.nom_complet.localeCompare(b.nom_complet));
+    openModal({
+      size: 'lg',
+      title: isEdit ? 'Modifier la séance' : 'Nouvelle séance',
+      body: `
+        <form id="session-form" onsubmit="event.preventDefault();Actions.saveSession(${isEdit ? `'${s.id}'` : 'null'});">
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">Client<span class="req">*</span></label>
+              <select class="form-select" name="client_id" required ${isEdit ? 'disabled' : ''}>
+                <option value="">— Choisir —</option>
+                ${clients.map(c => `<option value="${c.id}" ${c.id === s.client_id ? 'selected' : ''}>${escapeHtml(c.nom_complet)}</option>`).join('')}
+              </select>
+              ${isEdit ? `<input type="hidden" name="client_id_hidden" value="${s.client_id}">` : ''}
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date<span class="req">*</span></label>
+              <input class="form-input" type="date" name="date" required value="${(s.date || '').slice(0,10)}">
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">Heure</label>
+              <input class="form-input" type="time" name="heure" value="${escapeHtml(s.heure || '')}" placeholder="—">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type<span class="req">*</span></label>
+              <select class="form-select" name="type" required>
+                <option value="initial" ${s.type === 'initial' ? 'selected' : ''}>Initiale</option>
+                <option value="suivi" ${s.type === 'suivi' ? 'selected' : ''}>Suivi</option>
+                <option value="controle" ${s.type === 'controle' ? 'selected' : ''}>Contrôle</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Réalisé</label>
+            <textarea class="form-textarea" name="realise" rows="3" placeholder="Ce qui a été fait pendant la séance">${escapeHtml(s.realise)}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea class="form-textarea" name="notes" rows="5" placeholder="Observations, ressentis, points marquants…">${escapeHtml(s.notes)}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Recommandations</label>
+            <textarea class="form-textarea" name="recommandations" rows="3" placeholder="Exercices, lectures, prochaines étapes">${escapeHtml(s.recommandations)}</textarea>
+          </div>
+        </form>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="document.getElementById('session-form').requestSubmit()">${isEdit ? 'Enregistrer' : 'Créer'}</button>
+      `
+    });
+  },
+
+  async saveSession(existingId) {
+    const f = document.getElementById('session-form');
+    let clientId = f.client_id.value;
+    if (!clientId && f.client_id_hidden) clientId = f.client_id_hidden.value;
+    if (!clientId) { toast('Client requis', 'error'); return; }
+    const client = state.data.clients.find(c => c.id === clientId);
+    if (!client) { toast('Client introuvable', 'error'); return; }
+
+    const data = {
+      id: existingId || uid('se'),
+      client_id: clientId,
+      client_nom: client.nom_complet,
+      date: f.date.value,
+      heure: f.heure ? f.heure.value : '',
+      type: f.type.value,
+      realise: f.realise.value.trim(),
+      notes: f.notes.value.trim(),
+      recommandations: f.recommandations.value.trim()
+    };
+    if (existingId) {
+      const idx = state.data.sessions.findIndex(s => s.id === existingId);
+      if (idx >= 0) state.data.sessions[idx] = { ...state.data.sessions[idx], ...data };
+      audit('session_update', { id: data.id, client_id: clientId });
+    } else {
+      data.date_creation = nowIso();
+      state.data.sessions.push(data);
+      audit('session_create', { id: data.id, client_id: clientId });
+    }
+    App.saveToCache();
+    closeModal();
+    App.refreshCurrentView();
+
+    showLoader();
+    const res = await syncToBackend(existingId ? 'updateSession' : 'addSession', data);
+    hideLoader();
+    if (res.ok) toast(`Séance ${existingId ? 'modifiée' : 'enregistrée'}`, 'success');
+    else if (res.demo) toast(`Séance ${existingId ? 'modifiée' : 'enregistrée'} (démo)`, 'success');
+    else toast('Sauvegardé localement (sync échouée)', 'warning');
+  },
+
+  deleteSession(id) {
+    confirmModal('Supprimer cette séance ?', async () => {
+      state.data.sessions = state.data.sessions.filter(s => s.id !== id);
+      audit('session_delete', { id });
+      App.saveToCache();
+      App.refreshCurrentView();
+      toast('Séance supprimée', 'success');
+      const res = await syncToBackend('deleteSession', { id });
+      if (!res.ok && !res.demo) toast('Sync échouée', 'warning');
+    }, { danger: true, confirmLabel: 'Supprimer' });
+  },
+
+  // ----- BOOKING -----
+  openBookingForm(booking = null) {
+    const isEdit = !!booking;
+    const b = booking || {
+      nom: '', email: '', telephone: '',
+      date_rdv: todayIsoDate(), heure_rdv: '10:00', message: '',
+      statut: 'en_attente', source: 'cal.com'
+    };
+    openModal({
+      title: isEdit ? 'Modifier la réservation' : 'Nouvelle réservation',
+      body: `
+        <form id="booking-form" onsubmit="event.preventDefault();Actions.saveBooking(${isEdit ? `'${b.id}'` : 'null'});">
+          <div class="form-help mb-4" style="background: var(--info-soft); padding: 10px; border-radius: 8px; color: #075985;">
+            💡 Saisis ici les informations reçues par email depuis cal.com.
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nom complet<span class="req">*</span></label>
+            <input class="form-input" name="nom" required value="${escapeHtml(b.nom)}" autofocus>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input class="form-input" type="email" name="email" value="${escapeHtml(b.email)}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Téléphone</label>
+              <input class="form-input" type="tel" name="telephone" value="${escapeHtml(b.telephone)}">
+            </div>
+          </div>
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label class="form-label">Date du RDV<span class="req">*</span></label>
+              <input class="form-input" type="date" name="date_rdv" required value="${b.date_rdv || ''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Heure du RDV<span class="req">*</span></label>
+              <input class="form-input" type="time" name="heure_rdv" required value="${b.heure_rdv || ''}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message du client</label>
+            <textarea class="form-textarea" name="message" rows="3">${escapeHtml(b.message)}</textarea>
+          </div>
+        </form>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="document.getElementById('booking-form').requestSubmit()">${isEdit ? 'Enregistrer' : 'Ajouter'}</button>
+      `
+    });
+  },
+
+  async saveBooking(existingId) {
+    const f = document.getElementById('booking-form');
+    const data = {
+      id: existingId || uid('bk'),
+      nom: f.nom.value.trim(),
+      email: f.email.value.trim(),
+      telephone: f.telephone.value.trim(),
+      date_rdv: f.date_rdv.value,
+      heure_rdv: f.heure_rdv.value,
+      message: f.message.value.trim(),
+      statut: existingId ? (state.data.bookings.find(x=>x.id===existingId)?.statut || 'en_attente') : 'en_attente',
+      source: 'cal.com',
+      date_reception: existingId ? (state.data.bookings.find(x=>x.id===existingId)?.date_reception || nowIso()) : nowIso()
+    };
+    if (!data.nom) { toast('Nom requis', 'error'); return; }
+
+    if (existingId) {
+      const idx = state.data.bookings.findIndex(b => b.id === existingId);
+      if (idx >= 0) state.data.bookings[idx] = { ...state.data.bookings[idx], ...data };
+      audit('booking_update', { id: data.id });
+    } else {
+      state.data.bookings.unshift(data);
+      audit('booking_create', { id: data.id, nom: data.nom });
+    }
+    App.saveToCache();
+    closeModal();
+    App.refreshCurrentView();
+
+    const res = await syncToBackend(existingId ? 'updateBooking' : 'addBooking', data);
+    if (res.ok) toast('Réservation enregistrée', 'success');
+    else if (res.demo) toast('Réservation enregistrée (démo)', 'success');
+    else toast('Sauvegardée localement', 'warning');
+  },
+
+  async setBookingStatus(id, statut) {
+    const idx = state.data.bookings.findIndex(b => b.id === id);
+    if (idx < 0) return;
+    const b = state.data.bookings[idx];
+    state.data.bookings[idx] = { ...b, statut };
+    audit('booking_status', { id, statut });
+    App.saveToCache();
+    App.refreshCurrentView();
+    const labels = { valide: 'validée', refuse: 'refusée', en_attente: 'remise en attente' };
+    toast(`Réservation ${labels[statut] || statut}`, 'success');
+
+    // Si validation : créer le client s'il n'existe pas
+    if (statut === 'valide') {
+      const existing = state.data.clients.find(c =>
+        (c.email && c.email.toLowerCase() === (b.email || '').toLowerCase() && b.email) ||
+        c.nom_complet.toLowerCase() === b.nom.toLowerCase()
+      );
+      if (!existing) {
+        confirmModal(
+          `Créer la fiche client pour ${b.nom} ?`,
+          () => {
+            const newClient = {
+              id: uid('cl'),
+              nom_complet: b.nom,
+              telephone: b.telephone || '',
+              email: b.email || '',
+              statut: 'actif',
+              metier: '', typologie: '', objectif: '',
+              commentaires: b.message ? `Message initial : ${b.message}` : '',
+              date_creation: nowIso(),
+              date_modification: nowIso()
+            };
+            state.data.clients.push(newClient);
+            audit('client_auto_create', { id: newClient.id, from_booking: id });
+            App.saveToCache();
+            App.refreshCurrentView();
+            toast('Fiche client créée', 'success');
+            syncToBackend('addClient', newClient);
+          },
+          { confirmLabel: 'Créer la fiche', title: 'Créer le client' }
+        );
+      }
+    }
+
+    await syncToBackend('updateBooking', state.data.bookings[idx]);
+  },
+
+  deleteBooking(id) {
+    confirmModal('Supprimer cette réservation ?', async () => {
+      state.data.bookings = state.data.bookings.filter(b => b.id !== id);
+      audit('booking_delete', { id });
+      App.saveToCache();
+      App.refreshCurrentView();
+      toast('Réservation supprimée', 'success');
+      await syncToBackend('deleteBooking', { id });
+    }, { danger: true, confirmLabel: 'Supprimer' });
+  },
+
+  // ----- WHATSAPP / EMAIL / CALL -----
+  whatsapp(client) {
+    if (!client.telephone) { toast('Pas de numéro de téléphone', 'warning'); return; }
+    const phoneIntl = formatPhoneE164(client.telephone);
+    if (!phoneIntl) { toast('Numéro de téléphone invalide', 'error'); return; }
+    this.openMessageTemplates(client, 'whatsapp', (msg) => {
+      const url = `https://wa.me/${phoneIntl}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+      audit('whatsapp_send', { client_id: client.id, phone: phoneIntl });
+      if (state.mode === 'demo') toast('WhatsApp ouvert (démo)', 'info');
+    });
+  },
+
+  email(client) {
+    if (!client.email) { toast('Pas d\'email', 'warning'); return; }
+    this.openMessageTemplates(client, 'email', (msg, subject) => {
+      const url = `mailto:${encodeURIComponent(client.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(msg)}`;
+      window.location.href = url;
+      audit('email_send', { client_id: client.id });
+      if (state.mode === 'demo') toast('Email ouvert (démo)', 'info');
+    });
+  },
+
+  call(client) {
+    if (!client.telephone) { toast('Pas de numéro', 'warning'); return; }
+    const e164 = formatPhoneE164(client.telephone);
+    // tel: accepte le + devant (recommandé pour mobile)
+    window.location.href = 'tel:+' + e164;
+    audit('call', { client_id: client.id });
+  },
+
+  updatePhonePreview() {
+    const input = document.getElementById('client-phone-input');
+    const hint = document.getElementById('client-phone-hint');
+    if (!input || !hint) return;
+    const v = input.value.trim();
+    if (!v) {
+      hint.innerHTML = `Indicatif par défaut : <b>${escapeHtml(CONFIG.PHONE_PREFIX)}</b> · Pour un autre pays, saisis le numéro avec son indicatif (ex : +33612345678).`;
+      hint.style.color = 'var(--text-muted)';
+      return;
+    }
+    const e164 = formatPhoneE164(v);
+    if (!e164 || e164.length < 6) {
+      hint.innerHTML = `⚠️ Numéro trop court ou invalide`;
+      hint.style.color = 'var(--warning)';
+      return;
+    }
+    // Détection si le numéro est déjà au format international
+    const userTyped = v.replace(/[\s.\-()_/]/g, '');
+    const isIntl = userTyped.charAt(0) === '+' || userTyped.indexOf('00') === 0;
+    if (isIntl) {
+      hint.innerHTML = `✓ Format international détecté → WhatsApp utilisera <b>+${escapeHtml(e164)}</b>`;
+    } else {
+      hint.innerHTML = `↪ Indicatif <b>${escapeHtml(CONFIG.PHONE_PREFIX)}</b> ajouté → WhatsApp utilisera <b>+${escapeHtml(e164)}</b>`;
+    }
+    hint.style.color = 'var(--success)';
+  },
+
+  openMessageTemplates(client, channel, onSend) {
+    const isWa = channel === 'whatsapp';
+    const firstName = client.nom_complet.split(' ')[0];
+    const templates = [
+      {
+        label: '👋 Prise de nouvelles',
+        subject: 'Comment allez-vous ?',
+        body: `Bonjour ${firstName},\n\nJ'espère que vous allez bien. Je prends de vos nouvelles depuis notre dernière séance — est-ce que les exercices avancent comme vous le souhaitiez ?\n\nN'hésitez pas si vous avez besoin d'échanger.\n\nÀ bientôt,\nEnergy Force`
+      },
+      {
+        label: '📅 Relance pour RDV',
+        subject: 'Programmons votre prochaine séance',
+        body: `Bonjour ${firstName},\n\nIl est temps de programmer votre prochaine séance ! Voici mon agenda :\nhttps://cal.com/annuaire-youpi/30min\n\nRéservez le créneau qui vous convient.\n\nÀ très vite,\nEnergy Force`
+      },
+      {
+        label: '✨ Encouragement',
+        subject: 'Petit message pour vous',
+        body: `Bonjour ${firstName},\n\nJuste un petit message pour vous rappeler le chemin parcouru. Continuez sur votre lancée — chaque pas compte.\n\nÀ bientôt,\nEnergy Force`
+      },
+      {
+        label: '⏰ Rappel de séance',
+        subject: 'Rappel — séance demain',
+        body: `Bonjour ${firstName},\n\nUn petit rappel pour notre séance prévue demain. À tout à l'heure !\n\nEnergy Force`
+      },
+      {
+        label: '❓ Séance manquée',
+        subject: 'Tout va bien ?',
+        body: `Bonjour ${firstName},\n\nJe n'ai pas eu de vos nouvelles pour la séance prévue. J'espère que tout va bien — n'hésitez pas à me dire si vous souhaitez reprogrammer.\n\nEnergy Force`
+      }
+    ];
+
+    openModal({
+      title: (isWa ? '💬 WhatsApp · ' : '✉️ Email · ') + client.nom_complet,
+      body: `
+        <div class="form-group">
+          <label class="form-label">Modèle</label>
+          <div class="pill-row" id="template-pills">
+            ${templates.map((t,i) => `<button class="filter-chip ${i === 0 ? 'active' : ''}" data-i="${i}">${escapeHtml(t.label)}</button>`).join('')}
           </div>
         </div>
+        ${isWa ? '' : `
+        <div class="form-group">
+          <label class="form-label">Objet</label>
+          <input class="form-input" id="msg-subject" value="${escapeHtml(templates[0].subject)}">
+        </div>`}
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" id="msg-body" rows="8">${escapeHtml(templates[0].body)}</textarea>
+        </div>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" id="msg-send-btn">${isWa ? 'Ouvrir WhatsApp' : 'Ouvrir l\'email'}</button>
+      `
+    });
+
+    setTimeout(() => {
+      document.querySelectorAll('#template-pills .filter-chip').forEach(p => {
+        p.addEventListener('click', () => {
+          document.querySelectorAll('#template-pills .filter-chip').forEach(x => x.classList.remove('active'));
+          p.classList.add('active');
+          const t = templates[parseInt(p.dataset.i, 10)];
+          document.getElementById('msg-body').value = t.body;
+          if (!isWa) document.getElementById('msg-subject').value = t.subject;
+        });
+      });
+      document.getElementById('msg-send-btn').onclick = () => {
+        const body = document.getElementById('msg-body').value;
+        const subject = isWa ? '' : document.getElementById('msg-subject').value;
+        closeModal();
+        onSend(body, subject);
+      };
+    }, 50);
+  },
+
+  // ----- PIN / SETTINGS -----
+  changePin() {
+    openModal({
+      title: 'Changer le PIN',
+      body: `
+        <form id="pin-form" onsubmit="event.preventDefault();Actions.savePin();">
+          <div class="form-group">
+            <label class="form-label">PIN actuel<span class="req">*</span></label>
+            <input class="form-input" type="password" name="current" required maxlength="6" inputmode="numeric" pattern="[0-9#]{6}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nouveau PIN (6 chiffres)<span class="req">*</span></label>
+            <input class="form-input" type="password" name="new1" required maxlength="6" inputmode="numeric" pattern="[0-9#]{6}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirmer le nouveau PIN<span class="req">*</span></label>
+            <input class="form-input" type="password" name="new2" required maxlength="6" inputmode="numeric" pattern="[0-9#]{6}">
+          </div>
+          <div class="form-help">PIN faibles refusés (000000, 123456, etc.)</div>
+        </form>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="document.getElementById('pin-form').requestSubmit()">Enregistrer</button>
+      `
+    });
+  },
+
+  savePin() {
+    const f = document.getElementById('pin-form');
+    const cur = f.current.value, n1 = f.new1.value, n2 = f.new2.value;
+    const stored = localStorage.getItem('ef_pin') || CONFIG.DEFAULT_PIN;
+    if (cur !== stored) { toast('PIN actuel incorrect', 'error'); return; }
+    if (n1 !== n2) { toast('Les PIN ne correspondent pas', 'error'); return; }
+    if (!/^[0-9#]{6}$/.test(n1)) { toast('PIN invalide (6 caractères, chiffres ou #)', 'error'); return; }
+    if (PIN.isWeak(n1)) { toast('PIN trop faible', 'error'); return; }
+    localStorage.setItem('ef_pin', n1);
+    audit('pin_changed');
+    closeModal();
+    toast('PIN modifié', 'success');
+  },
+
+  setBackendUrl() {
+    const cur = CONFIG.BACKEND_URL || '';
+    openModal({
+      title: 'URL du backend Apps Script',
+      body: `
+        <div class="form-group">
+          <label class="form-label">URL de déploiement Apps Script</label>
+          <input class="form-input" id="backend-url-input" value="${escapeHtml(cur)}" placeholder="https://script.google.com/macros/s/.../exec">
+          <div class="form-help">Colle ici l'URL générée par "Déployer → Application Web" dans l'éditeur Apps Script.</div>
+        </div>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="Actions.saveBackendUrl()">Enregistrer</button>
+      `
+    });
+  },
+
+  saveBackendUrl() {
+    const v = document.getElementById('backend-url-input').value.trim();
+    if (v && !/^https:\/\//.test(v)) { toast('URL invalide (https:// requis)', 'error'); return; }
+    localStorage.setItem('ef_backend_url', v);
+    CONFIG.BACKEND_URL = v;
+    closeModal();
+    toast('URL backend enregistrée', 'success');
+    if (v) App.syncNow();
+    App.refreshCurrentView();
+  },
+
+  setPhonePrefix() {
+    const cur = CONFIG.PHONE_PREFIX || '+596';
+    const presets = [
+      { code: '+596', label: '🇲🇶 Martinique / Guadeloupe' },
+      { code: '+33',  label: '🇫🇷 France métropolitaine' },
+      { code: '+594', label: '🇬🇫 Guyane' },
+      { code: '+262', label: '🇷🇪 Réunion / Mayotte' },
+      { code: '+590', label: '🇬🇵 Guadeloupe (autre)' },
+      { code: '+1',   label: '🇺🇸 USA / 🇨🇦 Canada' },
+      { code: '+32',  label: '🇧🇪 Belgique' },
+      { code: '+41',  label: '🇨🇭 Suisse' },
+      { code: '+44',  label: '🇬🇧 Royaume-Uni' },
+      { code: '+212', label: '🇲🇦 Maroc' },
+      { code: '+213', label: '🇩🇿 Algérie' },
+      { code: '+216', label: '🇹🇳 Tunisie' },
+      { code: '+221', label: '🇸🇳 Sénégal' },
+      { code: '+225', label: '🇨🇮 Côte d\u2019Ivoire' }
+    ];
+    openModal({
+      title: '📱 Indicatif téléphonique par défaut',
+      body: `
+        <div class="text-sm text-muted mb-3">
+          Cet indicatif est utilisé quand tu saisis un numéro local sans + (ex : <code>0696123456</code>).
+          Tu peux toujours saisir un numéro avec son indicatif (ex : <code>+33612345678</code>) — il sera respecté.
+        </div>
+        <div class="form-group">
+          <label class="form-label">Choisir un pays</label>
+          <select class="form-select" id="phone-prefix-select" onchange="document.getElementById('phone-prefix-input').value = this.value;">
+            <option value="">— Choisis ou tape librement —</option>
+            ${presets.map(p => `<option value="${p.code}" ${p.code === cur ? 'selected' : ''}>${p.label} (${p.code})</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ou saisir manuellement<span class="req">*</span></label>
+          <input class="form-input" id="phone-prefix-input" value="${escapeHtml(cur)}" placeholder="+596" required>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Format : commence par <code>+</code> suivi de 1 à 4 chiffres.</div>
+        </div>
+      `,
+      footer: `
+        <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="Actions.savePhonePrefix()">Enregistrer</button>
+      `
+    });
+  },
+
+  savePhonePrefix() {
+    const v = document.getElementById('phone-prefix-input').value.trim();
+    if (!/^\+\d{1,4}$/.test(v)) {
+      toast('Indicatif invalide. Format : +33, +596, +1, etc.', 'error');
+      return;
+    }
+    localStorage.setItem('ef_phone_prefix', v);
+    CONFIG.PHONE_PREFIX = v;
+    audit('phone_prefix_changed', { new: v });
+    closeModal();
+    toast(`Indicatif par défaut : ${v}`, 'success');
+    App.refreshCurrentView();
+  },
+
+  resetDemo() {
+    if (state.mode !== 'demo') { toast('Pas en mode démo', 'info'); return; }
+    confirmModal('Réinitialiser les données de démonstration ?', () => {
+      demoSnapshot = generateDemoData();
+      state.data = JSON.parse(JSON.stringify(demoSnapshot));
+      App.refreshCurrentView();
+      toast('Démo réinitialisée', 'success');
+    });
+  },
+
+  exportData() {
+    const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `energy-force-export-${todayIsoDate()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Export téléchargé', 'success');
+  },
+
+  openWebhookHelp() {
+    const url = CONFIG.BACKEND_URL || '';
+    if (!url) {
+      toast('Configure d\u2019abord l\u2019URL du backend Apps Script', 'warning');
+      return;
+    }
+    openModal({
+      size: 'lg',
+      title: '⚡ Webhook cal.com — configuration en 5 étapes',
+      body: `
+        <div class="text-sm" style="line-height:1.6;">
+          <div style="background:var(--primary-soft-2);border:1px solid var(--primary-soft);border-radius:var(--radius);padding:12px;margin-bottom:16px;">
+            <div class="font-semibold mb-2">URL à coller dans cal.com :</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <code style="background:var(--card);border:1px solid var(--border);padding:6px 10px;border-radius:var(--radius-sm);flex:1;word-break:break-all;font-size:11px;">${escapeHtml(url)}</code>
+              <button class="btn btn-primary btn-sm" onclick="Actions.copyWebhookUrl()">📋 Copier</button>
+            </div>
+          </div>
+
+          <div class="font-semibold mb-2">Étape 1 — Ouvrir cal.com</div>
+          <div class="mb-3">Va sur <a href="https://app.cal.com/settings/developer/webhooks" target="_blank" rel="noopener" style="color:var(--primary);">app.cal.com/settings/developer/webhooks</a> et clique sur <b>+ New Webhook</b>.</div>
+
+          <div class="font-semibold mb-2">Étape 2 — Coller l'URL</div>
+          <div class="mb-3">Dans le champ <b>Subscriber URL</b>, colle l'URL ci-dessus (celle de ton backend Apps Script).</div>
+
+          <div class="font-semibold mb-2">Étape 3 — Choisir les événements</div>
+          <div class="mb-3">Coche au minimum :
+            <ul style="margin:6px 0 0 20px;">
+              <li><b>Booking Created</b> — pour recevoir chaque nouveau RDV</li>
+              <li><b>Booking Rescheduled</b> — pour mettre à jour si le client reprogramme</li>
+              <li><b>Booking Cancelled</b> — pour marquer en refusé si le client annule</li>
+            </ul>
+          </div>
+
+          <div class="font-semibold mb-2">Étape 4 — Activer et sauvegarder</div>
+          <div class="mb-3">Vérifie que <b>Enabled</b> est ✓ activé. Laisse le champ <b>Secret</b> vide pour commencer (tu pourras le sécuriser plus tard). Clique sur <b>Create Webhook</b>.</div>
+
+          <div class="font-semibold mb-2">Étape 5 — Tester</div>
+          <div class="mb-3">Soit tu cliques sur <b>Ping Test</b> dans cal.com, soit tu fais une vraie réservation de test depuis ta page publique. Reviens dans l'app, clique sur <b>Synchroniser</b>, et le RDV doit apparaître dans tes "RDV à traiter".</div>
+
+          <div style="background:var(--info-soft);border-left:3px solid var(--info);border-radius:var(--radius-sm);padding:10px 12px;margin-top:16px;">
+            <div class="font-semibold mb-1">💡 Sécurité (optionnel)</div>
+            <div class="text-xs">Pour empêcher quelqu'un d'envoyer de faux RDV à ton backend, tu peux configurer un secret partagé. Dans Apps Script, exécute la fonction <code>_setWebhookSecret</code> (modifie la valeur d'abord). Puis dans cal.com, utilise un <b>Custom Payload Template</b> qui ajoute le champ <code>"secret": "ta-valeur"</code> dans le body.</div>
+          </div>
+
+          <div style="background:var(--warning-soft);border-left:3px solid var(--warning);border-radius:var(--radius-sm);padding:10px 12px;margin-top:12px;">
+            <div class="font-semibold mb-1">⚠️ Anti-doublon</div>
+            <div class="text-xs">Si tu reçois un RDV en double (par exemple parce que tu l'avais saisi à la main avant), supprime simplement le doublon manuel. Le webhook utilise l'identifiant unique cal.com pour ne jamais créer deux fois le même RDV.</div>
+          </div>
+        </div>
+      `,
+      footer: `<button class="btn btn-secondary" onclick="closeModal()">Fermer</button>
+               <button class="btn btn-primary" onclick="Actions.testWebhookConnection()">🧪 Tester maintenant</button>`
+    });
+  },
+
+  copyWebhookUrl() {
+    const url = CONFIG.BACKEND_URL || '';
+    if (!url) { toast('Backend non configuré', 'error'); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(
+        () => toast('URL copiée dans le presse-papier', 'success'),
+        () => toast('Impossible de copier — sélectionne et copie manuellement', 'warning')
+      );
+    } else {
+      toast('Copie indisponible — sélectionne le texte', 'info');
+    }
+  },
+
+  async testWebhookConnection() {
+    const url = CONFIG.BACKEND_URL || '';
+    if (!url) { toast('Configure l\u2019URL backend d\u2019abord', 'error'); return; }
+    if (state.mode === 'demo') { toast('Test impossible en mode démo', 'info'); return; }
+    closeModal();
+    showLoader('Envoi d\u2019un faux booking au backend…');
+    const fakePayload = {
+      triggerEvent: 'BOOKING_CREATED',
+      createdAt: new Date().toISOString(),
+      payload: {
+        uid: 'test-frontend-' + Date.now(),
+        bookingId: 'test-' + Date.now(),
+        startTime: new Date(Date.now() + 86400000 * 2).toISOString(),
+        endTime: new Date(Date.now() + 86400000 * 2 + 1800000).toISOString(),
+        additionalNotes: 'Test depuis l\u2019app Energy Force — peut être supprimé',
+        organizer: { name: 'Test', email: 'test@example.fr', timeZone: 'Europe/Paris' },
+        attendees: [{ name: 'Client Test (à supprimer)', email: 'client.test@exemple.fr', phoneNumber: '+33600000000', timeZone: 'Europe/Paris' }]
+      }
+    };
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(fakePayload),
+        headers: { 'Content-Type': 'text/plain' },
+        redirect: 'follow'
+      });
+      const json = await res.json();
+      hideLoader();
+      if (json.ok) {
+        toast('✓ Test réussi ! Synchronisation en cours…', 'success');
+        await App.syncNow();
+      } else {
+        toast('Backend a refusé : ' + (json.error || 'erreur inconnue'), 'error');
+      }
+    } catch (err) {
+      hideLoader();
+      toast('Échec du test : ' + err.message, 'error');
+    }
+  },
+
+  exportDataNoop() {} // placeholder
+};
+
+/* ============================================================
+   VIEWS
+   ============================================================ */
+const Views = {
+  // ----- DASHBOARD -----
+  dashboard() {
+    const today = todayIsoDate();
+    const todayStart = new Date(today + 'T00:00:00');
+    const sessionsThisMonth = state.data.sessions.filter(s => {
+      const d = new Date(s.date);
+      const now = new Date();
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    }).length;
+    const activeClients = state.data.clients.filter(c => c.statut === 'actif').length;
+    const pendingBookings = state.data.bookings.filter(b => b.statut === 'en_attente').length;
+
+    // ----- Agenda 7 jours : sessions futures + bookings validés -----
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(todayStart);
+      d.setDate(d.getDate() + i);
+      days.push({ date: d, iso: d.toISOString().slice(0, 10), rdvs: [] });
+    }
+    state.data.sessions.forEach(s => {
+      const sIso = (s.date || '').slice(0, 10);
+      const day = days.find(d => d.iso === sIso);
+      if (day) {
+        const c = state.data.clients.find(cl => cl.id === s.client_id);
+        day.rdvs.push({
+          source: 'session',
+          id: s.id,
+          client_id: s.client_id,
+          nom: c ? c.nom_complet : (s.client_nom || 'Client'),
+          heure: s.heure || '',
+          meta: this.sessionTypeLabel(s.type),
+          sortKey: s.heure || '99:99'
+        });
+      }
+    });
+    state.data.bookings.filter(b => b.statut === 'valide').forEach(b => {
+      const day = days.find(d => d.iso === b.date_rdv);
+      if (day) {
+        day.rdvs.push({
+          source: 'booking',
+          id: b.id,
+          nom: b.nom,
+          heure: b.heure_rdv || '',
+          meta: 'cal.com',
+          sortKey: b.heure_rdv || '99:99'
+        });
+      }
+    });
+    days.forEach(d => d.rdvs.sort((a, b) => a.sortKey.localeCompare(b.sortKey)));
+    const totalWeekRdv = days.reduce((sum, d) => sum + d.rdvs.length, 0);
+    const todayRdv = days[0].rdvs.length;
+
+    // ----- Dernières séances réalisées (passées ou avec contenu) -----
+    const recentSessions = [...state.data.sessions]
+      .filter(s => {
+        const sIso = (s.date || '').slice(0, 10);
+        return sIso < today || (s.realise && s.realise.length) || (s.notes && s.notes.length);
+      })
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 4);
+
+    const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    const monthNames = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+
+    return `
+      <div class="page-header">
+        <h1 class="page-title">Bonjour 👋</h1>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="Actions.openSessionForm()">＋ Séance</button>
+          <button class="btn btn-primary" onclick="Actions.openClientForm()">＋ Client</button>
+        </div>
       </div>
-    `);
-  });
-  $$('[data-confirm]').forEach(b=>b.onclick=()=>confirmAppointment(b.dataset.confirm));
-  $$('[data-cancel]').forEach(b=>b.onclick=()=>cancelAppointment(b.dataset.cancel));
-  if(appointments.length>0){
-    const next=appointments[0];
-    $('#nextAppointment').textContent=`${next.clientName} · ${next.date} ${next.time}`;
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--primary-soft);color:var(--primary-hover);">👥</div>
+          <div class="stat-label">Clients actifs</div>
+          <div class="stat-value">${activeClients}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--info-soft);color:var(--info);">📋</div>
+          <div class="stat-label">Séances ce mois</div>
+          <div class="stat-value">${sessionsThisMonth}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--warning-soft);color:var(--warning);">📅</div>
+          <div class="stat-label">cal.com en attente</div>
+          <div class="stat-value">${pendingBookings}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--success-soft);color:var(--success);">📆</div>
+          <div class="stat-label">RDV cette semaine</div>
+          <div class="stat-value">${totalWeekRdv}</div>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="agenda-toolbar">
+          <div class="card-title">📆 Ma semaine — ${todayRdv === 0 ? 'rien aujourd’hui' : todayRdv + ' RDV aujourd’hui'}</div>
+          <div class="agenda-legend">
+            <span><span class="agenda-legend-dot" style="background:var(--primary);"></span>Programmé</span>
+            <span><span class="agenda-legend-dot" style="background:var(--info);"></span>cal.com</span>
+          </div>
+        </div>
+        <div class="week-agenda">
+          ${days.map((d, idx) => {
+            const dayOfWeek = d.date.getDay();
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            const isToday = idx === 0;
+            return `
+              <div class="day-card ${isToday ? 'today' : ''} ${isWeekend ? 'weekend' : ''}">
+                <div class="day-header">
+                  <div class="day-name">${dayNames[dayOfWeek]}</div>
+                  <div class="day-num">${d.date.getDate()}</div>
+                  <div class="day-month">${monthNames[d.date.getMonth()]}</div>
+                </div>
+                <div class="day-rdvs">
+                  ${d.rdvs.length === 0 ? '<div class="day-empty">—</div>' : d.rdvs.map(r => {
+                    const onClick = r.source === 'session'
+                      ? (r.client_id ? `App.go('client', {id: '${r.client_id}'})` : `App.go('session', {id: '${r.id}'})`)
+                      : `App.go('bookings')`;
+                    const tooltip = r.source === 'booking' ? 'Réservation cal.com — ouvrir la liste' : 'RDV programmé — ouvrir la fiche client';
+                    return `
+                      <div class="rdv-item ${r.source === 'booking' ? 'rdv-booking' : ''}" onclick="${onClick}" title="${tooltip}">
+                        <div class="rdv-time-row">
+                          <span class="rdv-time">${escapeHtml(r.heure || '—')}</span>
+                          <span class="rdv-source-icon">${r.source === 'booking' ? '🌐' : '✏️'}</span>
+                        </div>
+                        <div class="rdv-name">${escapeHtml(r.nom)}</div>
+                        <div class="rdv-meta">${escapeHtml(r.meta)}</div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      ${pendingBookings > 0 ? `
+        <div class="card mt-4" style="border-color: var(--warning); background: linear-gradient(135deg, #fffbeb, var(--card));">
+          <div class="card-header">
+            <div class="card-title">⚠️ ${pendingBookings} réservation${pendingBookings > 1 ? 's' : ''} cal.com à valider</div>
+            <button class="btn btn-warning btn-sm" onclick="App.go('bookings')">Traiter →</button>
+          </div>
+          <div class="text-sm text-muted">Confirme-les pour qu'elles apparaissent dans ton agenda ci-dessus.</div>
+        </div>
+      ` : ''}
+
+      <div class="card mt-4">
+        <div class="card-header">
+          <div class="card-title">📋 Dernières séances réalisées</div>
+          <button class="btn btn-ghost btn-sm" onclick="App.go('sessions')">Voir tout →</button>
+        </div>
+        ${recentSessions.length === 0 ? `
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-title">Aucune séance réalisée</div>
+            <div class="text-sm">Tes notes de séance apparaîtront ici.</div>
+          </div>
+        ` : `
+          <div class="list">
+            ${recentSessions.map(s => {
+              const c = state.data.clients.find(cl => cl.id === s.client_id);
+              const nom = c ? c.nom_complet : (s.client_nom || 'Client supprimé');
+              return `
+                <div class="list-item" onclick="App.go('session', {id: '${s.id}'})">
+                  <div class="avatar sm" style="background:${avatarColor(nom)}20;color:${avatarColor(nom)};">${initials(nom)}</div>
+                  <div class="grow">
+                    <div class="font-semibold truncate">${escapeHtml(nom)}</div>
+                    <div class="text-sm text-muted">${fmtDate(s.date)} · ${this.sessionTypeLabel(s.type)}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `}
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-title mb-3">🚀 Liens rapides cal.com</div>
+        <div class="quick-actions">
+          <a class="qa-btn" href="https://cal.com/annuaire-youpi/30min" target="_blank" rel="noopener">
+            <span class="icon">🔗</span><span>Page publique</span>
+          </a>
+          <a class="qa-btn" href="https://app.cal.com/event-types/1576938?tabName=availability" target="_blank" rel="noopener">
+            <span class="icon">📆</span><span>Mes dispos</span>
+          </a>
+          <a class="qa-btn" href="https://app.cal.com/bookings/upcoming" target="_blank" rel="noopener">
+            <span class="icon">📥</span><span>Mes RDV cal.com</span>
+          </a>
+          <button class="qa-btn" onclick="Actions.openBookingForm()">
+            <span class="icon">＋</span><span>Saisir un RDV</span>
+          </button>
+        </div>
+      </div>
+    `;
+  },
+
+  sessionTypeLabel(t) {
+    const m = { initial: 'Initiale', suivi: 'Suivi', controle: 'Contrôle' };
+    return m[t] || t;
+  },
+  sessionTypeBadge(t) {
+    const m = { initial: 'badge-info', suivi: 'badge-primary', controle: 'badge-warning' };
+    return m[t] || 'badge-neutral';
+  },
+
+  // ----- CLIENTS LIST -----
+  clients() {
+    const search = state.filters.clientSearch.toLowerCase();
+    const statut = state.filters.clientStatut;
+    let list = [...state.data.clients];
+    if (search) {
+      list = list.filter(c =>
+        c.nom_complet.toLowerCase().includes(search) ||
+        (c.email || '').toLowerCase().includes(search) ||
+        (c.telephone || '').toLowerCase().includes(search) ||
+        (c.metier || '').toLowerCase().includes(search) ||
+        (c.typologie || '').toLowerCase().includes(search)
+      );
+    }
+    if (statut !== 'tous') list = list.filter(c => c.statut === statut);
+    list.sort((a,b) => a.nom_complet.localeCompare(b.nom_complet));
+
+    return `
+      <div class="page-header">
+        <h1 class="page-title">Clients</h1>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="Actions.openClientForm()">＋ Nouveau client</button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="row" style="gap: 12px; flex-wrap: wrap;">
+          <div class="search-bar">
+            <input id="clients-search" placeholder="Rechercher (nom, email, métier…)" value="${escapeHtml(state.filters.clientSearch)}">
+          </div>
+        </div>
+        <div class="pill-row mt-3">
+          <button class="filter-chip ${statut === 'tous' ? 'active' : ''}" data-statut="tous">Tous (${state.data.clients.length})</button>
+          <button class="filter-chip ${statut === 'actif' ? 'active' : ''}" data-statut="actif">Actifs (${state.data.clients.filter(c=>c.statut==='actif').length})</button>
+          <button class="filter-chip ${statut === 'pause' ? 'active' : ''}" data-statut="pause">En pause (${state.data.clients.filter(c=>c.statut==='pause').length})</button>
+        </div>
+      </div>
+
+      ${list.length === 0 ? `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-state-icon">👥</div>
+            <div class="empty-state-title">Aucun client trouvé</div>
+            <div class="text-sm mb-4">${state.data.clients.length === 0 ? 'Ajoute ton premier client pour commencer.' : 'Modifie ta recherche ou les filtres.'}</div>
+            ${state.data.clients.length === 0 ? '<button class="btn btn-primary" onclick="Actions.openClientForm()">＋ Nouveau client</button>' : ''}
+          </div>
+        </div>
+      ` : `
+        <div class="list">
+          ${list.map(c => {
+            const sessionsCount = state.data.sessions.filter(s => s.client_id === c.id).length;
+            const lastSession = state.data.sessions
+              .filter(s => s.client_id === c.id)
+              .sort((a,b) => new Date(b.date) - new Date(a.date))[0];
+            const color = avatarColor(c.nom_complet);
+            return `
+              <div class="list-item" onclick="App.go('client', {id: '${c.id}'})">
+                <div class="avatar lg" style="background:${color}20;color:${color};">${initials(c.nom_complet)}</div>
+                <div class="grow">
+                  <div class="row" style="gap:8px;flex-wrap:wrap;">
+                    <div class="font-semibold">${escapeHtml(c.nom_complet)}</div>
+                    <span class="badge ${c.statut === 'actif' ? 'badge-success' : 'badge-neutral'}">${c.statut === 'actif' ? 'Actif' : 'En pause'}</span>
+                  </div>
+                  <div class="text-sm text-muted truncate">${escapeHtml(c.metier || '—')} ${c.typologie ? '· ' + escapeHtml(c.typologie) : ''}</div>
+                  <div class="text-xs text-soft mt-2">${sessionsCount} séance${sessionsCount>1?'s':''}${lastSession ? ' · dernière le ' + fmtDate(lastSession.date) : ''}</div>
+                </div>
+                <div style="font-size:18px;color:var(--text-soft);">›</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
+    `;
+  },
+
+  attachClientsHandlers() {
+    const search = document.getElementById('clients-search');
+    if (search) {
+      search.addEventListener('input', debounce(e => {
+        state.filters.clientSearch = e.target.value;
+        App.refreshCurrentView();
+        // Restaure le focus
+        setTimeout(() => {
+          const s = document.getElementById('clients-search');
+          if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
+        }, 0);
+      }, 250));
+    }
+    document.querySelectorAll('[data-statut]').forEach(b => {
+      b.addEventListener('click', () => {
+        state.filters.clientStatut = b.dataset.statut;
+        App.refreshCurrentView();
+      });
+    });
+  },
+
+  // ----- CLIENT DETAIL -----
+  clientDetail(id) {
+    const c = state.data.clients.find(x => x.id === id);
+    if (!c) {
+      return `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-state-icon">❓</div>
+            <div class="empty-state-title">Client introuvable</div>
+            <button class="btn btn-primary mt-4" onclick="App.go('clients')">← Retour aux clients</button>
+          </div>
+        </div>`;
+    }
+    const sessions = state.data.sessions
+      .filter(s => s.client_id === id)
+      .sort((a,b) => new Date(b.date) - new Date(a.date));
+    const lastSession = sessions[0];
+    const color = avatarColor(c.nom_complet);
+
+    return `
+      <div class="page-header">
+        <button class="icon-btn" onclick="App.go('clients')" title="Retour">←</button>
+        <h1 class="page-title">${escapeHtml(c.nom_complet)}</h1>
+        <span class="badge ${c.statut === 'actif' ? 'badge-success' : 'badge-neutral'}">${c.statut === 'actif' ? 'Actif' : 'En pause'}</span>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick='Actions.openClientForm(${JSON.stringify(c).replace(/'/g, "&#39;")})'>✏️ Modifier</button>
+          <button class="btn btn-primary" onclick="Actions.openSessionForm(null, '${c.id}')">＋ Nouvelle séance</button>
+        </div>
+      </div>
+
+      ${lastSession ? `
+        <div class="session-context">
+          <div class="session-context-label">📌 Contexte de la dernière séance · ${fmtDate(lastSession.date)}</div>
+          ${c.objectif ? `<div class="text-sm mt-2"><strong>Objectif :</strong> ${nl2br(c.objectif)}</div>` : ''}
+          ${lastSession.notes ? `<div class="text-sm mt-2"><strong>Notes :</strong> ${nl2br(lastSession.notes)}</div>` : ''}
+          ${lastSession.recommandations ? `<div class="text-sm mt-2"><strong>Recommandations :</strong> ${nl2br(lastSession.recommandations)}</div>` : ''}
+          <button class="btn btn-primary btn-sm mt-3" onclick="Actions.openSessionForm(null, '${c.id}')">▶️ Démarrer la nouvelle séance</button>
+        </div>
+      ` : `
+        <div class="session-context">
+          <div class="session-context-label">📌 Première rencontre</div>
+          ${c.objectif ? `<div class="text-sm mt-2"><strong>Objectif :</strong> ${nl2br(c.objectif)}</div>` : ''}
+          <button class="btn btn-primary btn-sm mt-3" onclick="Actions.openSessionForm(null, '${c.id}')">▶️ Démarrer la séance initiale</button>
+        </div>
+      `}
+
+      <div class="quick-actions mb-4">
+        <button class="qa-btn" onclick='Actions.whatsapp(${JSON.stringify(c).replace(/'/g, "&#39;")})'>
+          <span class="icon">💬</span><span>WhatsApp</span>
+        </button>
+        <button class="qa-btn" onclick='Actions.email(${JSON.stringify(c).replace(/'/g, "&#39;")})'>
+          <span class="icon">✉️</span><span>Email</span>
+        </button>
+        <button class="qa-btn" onclick='Actions.call(${JSON.stringify(c).replace(/'/g, "&#39;")})'>
+          <span class="icon">📞</span><span>Appeler</span>
+        </button>
+        <button class="qa-btn" onclick="Actions.openSessionForm(null, '${c.id}')">
+          <span class="icon">＋</span><span>Séance</span>
+        </button>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title mb-3">📇 Coordonnées</div>
+          <div class="info-line"><div class="info-line-label">Téléphone</div><div class="info-line-value">${c.telephone ? `<a href="tel:${escapeHtml(c.telephone)}">${escapeHtml(c.telephone)}</a>` : '<span class="text-soft">—</span>'}</div></div>
+          <div class="info-line"><div class="info-line-label">Email</div><div class="info-line-value">${c.email ? `<a href="mailto:${escapeHtml(c.email)}">${escapeHtml(c.email)}</a>` : '<span class="text-soft">—</span>'}</div></div>
+          <div class="info-line"><div class="info-line-label">Métier</div><div class="info-line-value">${escapeHtml(c.metier || '—')}</div></div>
+          <div class="info-line"><div class="info-line-label">Typologie</div><div class="info-line-value">${escapeHtml(c.typologie || '—')}</div></div>
+          <div class="info-line"><div class="info-line-label">Créé le</div><div class="info-line-value">${fmtDate(c.date_creation)}</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title mb-3">🎯 Objectif & commentaires</div>
+          <div class="info-line"><div class="info-line-label">Objectif</div><div class="info-line-value">${c.objectif ? nl2br(c.objectif) : '<span class="text-soft">—</span>'}</div></div>
+          <div class="info-line"><div class="info-line-label">Commentaires</div><div class="info-line-value">${c.commentaires ? nl2br(c.commentaires) : '<span class="text-soft">—</span>'}</div></div>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header">
+          <div class="card-title">📋 Historique des séances · ${sessions.length}</div>
+          <button class="btn btn-primary btn-sm" onclick="Actions.openSessionForm(null, '${c.id}')">＋ Nouvelle</button>
+        </div>
+        ${sessions.length === 0 ? `
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-title">Aucune séance enregistrée</div>
+            <div class="text-sm">Commence par enregistrer la première séance.</div>
+          </div>
+        ` : sessions.map(s => `
+          <div class="history-item" onclick="App.go('session', {id: '${s.id}'})" style="cursor:pointer;">
+            <div class="history-item-head">
+              <div class="history-item-date">${fmtDate(s.date)}</div>
+              <span class="badge ${this.sessionTypeBadge(s.type)}">${this.sessionTypeLabel(s.type)}</span>
+              <div style="margin-left:auto;color:var(--text-soft);">›</div>
+            </div>
+            ${s.notes ? `<div class="history-item-text">${escapeHtml(s.notes.slice(0, 200))}${s.notes.length > 200 ? '…' : ''}</div>` : '<div class="history-item-text text-soft">Pas de notes</div>'}
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="mt-6" style="text-align:center;">
+        <button class="btn btn-ghost" style="color:var(--danger);" onclick="Actions.deleteClient('${c.id}')">🗑️ Supprimer ce client</button>
+      </div>
+    `;
+  },
+
+  // ----- SESSIONS LIST -----
+  sessions() {
+    const type = state.filters.sessionType;
+    let list = [...state.data.sessions];
+    if (type !== 'tous') list = list.filter(s => s.type === type);
+    list.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+    const counts = {
+      tous: state.data.sessions.length,
+      initial: state.data.sessions.filter(s => s.type === 'initial').length,
+      suivi: state.data.sessions.filter(s => s.type === 'suivi').length,
+      controle: state.data.sessions.filter(s => s.type === 'controle').length
+    };
+
+    return `
+      <div class="page-header">
+        <h1 class="page-title">Séances</h1>
+        <div class="page-actions">
+          <button class="btn btn-primary" onclick="Actions.openSessionForm()">＋ Nouvelle séance</button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="pill-row">
+          <button class="filter-chip ${type === 'tous' ? 'active' : ''}" data-stype="tous">Toutes (${counts.tous})</button>
+          <button class="filter-chip ${type === 'initial' ? 'active' : ''}" data-stype="initial">Initiale (${counts.initial})</button>
+          <button class="filter-chip ${type === 'suivi' ? 'active' : ''}" data-stype="suivi">Suivi (${counts.suivi})</button>
+          <button class="filter-chip ${type === 'controle' ? 'active' : ''}" data-stype="controle">Contrôle (${counts.controle})</button>
+        </div>
+      </div>
+
+      ${list.length === 0 ? `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <div class="empty-state-title">Aucune séance</div>
+            <div class="text-sm mb-4">Crée ta première séance.</div>
+            <button class="btn btn-primary" onclick="Actions.openSessionForm()">＋ Nouvelle séance</button>
+          </div>
+        </div>
+      ` : `
+        <div class="list">
+          ${list.map(s => {
+            const c = state.data.clients.find(cl => cl.id === s.client_id);
+            const nom = c ? c.nom_complet : (s.client_nom || 'Client supprimé');
+            const color = avatarColor(nom);
+            return `
+              <div class="list-item" onclick="App.go('session', {id: '${s.id}'})">
+                <div class="avatar" style="background:${color}20;color:${color};">${initials(nom)}</div>
+                <div class="grow">
+                  <div class="row" style="gap:8px;flex-wrap:wrap;">
+                    <div class="font-semibold">${escapeHtml(nom)}</div>
+                    <span class="badge ${this.sessionTypeBadge(s.type)}">${this.sessionTypeLabel(s.type)}</span>
+                  </div>
+                  <div class="text-sm text-muted">${fmtDate(s.date)}</div>
+                  ${s.notes ? `<div class="text-xs text-soft truncate mt-2">${escapeHtml(s.notes.slice(0, 100))}${s.notes.length>100?'…':''}</div>` : ''}
+                </div>
+                <div style="font-size:18px;color:var(--text-soft);">›</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
+    `;
+  },
+
+  attachSessionsHandlers() {
+    document.querySelectorAll('[data-stype]').forEach(b => {
+      b.addEventListener('click', () => {
+        state.filters.sessionType = b.dataset.stype;
+        App.refreshCurrentView();
+      });
+    });
+  },
+
+  // ----- SESSION DETAIL -----
+  sessionDetail(id) {
+    const s = state.data.sessions.find(x => x.id === id);
+    if (!s) {
+      return `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-state-icon">❓</div>
+            <div class="empty-state-title">Séance introuvable</div>
+            <button class="btn btn-primary mt-4" onclick="App.go('sessions')">← Retour aux séances</button>
+          </div>
+        </div>`;
+    }
+    const c = state.data.clients.find(cl => cl.id === s.client_id);
+    const nom = c ? c.nom_complet : (s.client_nom || 'Client supprimé');
+
+    return `
+      <div class="page-header">
+        <button class="icon-btn" onclick="App.go('sessions')" title="Retour">←</button>
+        <h1 class="page-title">Séance</h1>
+        <span class="badge ${this.sessionTypeBadge(s.type)}">${this.sessionTypeLabel(s.type)}</span>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick='Actions.openSessionForm(${JSON.stringify(s).replace(/'/g, "&#39;")})'>✏️ Modifier</button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="row" style="gap:12px;">
+          <div class="avatar lg" style="background:${avatarColor(nom)}20;color:${avatarColor(nom)};">${initials(nom)}</div>
+          <div class="grow">
+            <div class="font-semibold text-lg">${escapeHtml(nom)}</div>
+            <div class="text-sm text-muted">${fmtDate(s.date)}</div>
+          </div>
+          ${c ? `<button class="btn btn-secondary btn-sm" onclick="App.go('client', {id:'${c.id}'})">Voir fiche</button>` : ''}
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">✓ Réalisé</div>
+        <div class="text-sm" style="white-space:pre-wrap;line-height:1.6;">${s.realise ? escapeHtml(s.realise) : '<span class="text-soft">Pas de contenu</span>'}</div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">📝 Notes</div>
+        <div class="text-sm" style="white-space:pre-wrap;line-height:1.6;">${s.notes ? escapeHtml(s.notes) : '<span class="text-soft">Pas de notes</span>'}</div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">🎯 Recommandations</div>
+        <div class="text-sm" style="white-space:pre-wrap;line-height:1.6;">${s.recommandations ? escapeHtml(s.recommandations) : '<span class="text-soft">Aucune recommandation notée</span>'}</div>
+      </div>
+
+      <div class="mt-6" style="text-align:center;">
+        <button class="btn btn-ghost" style="color:var(--danger);" onclick="Actions.deleteSession('${s.id}')">🗑️ Supprimer cette séance</button>
+      </div>
+    `;
+  },
+
+  // ----- BOOKINGS -----
+  bookings() {
+    const today = todayIsoDate();
+    const pending = state.data.bookings.filter(b => b.statut === 'en_attente')
+      .sort((a,b) => (a.date_rdv + a.heure_rdv).localeCompare(b.date_rdv + b.heure_rdv));
+    const validated = state.data.bookings.filter(b => b.statut === 'valide' && b.date_rdv >= today)
+      .sort((a,b) => (a.date_rdv + a.heure_rdv).localeCompare(b.date_rdv + b.heure_rdv));
+    const past = state.data.bookings.filter(b => b.statut === 'valide' && b.date_rdv < today)
+      .sort((a,b) => (b.date_rdv + b.heure_rdv).localeCompare(a.date_rdv + a.heure_rdv));
+    const refused = state.data.bookings.filter(b => b.statut === 'refuse')
+      .sort((a,b) => new Date(b.date_reception) - new Date(a.date_reception));
+
+    const renderBooking = (b) => {
+      const dateStr = `${fmtDate(b.date_rdv)} · ${escapeHtml(b.heure_rdv)}`;
+      const cls = b.statut === 'en_attente' ? '' : (b.statut === 'valide' ? 'confirmed' : 'refused');
+      return `
+        <div class="booking-card ${cls} mb-3">
+          <div class="row" style="gap:12px;flex-wrap:wrap;">
+            <div class="avatar" style="background:${avatarColor(b.nom)}20;color:${avatarColor(b.nom)};">${initials(b.nom)}</div>
+            <div class="grow">
+              <div class="font-semibold">${escapeHtml(b.nom)}</div>
+              <div class="text-sm text-muted">${dateStr}</div>
+            </div>
+            ${b.statut === 'en_attente' ? '<span class="badge badge-warning">en attente</span>' :
+              b.statut === 'valide' ? '<span class="badge badge-success">validé</span>' :
+              '<span class="badge badge-neutral">refusé</span>'}
+          </div>
+          <div class="text-sm text-muted mt-3" style="display:flex;gap:14px;flex-wrap:wrap;">
+            ${b.email ? `<span>✉️ <a href="mailto:${escapeHtml(b.email)}">${escapeHtml(b.email)}</a></span>` : ''}
+            ${b.telephone ? `<span>📞 <a href="tel:${escapeHtml(b.telephone)}">${escapeHtml(b.telephone)}</a></span>` : ''}
+          </div>
+          ${b.message ? `<div class="text-sm mt-3" style="background:var(--bg-soft);padding:10px;border-radius:8px;white-space:pre-wrap;">${escapeHtml(b.message)}</div>` : ''}
+          <div class="row mt-3" style="gap:8px;flex-wrap:wrap;">
+            ${b.statut === 'en_attente' ? `
+              <button class="btn btn-success btn-sm" onclick="Actions.setBookingStatus('${b.id}','valide')">✓ Valider</button>
+              <button class="btn btn-danger btn-sm" onclick="Actions.setBookingStatus('${b.id}','refuse')">✕ Refuser</button>
+            ` : b.statut === 'refuse' ? `
+              <button class="btn btn-secondary btn-sm" onclick="Actions.setBookingStatus('${b.id}','en_attente')">↺ Remettre en attente</button>
+            ` : `
+              <button class="btn btn-secondary btn-sm" onclick="Actions.setBookingStatus('${b.id}','en_attente')">↺ Remettre en attente</button>
+            `}
+            <button class="btn btn-ghost btn-sm" onclick='Actions.openBookingForm(${JSON.stringify(b).replace(/'/g, "&#39;")})'>✏️ Modifier</button>
+            <button class="btn btn-ghost btn-sm" style="color:var(--danger);" onclick="Actions.deleteBooking('${b.id}')">🗑️ Supprimer</button>
+          </div>
+        </div>
+      `;
+    };
+
+    return `
+      <div class="page-header">
+        <h1 class="page-title">Réservations</h1>
+        <div class="page-actions">
+          <a class="btn btn-secondary" href="https://app.cal.com/bookings/upcoming" target="_blank" rel="noopener">📥 Voir cal.com</a>
+          <button class="btn btn-primary" onclick="Actions.openBookingForm()">＋ Saisir un RDV</button>
+        </div>
+      </div>
+
+      <div class="card mb-4" style="background:var(--info-soft);border-color:#bae6fd;">
+        <div class="text-sm" style="color:#075985;">
+          💡 <strong>Workflow :</strong> Les réservations cal.com arrivent par email. Saisis les infos via <em>＋ Saisir un RDV</em>, puis valide ou refuse. Une validation propose automatiquement de créer la fiche client.
+        </div>
+      </div>
+
+      ${pending.length > 0 ? `
+        <h2 class="text-lg font-semibold mb-3">⚠️ À traiter (${pending.length})</h2>
+        ${pending.map(renderBooking).join('')}
+      ` : ''}
+
+      ${validated.length > 0 ? `
+        <h2 class="text-lg font-semibold mt-6 mb-3">📅 RDV à venir (${validated.length})</h2>
+        ${validated.map(renderBooking).join('')}
+      ` : ''}
+
+      ${past.length > 0 ? `
+        <h2 class="text-lg font-semibold mt-6 mb-3">⏳ RDV passés (${past.length})</h2>
+        ${past.slice(0, 10).map(renderBooking).join('')}
+      ` : ''}
+
+      ${refused.length > 0 ? `
+        <h2 class="text-lg font-semibold mt-6 mb-3">✕ Refusés (${refused.length})</h2>
+        ${refused.slice(0, 10).map(renderBooking).join('')}
+      ` : ''}
+
+      ${state.data.bookings.length === 0 ? `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-state-icon">📅</div>
+            <div class="empty-state-title">Aucune réservation</div>
+            <div class="text-sm mb-4">Quand tu reçois un email de cal.com, saisis-le ici.</div>
+            <button class="btn btn-primary" onclick="Actions.openBookingForm()">＋ Saisir un RDV</button>
+          </div>
+        </div>
+      ` : ''}
+    `;
+  },
+
+  // ----- SETTINGS -----
+  settings() {
+    const backendUrl = CONFIG.BACKEND_URL || '';
+    const auditCount = JSON.parse(localStorage.getItem('ef_audit') || '[]').length;
+    return `
+      <div class="page-header">
+        <h1 class="page-title">Paramètres</h1>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">🔐 Sécurité</div>
+        <div class="settings-list">
+          <button class="settings-item" onclick="Actions.changePin()">
+            <div class="settings-item-icon">🔢</div>
+            <div class="settings-item-label">Changer le PIN</div>
+            <div class="settings-item-value">›</div>
+          </button>
+          <button class="settings-item" onclick="App.go('audit')">
+            <div class="settings-item-icon">📜</div>
+            <div class="settings-item-label">Journal d'audit</div>
+            <div class="settings-item-value">${auditCount} entrées ›</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">⚙️ Préférences</div>
+        <div class="settings-list">
+          <button class="settings-item" onclick="Actions.setPhonePrefix()">
+            <div class="settings-item-icon">📱</div>
+            <div class="settings-item-label">Indicatif téléphonique par défaut</div>
+            <div class="settings-item-value">${escapeHtml(CONFIG.PHONE_PREFIX)} ›</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">☁️ Synchronisation</div>
+        <div class="settings-list">
+          <button class="settings-item" onclick="Actions.setBackendUrl()">
+            <div class="settings-item-icon">🔗</div>
+            <div class="settings-item-label">URL du backend Apps Script</div>
+            <div class="settings-item-value">${backendUrl ? '✓ Configuré' : 'Non configuré'} ›</div>
+          </button>
+          <button class="settings-item" onclick="App.syncNow()">
+            <div class="settings-item-icon">🔄</div>
+            <div class="settings-item-label">Synchroniser maintenant</div>
+            <div class="settings-item-value">›</div>
+          </button>
+          <button class="settings-item" onclick="Actions.exportData()">
+            <div class="settings-item-icon">⬇️</div>
+            <div class="settings-item-label">Exporter mes données (JSON)</div>
+            <div class="settings-item-value">›</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">⚡ Webhook cal.com — réception auto des RDV</div>
+        <div class="text-sm text-muted mb-3">
+          Configure cal.com pour qu'il envoie automatiquement chaque nouvelle réservation directement dans tes "RDV à traiter".
+          Plus besoin de saisir manuellement : la fiche apparaît seule dès qu'un client réserve.
+        </div>
+        <div class="settings-list">
+          <button class="settings-item" onclick="Actions.openWebhookHelp()">
+            <div class="settings-item-icon">📖</div>
+            <div class="settings-item-label">Procédure de configuration</div>
+            <div class="settings-item-value">${backendUrl ? '5 étapes ›' : 'Backend non configuré ›'}</div>
+          </button>
+          <a class="settings-item" href="https://app.cal.com/settings/developer/webhooks" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+            <div class="settings-item-icon">🔗</div>
+            <div class="settings-item-label">Ouvrir cal.com › Developer › Webhooks</div>
+            <div class="settings-item-value">↗</div>
+          </a>
+          <button class="settings-item" onclick="Actions.testWebhookConnection()">
+            <div class="settings-item-icon">🧪</div>
+            <div class="settings-item-label">Tester la chaîne (envoie un faux booking)</div>
+            <div class="settings-item-value">›</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">📅 Liens cal.com</div>
+        <div class="settings-list">
+          <a class="settings-item" href="https://cal.com/annuaire-youpi/30min" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+            <div class="settings-item-icon">🔗</div>
+            <div class="settings-item-label">Page de réservation publique</div>
+            <div class="settings-item-value">↗</div>
+          </a>
+          <a class="settings-item" href="https://app.cal.com/event-types/1576938?tabName=availability" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+            <div class="settings-item-icon">📆</div>
+            <div class="settings-item-label">Régler mes disponibilités</div>
+            <div class="settings-item-value">↗</div>
+          </a>
+          <a class="settings-item" href="https://app.cal.com/bookings/upcoming" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+            <div class="settings-item-icon">📥</div>
+            <div class="settings-item-label">Mes RDV sur cal.com</div>
+            <div class="settings-item-value">↗</div>
+          </a>
+        </div>
+      </div>
+
+      ${state.mode === 'demo' ? `
+        <div class="card mb-4" style="border-color:var(--warning);">
+          <div class="card-title mb-3">🎭 Mode démonstration</div>
+          <div class="text-sm text-muted mb-3">Tu es en mode démo. Aucune donnée n'est synchronisée vers Google Sheets.</div>
+          <button class="btn btn-warning btn-block" onclick="Actions.resetDemo()">↺ Réinitialiser la démo</button>
+        </div>
+      ` : ''}
+
+      <div class="card mb-4">
+        <div class="card-title mb-3">ℹ️ À propos</div>
+        <div class="info-line"><div class="info-line-label">Application</div><div class="info-line-value">Energy Force CRM</div></div>
+        <div class="info-line"><div class="info-line-label">Version</div><div class="info-line-value">${VERSION} — 2026</div></div>
+        <div class="info-line"><div class="info-line-label">Mode</div><div class="info-line-value">${state.mode === 'demo' ? '🎭 Démonstration' : '✓ Réel'}</div></div>
+      </div>
+    `;
+  },
+
+  audit() {
+    const log = JSON.parse(localStorage.getItem('ef_audit') || '[]');
+    return `
+      <div class="page-header">
+        <button class="icon-btn" onclick="App.go('settings')">←</button>
+        <h1 class="page-title">Journal d'audit</h1>
+        <div class="page-actions">
+          <button class="btn btn-ghost btn-sm" onclick="if(confirm('Effacer le journal local ?')){localStorage.removeItem('ef_audit');App.refreshCurrentView();}">Effacer</button>
+        </div>
+      </div>
+      <div class="card">
+        ${log.length === 0 ? `
+          <div class="empty-state">
+            <div class="empty-state-icon">📜</div>
+            <div class="empty-state-title">Aucune entrée</div>
+          </div>
+        ` : `
+          <div class="list">
+            ${log.slice(0, 100).map(e => `
+              <div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;">
+                <div class="row" style="gap:8px;">
+                  <span class="font-semibold">${escapeHtml(e.action)}</span>
+                  ${e.mode === 'demo' ? '<span class="badge badge-warning">démo</span>' : ''}
+                  <span class="text-soft" style="margin-left:auto;">${fmtDateTime(e.timestamp)}</span>
+                </div>
+                ${Object.keys(e.details || {}).length ? `<div class="text-xs text-muted mt-2" style="font-family:monospace;">${escapeHtml(JSON.stringify(e.details))}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    `;
   }
-}
-function confirmAppointment(id){
-  const i=state.appointments.findIndex(a=>a.id===id);
-  if(i>=0){
-    state.appointments[i].status='confirmed';
-    save();
-    render();
-    alert('Rendez-vous confirmé !');
-  }
-}
-function cancelAppointment(id){
-  if(!confirm('Annuler ce rendez-vous ?')) return;
-  state.appointments=state.appointments.filter(a=>a.id!==id);
-  save();
-  render();
-}
-function renderRecent(){ const el=$('#recentList'); el.innerHTML=''; state.clients.slice(0,4).forEach(c=>{const sessions=clientSessions(c.id); el.insertAdjacentHTML('beforeend',`<div class="row"><div><strong>${c.name}</strong><div class="muted">${c.objective}</div><div class="muted">Séances : ${sessions.length} · Dernière : ${sessions[0]?.date||'—'}</div></div><div class="tag">${c.status}</div></div>`)}); }
-function matches(c,q){return [c.name,c.phone,c.email,c.objective,c.comment||'',c.status,c.job||'',c.typology||''].join(' ').toLowerCase().includes(q)}
-function renderClients(){ const q=($('#clientFilter')?.value||$('#searchInput').value).toLowerCase().trim(); const status=$('#statusFilter').value; const el=$('#clientsList'); const filtered=state.clients.filter(c=>(status==='all'||c.status===status)&&matches(c,q)); $('#resultCount').textContent=`${filtered.length} résultat(s)`; el.innerHTML=''; if(!filtered.length){el.innerHTML='<div class="empty">Aucun client trouvé.</div>'; return;} filtered.forEach(c=>{const sessions=clientSessions(c.id); el.insertAdjacentHTML('beforeend',`<div class="row"><div><strong>${c.name}</strong><div class="muted">${c.phone} · ${c.email||'—'}</div><div class="muted">Objectif : ${c.objective||'—'}</div><div class="muted">Séances : ${sessions.length} · Dernière : ${sessions[0]?.date||'Aucune'}</div></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">${c.status}</span><button class="btn-icon open" data-open="${c.id}" title="Ouvrir la fiche">📂</button><button class="btn-icon edit" data-edit="${c.id}" title="Éditer">✏️</button><button class="btn-icon delete" data-del="${c.id}" title="Supprimer">🗑️</button></div></div>`)}); $$('[data-open]').forEach(b=>b.onclick=()=>openClient(b.dataset.open)); $$('[data-edit]').forEach(b=>b.onclick=()=>openModal(b.dataset.edit)); $$('[data-del]').forEach(b=>b.onclick=()=>deleteClient(b.dataset.del)); }
-function renderClientDetail(){ const c=state.clients.find(x=>x.id===state.selectedClientId)||state.clients[0]; if(!c) return; const sessions=clientSessions(c.id); $('#clientDetail').innerHTML=`<div class="profile"><div class="avatar"></div><div><div style="font-size:20px;font-weight:900">${c.name}</div><div class="muted">${c.phone} · ${c.email||'—'}</div><div class="muted" style="margin-top:8px;font-weight:600">Statut : ${c.status||'—'}</div><div class="muted">Métier : ${c.job||'—'}</div><div class="muted">Typologie du client : ${c.typology||'—'}</div><div class="muted">Objectif : ${c.objective||'—'}</div><div class="muted" style="margin-top:8px">Commentaire : ${c.comment||'—'}</div></div></div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px"><div class="row"><div><strong>${sessions[0]?.date||'—'}</strong><div class="muted">Dernière séance</div></div></div><div class="row"><div><strong>${sessions.length}</strong><div class="muted">Nb de séances</div></div></div></div>`; $('#clientTag').textContent=c.status; }
-function renderTimeline(){ const c=state.clients.find(x=>x.id===state.selectedClientId)||state.clients[0]; const el=$('#timeline'); el.innerHTML=''; if(!c) return; const sessions=clientSessions(c.id); if(!sessions.length){el.innerHTML='<div class="empty">Aucune séance pour ce client.</div>'; return;} sessions.forEach(s=>el.insertAdjacentHTML('beforeend',`<div class="event"><strong>${s.date} — ${s.type}</strong><div class="muted" style="margin-top:6px">Commentaire : ${s.reason}</div><div class="muted">État : ${s.state}</div><div style="margin-top:8px">${s.notes}</div></div>`)); }
-function fillSessionSelect(){ const sel=$('#sessionClient'); sel.innerHTML=state.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join(''); sel.value=state.selectedClientId||state.clients[0]?.id; }
-function openClient(id){ state.selectedClientId=id; save(); render(); goView('historique'); }
-function openModal(id=null){ editingId=id; const modal=$('#clientModalBackdrop'); const c=id?state.clients.find(x=>x.id===id):null; $('#modalTitle').textContent=id?'Éditer le client':'Nouveau client'; $('#cName').value=c?.name||''; $('#cPhone').value=c?.phone||''; $('#cEmail').value=c?.email||''; $('#cStatus').value=c?.status||'actif'; $('#cJob').value=c?.job||''; $('#cTypology').value=c?.typology||''; $('#cObjective').value=c?.objective||''; $('#cComment').value=c?.comment||''; modal.classList.add('show'); }
-function closeModal(){ $('#clientModalBackdrop').classList.remove('show'); editingId=null; }
-function deleteClient(id){ const c=state.clients.find(x=>x.id===id); if(!confirm(`Supprimer ${c?.name} ?`)) return; state.clients=state.clients.filter(x=>x.id!==id); state.sessions=state.sessions.filter(x=>x.clientId!==id); if(state.selectedClientId===id) state.selectedClientId=state.clients[0]?.id||null; save(); render(); }
-function exportJSON(){ const payload={app:'Energy Force',version:'final-v9',exportedAt:new Date().toISOString(),data:state}; const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='energy_force_export_make.json'; a.click(); URL.revokeObjectURL(a.href); }
-function render(){ populateYearSelector(); renderStats(); renderUpcoming(); renderAppointments(); renderRecent(); renderClients(); renderClientDetail(); renderTimeline(); fillSessionSelect(); save(); }
-$('#seedBtn').onclick=()=>{state=JSON.parse(JSON.stringify(sample)); state.selectedClientId='c1'; render();};
-$('#newClientBtn').onclick=()=>openModal(); $('#fab').onclick=()=>openModal(); $('#exportBtn').onclick=exportJSON;
-$('#closeModal').onclick=closeModal; $('#cancelModal').onclick=closeModal; $('#clientModalBackdrop').addEventListener('click',e=>{if(e.target.id==='clientModalBackdrop') closeModal()});
-$('#clientForm').onsubmit=e=>{e.preventDefault(); const data={name:$('#cName').value.trim(),phone:$('#cPhone').value.trim(),email:$('#cEmail').value.trim(),status:$('#cStatus').value,job:$('#cJob').value.trim(),typology:$('#cTypology').value.trim(),objective:$('#cObjective').value.trim(),comment:$('#cComment').value.trim(),updated:new Date().toISOString().slice(0,10)}; if(editingId){const i=state.clients.findIndex(x=>x.id===editingId); state.clients[i]={...state.clients[i],...data}; state.selectedClientId=editingId;} else {const id='c'+Math.random().toString(36).slice(2,9); state.clients.unshift({id,...data}); state.selectedClientId=id;} closeModal(); render(); };
-$('#searchInput').oninput=e=>{goView('clients'); $('#clientFilter').value=e.target.value; renderClients();}; $('#clientFilter').oninput=renderClients; $('#statusFilter').onchange=renderClients;
-$('#editClientBtn').onclick=()=>openModal(state.selectedClientId); $('#deleteClientBtn').onclick=()=>deleteClient(state.selectedClientId);
-$('#sessionForm').onsubmit=e=>{e.preventDefault(); const clientId=$('#sessionClient').value; state.selectedClientId=clientId; const entry={id:crypto.randomUUID(),clientId,date:$('#sessionDate').value||new Date().toISOString().slice(0,10),type:$('#sessionType').value,reason:$('#sessionReason').value||'—',state:$('#sessionState').value||'—',notes:$('#sessionNotes').value||'—'}; state.sessions.unshift(entry); const client=state.clients.find(x=>x.id===clientId); if(client){ client.updated=new Date().toISOString().slice(0,10);} render(); e.target.reset(); alert('Séance enregistrée ! Le compteur de séances a été mis à jour automatiquement.'); };
-$('#clearForm').onclick=()=>$('#sessionForm').reset();
-$('#yearSelector').onchange=e=>{selectedYear=parseInt(e.target.value); render();};
-$$('.nav button, .footer-mobile button').forEach(b=>b.onclick=()=>goView(b.dataset.view));
-load(); render();
+};
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => App.init());
+
+// Empêche la fermeture accidentelle des modaux par clic extérieur involontaire
+window.closeModal = closeModal;
 </script>
+
 </body>
 </html>

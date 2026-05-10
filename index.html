@@ -1100,7 +1100,7 @@
     <div class="splash-security-hint" id="splash-security-hint" style="display:none;text-align:center;font-size:11px;color:var(--text-muted);margin-top:14px;padding:8px;background:var(--primary-soft-2);border-radius:var(--radius-sm);"></div>
 
     <div class="splash-footer">
-      Energy Force CRM · <span id="splash-version">v0.11</span> — 2026
+      Energy Force CRM · <span id="splash-version">v0.12</span> — 2026
     </div>
   </div>
 </div>
@@ -1188,7 +1188,7 @@
    v0.1 — 2026
    ============================================================ */
 
-const VERSION = 'v0.11';
+const VERSION = 'v0.12';
 /* ============================================================
    🔧 CONFIGURATION — À MODIFIER UNE SEULE FOIS
    ============================================================
@@ -1361,9 +1361,27 @@ function formatPhoneE164(phone, defaultPrefix) {
   if (s.indexOf('00') === 0 && s.length > 4) {
     return s.substring(2).replace(/\D/g, '');
   }
-  // Numéro local : on enlève chiffres non-numériques, retire le 0 initial s'il y en a un, préfixe
+  // Numéro local commençant par 0 : on enlève le 0 et on préfixe
   s = s.replace(/\D/g, '');
-  if (s.charAt(0) === '0') s = s.substring(1);
+  if (s.charAt(0) === '0') {
+    s = s.substring(1);
+    return prefix + s;
+  }
+  // HEURISTIQUE : si le numéro a 10+ chiffres et commence par les chiffres
+  // de l'indicatif par défaut (ex : "596696978872" avec indicatif +596),
+  // on considère qu'il est déjà au format E164 sans le +
+  // Cela évite le double-préfixage des numéros stockés ainsi.
+  if (s.length >= 10 && prefix && s.indexOf(prefix) === 0) {
+    return s;
+  }
+  // HEURISTIQUE 2 : si le numéro a 11-15 chiffres (longueur typique E164),
+  // et commence par un chiffre d'indicatif courant (1, 2, 3, 4, 5, 6, 7, 8, 9),
+  // on le considère déjà E164. Cela couvre les cas où l'utilisateur a saisi
+  // un numéro étranger sans le + (ex : "33612345678" pour la France).
+  if (s.length >= 11 && s.length <= 15) {
+    return s;
+  }
+  // Sinon : numéro court, on préfixe par défaut
   return prefix + s;
 }
 
@@ -1889,8 +1907,10 @@ const App = {
     // Service worker / PWA manifest dynamique
     this.installManifest();
 
-    // Persiste la dernière route
-    state.route = localStorage.getItem('ef_last_route') || 'dashboard';
+    // Toujours démarrer sur le dashboard à la connexion (pas de restauration
+    // de la dernière route pour éviter les "client introuvable" si l'ID
+    // a été modifié/supprimé entre temps)
+    state.route = 'dashboard';
 
     // Synchronisation des paramètres partagés (PIN hash, indicatif, etc.)
     // depuis le backend AVANT l'écran de PIN, pour que tous les appareils
@@ -2093,7 +2113,6 @@ const App = {
   go(route, params = {}) {
     state.route = route;
     state.routeParams = params;
-    localStorage.setItem('ef_last_route', route);
     this.refreshNav();
     this.render();
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -2211,10 +2230,14 @@ const Actions = {
 
   async saveClient(existingId) {
     const f = document.getElementById('client-form');
+    // Normalisation du téléphone : on stocke toujours au format +XXXXXXXXXX
+    // pour éviter toute ambiguïté ultérieure
+    const rawPhone = f.telephone.value.trim();
+    const normalizedPhone = rawPhone ? '+' + formatPhoneE164(rawPhone) : '';
     const data = {
       id: existingId || uid('cl'),
       nom_complet: f.nom_complet.value.trim(),
-      telephone: f.telephone.value.trim(),
+      telephone: normalizedPhone,
       email: f.email.value.trim(),
       statut: f.statut.value,
       metier: f.metier.value.trim(),
@@ -2809,19 +2832,17 @@ const Actions = {
       return;
     }
     const e164 = formatPhoneE164(v);
-    if (!e164 || e164.length < 6) {
+    if (!e164 || e164.length < 8) {
       hint.innerHTML = `⚠️ Numéro trop court ou invalide`;
       hint.style.color = 'var(--warning)';
       return;
     }
-    // Détection si le numéro est déjà au format international
-    const userTyped = v.replace(/[\s.\-()_/]/g, '');
-    const isIntl = userTyped.charAt(0) === '+' || userTyped.indexOf('00') === 0;
-    if (isIntl) {
-      hint.innerHTML = `✓ Format international détecté → WhatsApp utilisera <b>+${escapeHtml(e164)}</b>`;
-    } else {
-      hint.innerHTML = `↪ Indicatif <b>${escapeHtml(CONFIG.PHONE_PREFIX)}</b> ajouté → WhatsApp utilisera <b>+${escapeHtml(e164)}</b>`;
+    if (e164.length > 15) {
+      hint.innerHTML = `⚠️ Numéro trop long`;
+      hint.style.color = 'var(--warning)';
+      return;
     }
+    hint.innerHTML = `✓ Sera enregistré comme <b>+${escapeHtml(e164)}</b>`;
     hint.style.color = 'var(--success)';
   },
 
